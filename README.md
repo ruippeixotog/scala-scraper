@@ -2,7 +2,7 @@
 
 A library providing a flexible DSL for loading and scraping content from HTML pages.
 
-Take a look at `Examples.scala` for usage examples.
+Take a look at `Examples.scala` and `application.conf` for usage examples.
 
 ## Copyright
 
