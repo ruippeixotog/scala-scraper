@@ -14,8 +14,13 @@ class Browser {
   def get(url: String) = execute(url, _.method(GET))
   def post(url: String, form: Map[String, String]) = execute(url, _.method(POST).data(form))
 
-  private[this] def prepareConn(conn: Connection): Connection =
-    conn.cookies(cookies).userAgent("jsoup/1.8.1")
+  private[this] def prepareConn(conn: Connection) =
+    conn.cookies(cookies).
+        userAgent("jsoup/1.8.1").
+        header("Accept", "text/html,application/xhtml+xml,application/xml").
+        header("Accept-Charset", "utf-8").
+        timeout(15000).
+        maxBodySize(0)
 
   private[this] def execute(url: String, conn: Connection => Connection): Document =
     process(conn(prepareConn(Jsoup.connect(url))))
