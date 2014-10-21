@@ -6,41 +6,43 @@ import net.ruippeixotog.scalascraper.util._
 import org.jsoup.select.Elements
 
 import scala.util.Try
+import scalaz._
+import scalaz.syntax.functor._
 
-trait ScrapingOps extends MappableInstances {
+trait ScrapingOps extends syntax.ToIdOps with std.AllInstances with IdInstances {
 
-  class ElementsScrapingOps[F[_], A <% Elements, FA <% Mappable[F, A]](val self: FA) {
+  class ElementsScrapingOps[+F[_]: Functor, A <% Elements](val self: F[A]) {
 
-    def extract[B](extractor: HtmlExtractor[B]) = self.mmap(extractor.extract(_))
+    def extract[B](extractor: HtmlExtractor[B]) = self.map(extractor.extract(_))
 
     @inline final def apply[B](extractor: HtmlExtractor[B]) = extract(extractor)
 
     @inline final def >>[B](extractor: HtmlExtractor[B]) = extract(extractor)
 
     @inline final def >>[B, C](extractor1: HtmlExtractor[B], extractor2: HtmlExtractor[C]) =
-      (extract(extractor1), extract(extractor2))
+      self.map { doc => (extractor1.extract(doc), extractor2.extract(doc)) }
 
     def tryExtract[B](extractor: HtmlExtractor[B]) =
-      self.mmap { doc => Try(extractor.extract(doc)).toOption }
+      self.map { doc => Try(extractor.extract(doc)).toOption }
 
     @inline final def tryApply[B](extractor: HtmlExtractor[B]) = tryExtract(extractor)
 
     @inline final def ?>>[B](extractor: HtmlExtractor[B]) = tryExtract(extractor)
 
-    def errorIf[R](errors: Seq[HtmlStatusMatcher[R]]) = self.mmap { doc =>
-      errors.foldLeft(VSuccess[A, R](doc)) { (res, error) =>
+    def errorIf[R](errors: Seq[HtmlStatusMatcher[R]]) = self.map { doc =>
+      errors.foldLeft(VSuccess[R, A](doc)) { (res, error) =>
         if(res.isRight || !error.matches(doc)) res else VFailure(error.result)
       }
     }
 
     def validateWith[R](success: HtmlStatusMatcher[_],
                         errors: Seq[HtmlStatusMatcher[R]],
-                        default: => R = throw new Exception("Unknown error matching document")) =
-      self.mmap { doc =>
+                        default: => R = throw new Exception("Unknown error matching document")): F[Validated[R, A]] =
+      self.map { doc =>
         if(success.matches(doc)) VSuccess(doc)
-        else errors.foldLeft(VSuccess[A, R](doc)) { (res, error) =>
+        else errors.foldLeft(VSuccess[R, A](doc)) { (res, error) =>
           if(res.isRight || !error.matches(doc)) res else VFailure(error.result)
-        }.fold(_ => VFailure(default), VFailure.apply)
+        }.fold(VFailure.apply, _ => VFailure(default))
       }
 
     @inline final def ~/~[R](error: HtmlStatusMatcher[R]) = errorIf(error :: Nil)
@@ -62,15 +64,19 @@ trait ScrapingOps extends MappableInstances {
     @inline final def and = self
   }
 
-  implicit def elementsScrapingOps[F[_], A <% Elements, FA <% Mappable[F, A]](self: FA) =
-    new ElementsScrapingOps[F, A, FA](self)
+  implicit def elementsScrapingOps[F[_]: Functor, A <% Elements](self: F[A]) =
+    new ElementsScrapingOps[F, A](self)
 
-  // TODO: this explicit delcaration shouldn't be needed
-  implicit final def validatedScrapingOps[A <% Elements, R](doc: Validated[A, R]) =
-    new ElementsScrapingOps[({ type F[X] = Validated[X, R] })#F, A, Validated[A, R]](doc)
+  // TODO: these explicit delcarations shouldn't be needed
+  implicit def idScrapingOps[A <% Elements](self: A) = new ElementsScrapingOps[Id, A](self)
 
-  implicit def functionApplyOps[A](obj: A) = new {
-    def |>[B](f: A => B) = f(obj)
+  implicit final def validatedScrapingOps[R, A <% Elements](self: Validated[R, A]) =
+    new ElementsScrapingOps[({ type F[X] = Validated[R, X] })#F, A](self)
+
+  // TODO: this only handles two levels of functors (not that more levels would be really needed)
+  implicit def compositeScrapingOps[F[_]: Functor, G[_]: Functor, A <% Elements](self: F[G[A]]) = {
+    implicit val FG = implicitly[Functor[F]].compose[G]
+    new ElementsScrapingOps[({ type FG[X] = F[G[X]] })#FG, A](self)
   }
 }
 

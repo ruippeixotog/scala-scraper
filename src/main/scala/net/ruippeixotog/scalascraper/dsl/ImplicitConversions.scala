@@ -14,7 +14,7 @@ trait ImplicitConversions {
 
   implicit def elementAsElements(elem: Element) = new Elements(elem)
 
-  implicit def projectValidatedSuccess[A, R](either: Validated[A, R]) = either.left
+  implicit def projectValidatedSuccess[R, A](either: Validated[R, A]) = either.right
 }
 
 object ImplicitConversions extends ImplicitConversions

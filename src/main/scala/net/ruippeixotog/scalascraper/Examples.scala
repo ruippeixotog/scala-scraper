@@ -1,10 +1,9 @@
 package net.ruippeixotog.scalascraper
 
 import com.typesafe.config.ConfigFactory
-import net.ruippeixotog.scalascraper.dsl.DSL
-import DSL._
 import net.ruippeixotog.scalascraper.ExampleMatchers._
 import net.ruippeixotog.scalascraper.browser.Browser
+import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.scraper.ContentExtractors._
 import net.ruippeixotog.scalascraper.util.Validated._
 
@@ -21,7 +20,7 @@ object NewsApp extends App {
   println("=== OBSERVADOR ===")
 
   doc >> extractor(".logo img", attr("src")) |> println
-  doc >> extractorAt("example-extractor") |> println
+  doc >> extractorAt[String]("example-extractor") |> println
 
   println("==================")
   println()

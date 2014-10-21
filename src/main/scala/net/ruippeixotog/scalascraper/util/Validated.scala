@@ -1,16 +1,16 @@
 package net.ruippeixotog.scalascraper.util
 
 object Validated {
-  @inline final def success[A, R](succ: A) = VSuccess[A, R](succ)
-  @inline final def failure[A, R](succ: R) = VFailure[A, R](succ)
+  @inline final def success[R, A](succ: A) = VSuccess[R, A](succ)
+  @inline final def failure[R, A](succ: R) = VFailure[R, A](succ)
 
   object VSuccess {
-    def apply[A, B](a: A): Validated[A, B] = Left(a)
-    def unapply[A, R](either: Validated[A, R]) = either.left.toOption
+    def apply[R, A](a: A): Validated[R, A] = Right(a)
+    def unapply[R, A](either: Validated[R, A]) = either.right.toOption
   }
 
   object VFailure {
-    def apply[A, R](res: R): Validated[A, R] = Right(res)
-    def unapply[A, R](either: Validated[A, R]) = either.right.toOption
+    def apply[R, A](res: R): Validated[R, A] = Left(res)
+    def unapply[R, A](either: Validated[R, A]) = either.left.toOption
   }
 }
