@@ -1,11 +1,17 @@
 package net.ruippeixotog.scalascraper
 
+import java.io.PrintStream
+
 import com.typesafe.config.ConfigFactory
 import net.ruippeixotog.scalascraper.ExampleMatchers._
 import net.ruippeixotog.scalascraper.browser.Browser
 import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.scraper.ContentExtractors._
 import net.ruippeixotog.scalascraper.util.Validated._
+import org.jsoup.nodes.Element
+
+import scala.collection.convert.WrapAsScala._
+import scala.collection.immutable.SortedMap
 
 object ExampleMatchers {
   val succ = matcherAt[Int]("success-matcher")
@@ -55,4 +61,21 @@ object HeadlineVerboseApp extends App {
     headline <- browser.get("http://observador.pt") validateWith (succ, errs) extract element("h1 a")
     headlineDesc = browser.get(headline.attr("href")) extract text(".lead")
   } println("== " + headline.text + " ==\n" + headlineDesc)
+}
+
+object MusicGenreTreeApp extends App {
+
+  case class GenreNode(root: Element) {
+    def leaves = root >> elements("> a.genre") map { e => e.text -> e }
+    def nodes = root >> elementList("> div:has(b:has(a.genre))") >> (text(".genre"), element("blockquote"))
+
+    def children: Map[String, GenreNode] = SortedMap(leaves ++ nodes: _*).mapValues(GenreNode.apply)
+
+    def renderYaml(d: Int = 0): String =
+      children.map { case (k, v) => s"${" " * d}- $k:\n${v.renderYaml(d + 2)}" }.mkString
+  }
+
+  val page = new Browser().get("http://rateyourmusic.com/rgenre/")
+  val out = new PrintStream("genres.yaml")
+  GenreNode(page >> element("#content")).renderYaml() |> out.println
 }
