@@ -66,6 +66,7 @@ object SimpleExtractor {
 object ContentExtractors {
   def element: Elements => Element = _.head
   def elements: Elements => Elements = identity
+  def elementList: Elements => List[Element] = _.toList
 
   def text: Elements => String = _.head.text
   def texts: Elements => Seq[String] = _.map(_.text)
