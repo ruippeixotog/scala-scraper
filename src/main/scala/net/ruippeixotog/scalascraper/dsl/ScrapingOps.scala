@@ -27,7 +27,7 @@ trait ScrapingOps extends syntax.ToIdOps with std.AllInstances with IdInstances 
 
     @inline final def tryApply[B](extractor: HtmlExtractor[B]) = tryExtract(extractor)
 
-    @inline final def ?>>[B](extractor: HtmlExtractor[B]) = tryExtract(extractor)
+    @inline final def >?>[B](extractor: HtmlExtractor[B]) = tryExtract(extractor)
 
     def errorIf[R](errors: Seq[HtmlStatusMatcher[R]]) = self.map { doc =>
       errors.foldLeft(VSuccess[R, A](doc)) { (res, error) =>
