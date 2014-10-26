@@ -11,10 +11,15 @@ import scala.collection.mutable.{Map => MutableMap}
 class Browser {
   val cookies = MutableMap.empty[String, String]
 
-  def get(url: String) = execute(url, _.method(GET))
-  def post(url: String, form: Map[String, String]) = execute(url, _.method(POST).data(form))
+  def get(url: String) =
+    executePipeline(Jsoup.connect(url).method(GET))
 
-  private[this] def prepareConn(conn: Connection) =
+  def post(url: String, form: Map[String, String]) =
+    executePipeline(Jsoup.connect(url).method(POST).data(form))
+
+  def requestSettings(conn: Connection): Connection = conn
+
+  private[this] def defaultRequestSettings(conn: Connection) =
     conn.cookies(cookies).
         userAgent("jsoup/1.8.1").
         header("Accept", "text/html,application/xhtml+xml,application/xml").
@@ -22,8 +27,8 @@ class Browser {
         timeout(15000).
         maxBodySize(0)
 
-  private[this] def execute(url: String, conn: Connection => Connection): Document =
-    process(conn(prepareConn(Jsoup.connect(url))))
+  private[this] val executePipeline: Connection => Document =
+    (defaultRequestSettings _).andThen(requestSettings).andThen(process)
 
   private[this] def process(conn: Connection) = {
     val res = conn.execute()
