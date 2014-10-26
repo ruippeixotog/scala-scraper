@@ -73,6 +73,7 @@ object ContentExtractors {
   def allText: Elements => String = _.text
 
   def attr(attr: String): Elements => String = _.attr(attr)
+  def attrs(attr: String): Elements => Seq[String] = _.map(_.attr(attr))
 
   def formData: Elements => Map[String, String] =
     _.select("input").map { e => e.attr("name") -> e.attr("value") }.toMap
