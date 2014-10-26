@@ -1,5 +1,7 @@
 package net.ruippeixotog.scalascraper.browser
 
+import java.io.File
+
 import org.jsoup.Connection.Method._
 import org.jsoup.nodes.Document
 import org.jsoup.{Connection, Jsoup}
@@ -16,6 +18,12 @@ class Browser {
 
   def post(url: String, form: Map[String, String]) =
     executePipeline(Jsoup.connect(url).method(POST).data(form))
+
+  def parseFile(path: String, charset: String = "UTF-8") = Jsoup.parse(new File(path), charset)
+  def parseFile(file: File) = Jsoup.parse(file, "UTF-8")
+  def parseFile(file: File, charset: String) = Jsoup.parse(file, charset)
+
+  def parseString(html: String) = Jsoup.parse(html)
 
   def requestSettings(conn: Connection): Connection = conn
 
