@@ -64,6 +64,7 @@ object HeadlineVerboseApp extends App {
 }
 
 object MusicGenreTreeApp extends App {
+  val browser = new Browser
 
   case class GenreNode(root: Element) {
     def leaves = root >> elements("> a.genre") map { e => e.text -> e }
@@ -72,10 +73,13 @@ object MusicGenreTreeApp extends App {
     def children: Map[String, GenreNode] = SortedMap(leaves ++ nodes: _*).mapValues(GenreNode.apply)
 
     def renderYaml(d: Int = 0): String =
-      children.map { case (k, v) => s"${" " * d}- $k:\n${v.renderYaml(d + 2)}" }.mkString
+      children.map {
+        case (k, v) if v.children.isEmpty => s"${" " * d}- $k\n"
+        case (k, v) => s"${" " * d}- $k:\n${v.renderYaml(d + 2)}"
+      }.mkString
   }
 
-  val page = new Browser().get("http://rateyourmusic.com/rgenre/")
+  val page = browser.get("http://rateyourmusic.com/rgenre/")
   val out = new PrintStream("genres.yaml")
   GenreNode(page >> element("#content")).renderYaml() |> out.println
 }
