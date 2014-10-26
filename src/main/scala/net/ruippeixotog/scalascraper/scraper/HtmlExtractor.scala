@@ -88,6 +88,8 @@ object ContentParsers {
   def asDate(dateFormats: DateTimeFormatter*): String => DateTime = {
     val formatter = new DateTimeFormatterBuilder().
         append(null, dateFormats.map(_.getParser).toArray).toFormatter
+  def asInt: String => Int = _.toInt
+  def asDouble: String => Double = _.toDouble
 
     formatter.parseDateTime
   }
