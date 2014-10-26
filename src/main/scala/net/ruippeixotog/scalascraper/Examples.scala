@@ -10,7 +10,6 @@ import net.ruippeixotog.scalascraper.scraper.ContentExtractors._
 import net.ruippeixotog.scalascraper.util.Validated._
 import org.jsoup.nodes.Element
 
-import scala.collection.convert.WrapAsScala._
 import scala.collection.immutable.SortedMap
 
 object ExampleMatchers {

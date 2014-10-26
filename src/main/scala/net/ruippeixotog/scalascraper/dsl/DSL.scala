@@ -2,7 +2,9 @@ package net.ruippeixotog.scalascraper.dsl
 
 import net.ruippeixotog.scalascraper.scraper._
 
-object DSL extends ImplicitConversions with ScrapingOps with ConfigLoadingHelpers {
+import scala.collection.convert.WrapAsScala
+
+object DSL extends ImplicitConversions with ScrapingOps with ConfigLoadingHelpers with WrapAsScala {
   val extractor = SimpleExtractor
 
   val Extract = ContentExtractors
