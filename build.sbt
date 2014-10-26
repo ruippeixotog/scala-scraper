@@ -11,3 +11,10 @@ libraryDependencies ++= Seq(
   "com.typesafe"                % "config"          % "1.2.1",
   "org.jsoup"                   % "jsoup"           % "1.8.1",
   "org.scalaz"                 %% "scalaz-core"     % "7.1.0")
+
+scalacOptions ++= Seq(
+  "-deprecation",
+  "-unchecked",
+  "-feature",
+  "-language:implicitConversions",
+  "-language:higherKinds")
