@@ -26,9 +26,9 @@ object HtmlExtractor {
 
     val contentParser =
       if(conf.hasPath("date-format"))
-        asDate(DateTimeFormat.forPattern(conf.getString("date-format")))
+        asDate(conf.getString("date-format"))
       else if(conf.hasPath("date-formats"))
-        asDate(conf.getStringList("date-formats").map(DateTimeFormat.forPattern): _*)
+        asDate(conf.getStringList("date-formats"): _*)
       else if(conf.hasPath("regex-format"))
         withRegex(conf.getString("regex-format"))
       else
@@ -85,12 +85,12 @@ object ContentExtractors {
 object ContentParsers {
   def asIs[C] = identity[C] _
 
-  def asDate(dateFormats: DateTimeFormatter*): String => DateTime = {
-    val formatter = new DateTimeFormatterBuilder().
-        append(null, dateFormats.map(_.getParser).toArray).toFormatter
   def asInt: String => Int = _.toInt
   def asDouble: String => Double = _.toDouble
 
+  def asDate(dateFormats: String*): String => DateTime = {
+    val formatter = new DateTimeFormatterBuilder().append(null,
+      dateFormats.map(DateTimeFormat.forPattern(_).getParser).toArray).toFormatter
     formatter.parseDateTime
   }
 
