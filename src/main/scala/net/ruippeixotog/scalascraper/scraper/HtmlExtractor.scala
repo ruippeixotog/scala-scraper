@@ -30,7 +30,7 @@ object HtmlExtractor {
       else if(conf.hasPath("date-formats"))
         asDate(conf.getStringList("date-formats"): _*)
       else if(conf.hasPath("regex-format"))
-        withRegex(conf.getString("regex-format"))
+        regexMatch(conf.getString("regex-format"))
       else
         asIs[String]
 
@@ -94,8 +94,22 @@ object ContentParsers {
     formatter.parseDateTime
   }
 
-  def withRegex(regex: String): String => String = regex.r.findFirstIn(_).get
-  def withRegex(regex: Regex): String => String = regex.findFirstIn(_).get
+  class RegexMatch private[ContentParsers](regex: Regex) extends (String => String) {
+    def apply(content: String) = regex.findFirstIn(content).get
+    def captured: String => String = regex.findFirstMatchIn(_).get.subgroups.head
+    def allCaptured: String => List[String] = regex.findFirstMatchIn(_).get.subgroups
+  }
+
+  class RegexMatches private[ContentParsers](regex: Regex) extends (String => Iterator[String]) {
+    def apply(content: String) = regex.findAllIn(content)
+    def captured: String => Iterator[String] = regex.findAllMatchIn(_).map(_.subgroups.head)
+    def allCaptured: String => Iterator[List[String]] = regex.findAllMatchIn(_).map(_.subgroups)
+  }
+
+  def regexMatch(regex: String): RegexMatch = new RegexMatch(regex.r)
+  def regexMatch(regex: Regex): RegexMatch = new RegexMatch(regex)
+  def regexMatches(regex: String): RegexMatches = new RegexMatches(regex.r)
+  def regexMatches(regex: Regex): RegexMatches = new RegexMatches(regex)
 
   def seq[C, A](parser: C => A): TraversableOnce[C] => TraversableOnce[A] = _.map(parser)
 }
