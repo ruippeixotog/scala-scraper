@@ -19,8 +19,11 @@ trait ScrapingOps extends syntax.ToIdOps with std.AllInstances with IdInstances 
 
     @inline final def >>[B](extractor: HtmlExtractor[B]) = extract(extractor)
 
-    @inline final def >>[B, C](extractor1: HtmlExtractor[B], extractor2: HtmlExtractor[C]) =
+    def >>[B, C](extractor1: HtmlExtractor[B], extractor2: HtmlExtractor[C]) =
       self.map { doc => (extractor1.extract(doc), extractor2.extract(doc)) }
+
+    def >>[B, C, D](extractor1: HtmlExtractor[B], extractor2: HtmlExtractor[C], extractor3: HtmlExtractor[D]) =
+      self.map { doc => (extractor1.extract(doc), extractor2.extract(doc), extractor3.extract(doc)) }
 
     def tryExtract[B](extractor: HtmlExtractor[B]) =
       self.map { doc => Try(extractor.extract(doc)).toOption }
@@ -28,6 +31,16 @@ trait ScrapingOps extends syntax.ToIdOps with std.AllInstances with IdInstances 
     @inline final def tryApply[B](extractor: HtmlExtractor[B]) = tryExtract(extractor)
 
     @inline final def >?>[B](extractor: HtmlExtractor[B]) = tryExtract(extractor)
+
+    def >?>[B, C](extractor1: HtmlExtractor[B], extractor2: HtmlExtractor[C]) =
+      self.map { doc => (Try(extractor1.extract(doc)).toOption, Try(extractor2.extract(doc)).toOption) }
+
+    def >?>[B, C, D](extractor1: HtmlExtractor[B], extractor2: HtmlExtractor[C], extractor3: HtmlExtractor[C]) =
+      self.map { doc =>
+        (Try(extractor1.extract(doc)).toOption,
+          Try(extractor2.extract(doc)).toOption,
+          Try(extractor3.extract(doc)).toOption)
+      }
 
     def errorIf[R](errors: Seq[HtmlStatusMatcher[R]]) = self.map { doc =>
       errors.foldLeft(VSuccess[R, A](doc)) { (res, error) =>
