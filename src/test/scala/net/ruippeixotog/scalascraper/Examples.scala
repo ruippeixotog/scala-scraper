@@ -5,8 +5,8 @@ import java.io.PrintStream
 import com.typesafe.config.ConfigFactory
 import net.ruippeixotog.scalascraper.ExampleMatchers._
 import net.ruippeixotog.scalascraper.browser.Browser
-import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.dsl.DSL.Extract._
+import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.util.Validated._
 import org.jsoup.nodes.Element
 
