@@ -9,7 +9,7 @@ Take a look at [Examples.scala](https://github.com/ruippeixotog/scala-scraper/bl
 To use Scala Scraper in an existing SBT project with Scala 2.11.x, add the following repository and dependency to your `build.sbt`:
 
 ```scala
-resolvers += "Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/"
+resolvers += Resolver.sonatypeRepo("snapshots")
 
 libraryDependencies += "net.ruippeixotog" %% "scala-scraper" % "0.1-SNAPSHOT"
 ```
