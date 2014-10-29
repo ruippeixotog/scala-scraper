@@ -20,3 +20,34 @@ scalacOptions ++= Seq(
   "-feature",
   "-language:implicitConversions",
   "-language:higherKinds")
+
+publishTo <<= version { v =>
+  val nexus = "https://oss.sonatype.org/"
+  if (v.trim.endsWith("SNAPSHOT"))
+    Some("snapshots" at nexus + "content/repositories/snapshots")
+  else
+    Some("releases"  at nexus + "service/local/staging/deploy/maven2")
+}
+
+publishMavenStyle := true
+
+publishArtifact in Test := false
+
+pomIncludeRepository := { _ => false }
+
+licenses := Seq("MIT License" -> url("http://www.opensource.org/licenses/mit-license.php"))
+
+homepage := Some(url("https://github.com/ruippeixotog/scala-scraper"))
+
+pomExtra :=
+  <scm>
+    <url>git@github.com:ruippeixotog/scala-scraper.git</url>
+    <connection>scm:git:git@github.com:ruippeixotog/scala-scraper.git</connection>
+  </scm>
+  <developers>
+    <developer>
+      <id>ruippeixotog</id>
+      <name>Rui Gonçalves</name>
+      <url>http://ruippeixotog.net</url>
+    </developer>
+  </developers>
