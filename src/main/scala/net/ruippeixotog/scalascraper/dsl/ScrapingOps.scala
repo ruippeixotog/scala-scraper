@@ -44,7 +44,7 @@ trait ScrapingOps extends syntax.ToIdOps with std.AllInstances with IdInstances 
 
     def errorIf[R](errors: Seq[HtmlStatusMatcher[R]]) = self.map { doc =>
       errors.foldLeft(VSuccess[R, A](doc)) { (res, error) =>
-        if(res.isRight || !error.matches(doc)) res else VFailure(error.result)
+        if(res.isLeft || !error.matches(doc)) res else VFailure(error.result)
       }
     }
 
@@ -54,7 +54,7 @@ trait ScrapingOps extends syntax.ToIdOps with std.AllInstances with IdInstances 
       self.map { doc =>
         if(success.matches(doc)) VSuccess(doc)
         else errors.foldLeft(VSuccess[R, A](doc)) { (res, error) =>
-          if(res.isRight || !error.matches(doc)) res else VFailure(error.result)
+          if(res.isLeft || !error.matches(doc)) res else VFailure(error.result)
         }.fold(VFailure.apply, _ => VFailure(default))
       }
 
