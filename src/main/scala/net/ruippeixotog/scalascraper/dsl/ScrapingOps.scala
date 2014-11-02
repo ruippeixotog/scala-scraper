@@ -1,6 +1,6 @@
 package net.ruippeixotog.scalascraper.dsl
 
-import net.ruippeixotog.scalascraper.scraper.{HtmlExtractor, HtmlStatusMatcher}
+import net.ruippeixotog.scalascraper.scraper.{HtmlExtractor, HtmlValidator}
 import net.ruippeixotog.scalascraper.util.Validated.{VFailure, VSuccess}
 import net.ruippeixotog.scalascraper.util._
 import org.jsoup.select.Elements
@@ -42,36 +42,36 @@ trait ScrapingOps extends syntax.ToIdOps with std.AllInstances with IdInstances 
           Try(extractor3.extract(doc)).toOption)
       }
 
-    def errorIf[R](errors: Seq[HtmlStatusMatcher[R]]) = self.map { doc =>
+    def errorIf[R](errors: Seq[HtmlValidator[R]]) = self.map { doc =>
       errors.foldLeft(VSuccess[R, A](doc)) { (res, error) =>
-        if(res.isLeft || !error.matches(doc)) res else VFailure(error.result)
+        if(res.isLeft || !error.matches(doc)) res else VFailure(error.result.get)
       }
     }
 
-    def validateWith[R](success: HtmlStatusMatcher[_],
-                        errors: Seq[HtmlStatusMatcher[R]],
+    def validateWith[R](success: HtmlValidator[_],
+                        errors: Seq[HtmlValidator[R]],
                         default: => R = throw new Exception("Unknown error matching document")): F[Validated[R, A]] =
       self.map { doc =>
         if(success.matches(doc)) VSuccess(doc)
         else errors.foldLeft(VSuccess[R, A](doc)) { (res, error) =>
-          if(res.isLeft || !error.matches(doc)) res else VFailure(error.result)
+          if(res.isLeft || !error.matches(doc)) res else VFailure(error.result.get)
         }.fold(VFailure.apply, _ => VFailure(default))
       }
 
-    @inline final def ~/~[R](error: HtmlStatusMatcher[R]) = errorIf(error :: Nil)
+    @inline final def ~/~[R](error: HtmlValidator[R]) = errorIf(error :: Nil)
 
-    @inline final def ~/~[R](errors: Seq[HtmlStatusMatcher[R]]) = errorIf(errors)
+    @inline final def ~/~[R](errors: Seq[HtmlValidator[R]]) = errorIf(errors)
 
-    @inline final def ~/~[R](success: HtmlStatusMatcher[_], error: HtmlStatusMatcher[R]) =
+    @inline final def ~/~[R](success: HtmlValidator[_], error: HtmlValidator[R]) =
       validateWith(success, error :: Nil)
 
-    @inline final def ~/~[R](success: HtmlStatusMatcher[_], errors: Seq[HtmlStatusMatcher[R]]) =
+    @inline final def ~/~[R](success: HtmlValidator[_], errors: Seq[HtmlValidator[R]]) =
       validateWith(success, errors)
 
-    @inline final def ~/~[R](success: HtmlStatusMatcher[_], error: HtmlStatusMatcher[R], default: R) =
+    @inline final def ~/~[R](success: HtmlValidator[_], error: HtmlValidator[R], default: R) =
       validateWith(success, error :: Nil, default)
 
-    @inline final def ~/~[R](success: HtmlStatusMatcher[_], errors: Seq[HtmlStatusMatcher[R]], default: R) =
+    @inline final def ~/~[R](success: HtmlValidator[_], errors: Seq[HtmlValidator[R]], default: R) =
       validateWith(success, errors, default)
 
     @inline final def and = self

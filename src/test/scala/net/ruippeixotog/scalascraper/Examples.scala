@@ -13,8 +13,8 @@ import org.jsoup.nodes.Element
 import scala.collection.immutable.SortedMap
 
 object ExampleMatchers {
-  val succ = matcherAt[Int]("success-matcher")
-  val errs = matchersAt[Int]("error-matchers")
+  val succ = validatorAt("success-matcher")
+  val errs = validatorsAt[Int]("error-matchers")
 }
 
 object NewsApp extends App {

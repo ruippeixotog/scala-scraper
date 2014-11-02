@@ -8,23 +8,26 @@ import scala.collection.convert.WrapAsScala._
 
 trait ConfigLoadingHelpers extends ConfigReaders {
 
-  def matcherAt[R: ConfigReader](config: Config): HtmlStatusMatcher[R] =
-    HtmlStatusMatcher.fromConfig[R](config)
+  implicit def errorReader: ConfigReader[Nothing] = (_, _) =>
+    throw new Exception("A type must be provided for reading the result of a validator from config")
 
-  @inline final def matcherAt[R: ConfigReader](config: Config, path: String): HtmlStatusMatcher[R] =
-    matcherAt[R](config.getConfig(path))
+  def validatorAt[R: ConfigReader](config: Config): HtmlValidator[R] =
+    HtmlValidator.fromConfig[R](config)
 
-  @inline final def matcherAt[R: ConfigReader](path: String): HtmlStatusMatcher[R] =
-    matcherAt[R](ConfigFactory.load.getConfig(path))
+  @inline final def validatorAt[R: ConfigReader](config: Config, path: String): HtmlValidator[R] =
+    validatorAt[R](config.getConfig(path))
 
-  def matchersAt[R: ConfigReader](configs: Seq[Config]): Seq[HtmlStatusMatcher[R]] =
-    configs.map(matcherAt[R])
+  @inline final def validatorAt[R: ConfigReader](path: String): HtmlValidator[R] =
+    validatorAt[R](ConfigFactory.load.getConfig(path))
 
-  @inline final def matchersAt[R: ConfigReader](config: Config, path: String): Seq[HtmlStatusMatcher[R]] =
-    matchersAt[R](config.getConfigList(path))
+  def validatorsAt[R: ConfigReader](configs: Seq[Config]): Seq[HtmlValidator[R]] =
+    configs.map(validatorAt[R])
 
-  @inline final def matchersAt[R: ConfigReader](path: String): Seq[HtmlStatusMatcher[R]] =
-    matchersAt[R](ConfigFactory.load.getConfigList(path))
+  @inline final def validatorsAt[R: ConfigReader](config: Config, path: String): Seq[HtmlValidator[R]] =
+    validatorsAt[R](config.getConfigList(path))
+
+  @inline final def validatorsAt[R: ConfigReader](path: String): Seq[HtmlValidator[R]] =
+    validatorsAt[R](ConfigFactory.load.getConfigList(path))
 
   def extractorAt[A](config: Config): SimpleExtractor[String, A] =
     HtmlExtractor.fromConfig[A](config)
