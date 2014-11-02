@@ -51,7 +51,7 @@ val itemTitles: Seq[String] = items.map(_ >> text("h3"))
 val viewport: String = doc >> attr("content")("meta[name=viewport]")
 ```
 
-If the element may or may not be in the page, the `>?>` tries to extract the content and returns an `Option`:
+If the element may or may not be in the page, the `>?>` tries to extract the content and returns it wrapped in an `Option`:
 
 ```scala
 // Extract the element with id "optional" if it exists, return `None` if it
@@ -92,8 +92,8 @@ doc >> extractor(<cssQuery>, <contentExtractor>, <contentParser>)
 Where the arguments are:
 
 * **cssQuery**: the CSS query used to select the elements to be processed;
-* **contentExtractor**: defines the content to be extracted from the selected elements e.g. the element objects themselves, their text, a specific attribute, form data;
-* **contentParser**: an optional parser for the data extracted in the step above, such as parsing numbers, dates or regexes from text.
+* **contentExtractor**: defines the content to be extracted from the selected elements, e.g. the element objects themselves, their text, a specific attribute, form data;
+* **contentParser**: an optional parser for the data extracted in the step above, such as parsing numbers and dates or using regexes.
 
 The DSL provides several `contentExtractor` and `contentParser` instances, which were imported before with `DSL.Extract._` and `DSL.Parse._`. The full list can be seen in the `ContentExtractors` and `ContentParsers` objects inside [HtmlExtractor.scala](https://github.com/ruippeixotog/scala-scraper/blob/master/src/main/scala/net/ruippeixotog/scalascraper/scraper/HtmlExtractor.scala).
 
@@ -134,7 +134,7 @@ TODO
 
 ## Other DSL Features
 
-As shown before in the Quick Start section, one can try if an extractor works in a page and return an `Option` as the extracted content:
+As shown before in the Quick Start section, one can try if an extractor works in a page and obtain the extracted content wrapped in an `Option`:
 
 ```scala
 // Try to extract an element with id "title", return `None` if none exist
@@ -150,7 +150,7 @@ If you want to use multiple extractors in a single document or element, you can 
 doc >> (text("title"), elements("form"))
 ```
 
-The extraction operators work on `List`, `Option`, `Either` and other instances for which [Scalaz](https://github.com/scalaz/scalaz) provides a `Functor` instance:
+The extraction operators work on `List`, `Option`, `Either` and other instances for which a [Scalaz](https://github.com/scalaz/scalaz) `Functor` instance is provided by automatically mapping over their contents:
 
 ```scala
 // Extract the titles of all documents in the list
@@ -171,6 +171,26 @@ doc >?> element("#menu") >> text(".active")
 
 // Extract the links inside all the ".article" elements
 doc >> elementList(".article") >> attr("href")("a")
+```
+
+This library also provides a `Functor` for `HtmlExtractor`, which makes it possible to map over extractors and create chained extractors that can be passed around and stored like objects:
+
+```scala
+// An extractor for the links inside all the ".article" elements
+val linksExtractor = elementList(".article") >> attr("href")("a")
+doc >> linksExtractor
+
+// An extractor for the number of links
+val linkCountExtractor = linksExtractor.map(_.length)
+doc >> linkCountExtractor
+```
+
+Just remember that you can only apply extraction operators `>>` and `>?>` to jsoup documents/elements or to functors "containing" them, which means that the following is a compile-time error:
+
+```scala
+// The `texts` extractor extracts a list of strings and extractors cannot be
+// applied to strings
+doc >> texts(".article") >> attr("href")("a")
 ```
 
 Finally, if you prefer not using operators for the sake of code legibility, you can use full method names:

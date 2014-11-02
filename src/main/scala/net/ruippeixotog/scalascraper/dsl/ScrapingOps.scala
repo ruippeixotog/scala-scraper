@@ -7,9 +7,9 @@ import org.jsoup.select.Elements
 
 import scala.util.Try
 import scalaz._
-import scalaz.syntax.functor._
+import scalaz.syntax.ToFunctorOps
 
-trait ScrapingOps extends syntax.ToIdOps with std.AllInstances with IdInstances {
+trait ScrapingOps extends syntax.ToIdOps with ToFunctorOps with std.AllInstances with IdInstances {
 
   class ElementsScrapingOps[+F[_]: Functor, A <% Elements](val self: F[A]) {
 

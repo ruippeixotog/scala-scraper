@@ -8,12 +8,30 @@ import org.jsoup.select.Elements
 
 import scala.collection.convert.WrapAsScala._
 import scala.util.matching.Regex
+import scalaz.Monad
 
 trait HtmlExtractor[+A] {
   def extract(doc: Elements): A
 }
 
-object HtmlExtractor {
+trait HtmlExtractorInstances {
+
+  implicit val extractorInstance = new Monad[HtmlExtractor] {
+    def point[A](a: => A) = new HtmlExtractor[A] {
+      def extract(doc: Elements) = a
+    }
+
+    def bind[A, B](fa: HtmlExtractor[A])(f: A => HtmlExtractor[B]) = new HtmlExtractor[B] {
+      def extract(doc: Elements) = f(fa.extract(doc)).extract(doc)
+    }
+
+    override def map[A, B](fa: HtmlExtractor[A])(f: A => B) = new HtmlExtractor[B] {
+      def extract(doc: Elements) = f(fa.extract(doc))
+    }
+  }
+}
+
+object HtmlExtractor extends HtmlExtractorInstances {
 
   def fromConfig[A](conf: Config) = {
     import net.ruippeixotog.scalascraper.scraper.ContentExtractors._
