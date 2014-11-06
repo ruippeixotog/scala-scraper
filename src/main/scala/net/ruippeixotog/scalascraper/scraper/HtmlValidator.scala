@@ -56,6 +56,18 @@ object HtmlValidator {
 
 case class SimpleValidator[A, +R](htmlExtractor: HtmlExtractor[A],
                                   matcher: A => Boolean,
-                                  result: Option[R]) extends HtmlValidator[R] {
+                                  result: Option[R] = None) extends HtmlValidator[R] {
   def matches(doc: Elements) = matcher(htmlExtractor.extract(doc))
+
+  def withResult[R2](res: R2) = SimpleValidator(htmlExtractor, matcher, Some(res))
+  def withoutResult = SimpleValidator(htmlExtractor, matcher, None)
+}
+
+object SimpleValidator {
+
+  def apply[A, R](htmlExtractor: HtmlExtractor[A])(matcher: A => Boolean): SimpleValidator[A, R] =
+    SimpleValidator[A, R](htmlExtractor, matcher)
+
+  def apply[A, R](htmlExtractor: HtmlExtractor[A], result: R)(matcher: A => Boolean): SimpleValidator[A, R] =
+    SimpleValidator[A, R](htmlExtractor, matcher, Some(result))
 }
