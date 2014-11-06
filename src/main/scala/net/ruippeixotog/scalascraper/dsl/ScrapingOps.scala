@@ -42,6 +42,10 @@ trait ScrapingOps extends syntax.ToIdOps with ToFunctorOps with std.AllInstances
           Try(extractor3.extract(doc)).toOption)
       }
 
+    def successIf[R](success: HtmlValidator[_]) = self.map { doc =>
+      if(success.matches(doc)) VSuccess(doc) else VFailure(())
+    }
+
     def errorIf[R](errors: Seq[HtmlValidator[R]]) = self.map { doc =>
       errors.foldLeft(VSuccess[R, A](doc)) { (res, error) =>
         if(res.isLeft || !error.matches(doc)) res else VFailure(error.result.get)
@@ -58,9 +62,7 @@ trait ScrapingOps extends syntax.ToIdOps with ToFunctorOps with std.AllInstances
         }.fold(VFailure.apply, _ => VFailure(default))
       }
 
-    @inline final def ~/~[R](error: HtmlValidator[R]) = errorIf(error :: Nil)
-
-    @inline final def ~/~[R](errors: Seq[HtmlValidator[R]]) = errorIf(errors)
+    @inline final def ~/~[R](success: HtmlValidator[_]) = successIf(success)
 
     @inline final def ~/~[R](success: HtmlValidator[_], error: HtmlValidator[R]) =
       validateWith(success, error :: Nil)
