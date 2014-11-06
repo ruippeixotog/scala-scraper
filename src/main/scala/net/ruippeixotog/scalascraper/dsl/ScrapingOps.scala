@@ -54,7 +54,7 @@ trait ScrapingOps extends syntax.ToIdOps with ToFunctorOps with std.AllInstances
 
     def validateWith[R](success: HtmlValidator[_],
                         errors: Seq[HtmlValidator[R]],
-                        default: => R = throw new Exception("Unknown error matching document")): F[Validated[R, A]] =
+                        default: => R = throw new ValidationException): F[Validated[R, A]] =
       self.map { doc =>
         if(success.matches(doc)) VSuccess(doc)
         else errors.foldLeft(VSuccess[R, A](doc)) { (res, error) =>
