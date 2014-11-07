@@ -130,7 +130,62 @@ doc >> "p"
 
 ## Content Validation
 
-TODO
+While scraping web pages, it is a common use case to validate if a page effectively has the expected structure. This library provides special support for creating and applying validations.
+
+A `HtmlValidator` has the following signature:
+
+```scala
+trait HtmlValidator[+R] {
+  def matches(doc: Elements): Boolean
+  def result: Option[R]
+}
+```
+
+As with extractors, the DSL provides the `validator` constructor and the `~/~` operator for applying a validation to a document:
+
+```scala
+doc ~/~ validator(<extractor>)(<matcher>)
+```
+
+Where the arguments are:
+
+* **extractor**: an extractor as defined in the previous section;
+* **matcher**: a function mapping the extracted content to a boolean indicating if the document is valid.
+
+The result of a validation is a `Validated[A, R]` instance, where `A` is the type of the document and `R` is the result type of the validation (which will be explained later). A `Validated` can be either a `VSuccess(a: A)` or a `VFailure(res: R)`.
+
+Some validation examples:
+
+```scala
+// Check if the title of the page is "My Page"
+doc ~/~ validator(text("title"))(_ == "My Page") match {
+  case VSuccess(_) => println("Correct!")
+  case VFailure(_) => println("Wrong title")
+}
+
+// Check if there are at least 3 items
+doc ~/~ validator(".item")(_.length >= 3)
+
+// Check if the text in ".desc" contains the word "blue"
+doc ~/~ validator(text(".desc"))(_.contains("blue"))
+```
+
+When a document fails a validation, it may be useful to identify the problem by pattern-matching it against common scraping pitfalls, such as a login page that appears unexpectedly because of an expired cookie, dynamic content that disappeared or server-side errors. Validators can be also used to match "error" pages instead of expected pages:
+
+```scala
+val succ = validator(text("title"))(_ == "My Page")
+val errors = Seq(
+  validator(text(".msg"))(_.contains("sign in")) withResult "Not logged in",
+  validator(".item")(_.length < 3) withResult "Too few items",
+  validator(text("h1"))(_.contains("500")) withResult "Internal Server Error")
+
+doc ~/~ (succ, errors) match {
+  case VSuccess(_) => println("yey")
+  case VFailure(msg) => println(s"Error: $msg")
+}
+```
+
+For validators matching errors, `withResult` should be used most times. It returns a new validator holding a `result` value which will be returned wrapped in a `VFailure` if that particular error ever occurs.
 
 ## Other DSL Features
 
