@@ -106,7 +106,7 @@ doc >> extractor("section .price", texts, asDouble)
 // Extract the date from the "#date-taken" element
 doc >> extractor("#date-taken", text, asDate("yyyy-MM-dd"))
 
-// Extract an element "#card" and do no parsing (the default behavior)
+// Extract an element "#card" and do no parsing (the default parsing behavior)
 doc >> extractor("#card", element, asIs)
 ```
 
@@ -260,7 +260,7 @@ doc tryExtract element("#optional")
 
 ## Integration with Typesafe Config Files
 
-TODO
+Matchers and validators can be loaded from a [Typesafe config](https://github.com/typesafehub/config) using the methods `matcherAt`, `validatorAt` and `validatorsAt` of the DSL. More documentation will be available soon - meanwhile, take a look at the [application.conf](https://github.com/ruippeixotog/scala-scraper/blob/master/src/test/resources/application.conf) used [in the examples](https://github.com/ruippeixotog/scala-scraper/blob/master/src/test/scala/net/ruippeixotog/scalascraper/Examples.scala).
 
 ## Copyright
 
