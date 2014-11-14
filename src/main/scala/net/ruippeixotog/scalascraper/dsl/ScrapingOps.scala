@@ -79,12 +79,8 @@ trait ScrapingOps extends syntax.ToIdOps with ToFunctorOps with std.AllInstances
     @inline final def and = self
   }
 
-  implicit final def validatedScrapingOps[R, A <% Elements](self: Validated[R, A]) =
-    new ElementsScrapingOps[({ type F[X] = Validated[R, X] })#F, A](self)
-
-  implicit def deepFunctorOps[FA, A1](self: FA)(implicit df: DeepFunctor[FA] { type A = A1 }, conv: A1 => Elements) = {
+  implicit def deepFunctorOps[FA, A1](self: FA)(implicit df: DeepFunctor[FA] { type A = A1 }, conv: A1 => Elements) =
     new ElementsScrapingOps[df.F, df.A](df.asF(self))(df.f, conv)
-  }
 }
 
 object ScrapingOps extends ScrapingOps
