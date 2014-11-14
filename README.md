@@ -6,12 +6,10 @@ Take a look at [Examples.scala](https://github.com/ruippeixotog/scala-scraper/bl
 
 ## Quick Start
 
-To use Scala Scraper in an existing SBT project with Scala 2.11.x, add the following repository and dependency to your `build.sbt`:
+To use Scala Scraper in an existing SBT project with Scala 2.11.x, add the following dependency to your `build.sbt`:
 
 ```scala
-resolvers += Resolver.sonatypeRepo("snapshots")
-
-libraryDependencies += "net.ruippeixotog" %% "scala-scraper" % "0.1-SNAPSHOT"
+libraryDependencies += "net.ruippeixotog" %% "scala-scraper" % "0.1"
 ```
 
 A `Browser` object can be used to fetch HTML from the web or to parse a local HTML file or a string.
