@@ -42,6 +42,8 @@ class DSLValidatingSpec extends Specification {
       doc ~/~ (succ, errors) mustEqual VFailure("Shouldn't be in Section 2")
       doc ~/~ (succ, errors, "Unknown") mustEqual VFailure("Shouldn't be in Section 2")
       doc ~/~ (succ, errors.dropRight(1), "Unknown") mustEqual VFailure("Unknown")
+
+      doc errorIf errors mustEqual VFailure("Shouldn't be in Section 2")
     }
 
     "provide match-all and match-nothing validators" in {
