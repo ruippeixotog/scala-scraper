@@ -11,7 +11,7 @@ import scalaz.syntax.ToFunctorOps
 
 trait ScrapingOps extends syntax.ToIdOps with ToFunctorOps with std.AllInstances with IdInstances {
 
-  class ElementsScrapingOps[+F[_]: Functor, A <% Elements](val self: F[A]) {
+  implicit class ElementsScrapingOps[+F[_]: Functor, A <% Elements](val self: F[A]) {
 
     def extract[B](extractor: HtmlExtractor[B]) = self.map(extractor.extract(_))
 
@@ -79,19 +79,11 @@ trait ScrapingOps extends syntax.ToIdOps with ToFunctorOps with std.AllInstances
     @inline final def and = self
   }
 
-  implicit def elementsScrapingOps[F[_]: Functor, A <% Elements](self: F[A]) =
-    new ElementsScrapingOps[F, A](self)
-
-  // TODO: these explicit delcarations shouldn't be needed
-  implicit def idScrapingOps[A <% Elements](self: A) = new ElementsScrapingOps[Id, A](self)
-
   implicit final def validatedScrapingOps[R, A <% Elements](self: Validated[R, A]) =
     new ElementsScrapingOps[({ type F[X] = Validated[R, X] })#F, A](self)
 
-  // TODO: this only handles two levels of functors (not that more levels would be really needed)
-  implicit def compositeScrapingOps[F[_]: Functor, G[_]: Functor, A <% Elements](self: F[G[A]]) = {
-    implicit val FG = implicitly[Functor[F]].compose[G]
-    new ElementsScrapingOps[({ type FG[X] = F[G[X]] })#FG, A](self)
+  implicit def deepFunctorOps[FA, A1](self: FA)(implicit df: DeepFunctor[FA] { type A = A1 }, conv: A1 => Elements) = {
+    new ElementsScrapingOps[df.F, df.A](df.asF(self))(df.f, conv)
   }
 }
 
