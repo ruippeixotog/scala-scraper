@@ -6,6 +6,7 @@ import net.ruippeixotog.scalascraper.browser.Browser
 import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.scraper.ContentExtractors.{text => stext, _}
 import net.ruippeixotog.scalascraper.scraper.HtmlExtractor
+import net.ruippeixotog.scalascraper.util.Validated.{VFailure, VSuccess}
 import org.jsoup.nodes.Document
 import org.specs2.mutable.Specification
 
@@ -47,6 +48,12 @@ class DSLSpec extends Specification {
       doc >> ext mustEqual 4
     }
 
+    "support chaining extractors with validators" in {
+      doc >?> element("#menu") ~/~ validator("span")(_.nonEmpty) >> stext(".active") mustEqual Some(VSuccess("Section 2"))
+      doc >?> element("#menu") ~/~ validator(".active")(_.isEmpty) >> "span" mustEqual Some(VFailure(()))
+      doc >?> element("#menu2") ~/~ validator("span")(_.nonEmpty) >> stext(".active") mustEqual None
+    }
+
     "support creating chained extractors as objects for later use" in {
       val ext1 = element("#menu") >?> stext(".active")
       val ext2 = elementList("#menu span") >?> stext("a")
@@ -59,6 +66,16 @@ class DSLSpec extends Specification {
       useExtractor(ext2) mustEqual Seq(Some("Home"), Some("Section 1"), None, Some("Section 3"))
       useExtractor(ext3) mustEqual 4
       useExtractor(ext4) mustEqual 3
+    }
+
+    "support creating chained extractors with validations as objects for later use" in {
+      val ext1 = element("#menu") ~/~ validator("span")(_.nonEmpty) >?> stext(".active")
+      val ext2 = element("#menu") ~/~ validator(".active")(_.isEmpty) >> "span"
+
+      def useExtractor[A](ext: HtmlExtractor[A]) = doc >> ext
+
+      useExtractor(ext1) mustEqual VSuccess(Some("Section 2"))
+      useExtractor(ext2) mustEqual VFailure(())
     }
   }
 }

@@ -205,7 +205,7 @@ If you want to use multiple extractors in a single document or element, you can 
 doc >> (text("title"), elements("form"))
 ```
 
-The extraction operators work on `List`, `Option`, `Either` and other instances for which a [Scalaz](https://github.com/scalaz/scalaz) `Functor` instance is provided by automatically mapping over their contents:
+The extraction operators work on `List`, `Option`, `Either`, `Validated` and other instances for which a [Scalaz](https://github.com/scalaz/scalaz) `Functor` instance is provided. The extraction occurs by mapping over the functors:
 
 ```scala
 // Extract the titles of all documents in the list
@@ -215,14 +215,18 @@ List(doc1, doc2) >> text("title")
 Option(doc) >> text("title")
 ```
 
-You can apply other extractors to the result of an extraction, which is particularly powerful combined with the last feature shown above:
+You can apply other extractors and validators to the result of an extraction, which is particularly powerful combined with the last feature shown above:
 
 ```scala
-// From the "#menu" element, extract the text in the ".active" element inside
-doc >> element("#menu") >> text(".active")
+// From the "#menu" element, extract the text in the ".curr" element inside
+doc >> element("#menu") >> text(".curr")
 
 // Same as above, but in a scenario where "#menu" can be absent
-doc >?> element("#menu") >> text(".active")
+doc >?> element("#menu") >> text(".curr")
+
+// Same as above, but check if the "#menu" has any section before extracting
+// the text
+doc >?> element("#menu") ~/~ validator("section")(_.nonEmpty) >> text(".curr")
 
 // Extract the links inside all the ".article" elements
 doc >> elementList(".article") >> attr("href")("a")
