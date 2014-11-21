@@ -50,8 +50,8 @@ homepage := Some(url("https://github.com/ruippeixotog/scala-scraper"))
 
 pomExtra :=
   <scm>
-    <url>git@github.com:ruippeixotog/scala-scraper.git</url>
-    <connection>scm:git:git@github.com:ruippeixotog/scala-scraper.git</connection>
+    <url>https://github.com/ruippeixotog/scala-scraper</url>
+    <connection>scm:git:https://github.com/ruippeixotog/scala-scraper.git</connection>
   </scm>
   <developers>
     <developer>
