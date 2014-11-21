@@ -262,7 +262,7 @@ doc tryExtract element("#optional")
 
 ## Integration with Typesafe Config Files
 
-Matchers and validators can be loaded from a [Typesafe config](https://github.com/typesafehub/config) using the methods `matcherAt`, `validatorAt` and `validatorsAt` of the DSL. More documentation will be available soon - meanwhile, take a look at the [application.conf](https://github.com/ruippeixotog/scala-scraper/blob/master/src/test/resources/application.conf) used [in the examples](https://github.com/ruippeixotog/scala-scraper/blob/master/src/test/scala/net/ruippeixotog/scalascraper/Examples.scala).
+Matchers and validators can be loaded from a [Typesafe config](https://github.com/typesafehub/config) using the methods `matcherAt`, `validatorAt` and `validatorsAt` of the DSL. More documentation will be available soon - meanwhile, take a look at the [examples.conf](https://github.com/ruippeixotog/scala-scraper/blob/master/src/test/resources/examples.conf) config used [in the examples](https://github.com/ruippeixotog/scala-scraper/blob/master/src/test/scala/net/ruippeixotog/scalascraper/Examples.scala) and at the [application.conf](https://github.com/ruippeixotog/scala-scraper/blob/master/src/test/resources/examples.conf) used in tests.
 
 ## Copyright
 
