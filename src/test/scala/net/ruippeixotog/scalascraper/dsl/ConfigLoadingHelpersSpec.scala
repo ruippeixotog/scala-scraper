@@ -2,7 +2,7 @@ package net.ruippeixotog.scalascraper.dsl
 
 import java.io.File
 
-import com.typesafe.config.ConfigFactory
+import com.typesafe.config.{ConfigException, ConfigFactory}
 import net.ruippeixotog.scalascraper.browser.Browser
 import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.util.Validated.{VFailure, VSuccess}
@@ -39,6 +39,8 @@ class ConfigLoadingHelpersSpec extends Specification {
 
       doc ~/~ validatorAt(conf, "with-result") mustEqual VSuccess(doc)
       doc errorIf validatorAt[Int](conf, "with-result") mustEqual VFailure(5)
+      doc errorIf validatorAt[String](conf, "with-result") mustEqual VFailure("5")
+      doc errorIf validatorAt[Boolean](conf, "with-result") must throwAn[Exception]
 
       doc ~/~ validatorAt(conf, "exists") mustEqual VSuccess(doc)
       docEmpty ~/~ validatorAt(conf, "exists") mustEqual VSuccess(docEmpty)
