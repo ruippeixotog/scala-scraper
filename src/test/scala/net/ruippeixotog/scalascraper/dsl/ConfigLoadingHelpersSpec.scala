@@ -2,12 +2,12 @@ package net.ruippeixotog.scalascraper.dsl
 
 import java.io.File
 
-import com.typesafe.config.{ConfigException, ConfigFactory}
+import com.github.nscala_time.time.Imports._
+import com.typesafe.config.ConfigFactory
 import net.ruippeixotog.scalascraper.browser.Browser
 import net.ruippeixotog.scalascraper.dsl.DSL._
-import net.ruippeixotog.scalascraper.util.Validated.{VFailure, VSuccess}
+import net.ruippeixotog.scalascraper.util.Validated.{ VFailure, VSuccess }
 import org.specs2.mutable.Specification
-import com.github.nscala_time.time.Imports._
 
 class ConfigLoadingHelpersSpec extends Specification {
 

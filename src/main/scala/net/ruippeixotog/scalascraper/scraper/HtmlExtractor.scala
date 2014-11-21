@@ -40,14 +40,14 @@ object HtmlExtractor extends HtmlExtractorInstances {
     val cssQuery = conf.getString("query")
 
     val contentExtractor =
-      if(conf.hasPath("attr")) attr(conf.getString("attr")) else allText
+      if (conf.hasPath("attr")) attr(conf.getString("attr")) else allText
 
     val contentParser =
-      if(conf.hasPath("date-format"))
+      if (conf.hasPath("date-format"))
         asDate(conf.getString("date-format"))
-      else if(conf.hasPath("date-formats"))
+      else if (conf.hasPath("date-formats"))
         asDate(conf.getStringList("date-formats"): _*)
-      else if(conf.hasPath("regex-format"))
+      else if (conf.hasPath("regex-format"))
         regexMatch(conf.getString("regex-format"))
       else
         asIs[String]
@@ -113,13 +113,13 @@ object ContentParsers {
     formatter.parseDateTime
   }
 
-  class RegexMatch private[ContentParsers](regex: Regex) extends (String => String) {
+  class RegexMatch private[ContentParsers] (regex: Regex) extends (String => String) {
     def apply(content: String) = regex.findFirstIn(content).get
     def captured: String => String = regex.findFirstMatchIn(_).get.subgroups.head
     def allCaptured: String => List[String] = regex.findFirstMatchIn(_).get.subgroups
   }
 
-  class RegexMatches private[ContentParsers](regex: Regex) extends (String => Iterator[String]) {
+  class RegexMatches private[ContentParsers] (regex: Regex) extends (String => Iterator[String]) {
     def apply(content: String) = regex.findAllIn(content)
     def captured: String => Iterator[String] = regex.findAllMatchIn(_).map(_.subgroups.head)
     def allCaptured: String => Iterator[List[String]] = regex.findAllMatchIn(_).map(_.subgroups)

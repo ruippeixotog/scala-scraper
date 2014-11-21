@@ -15,7 +15,7 @@ trait HtmlValidator[+R] {
 object HtmlValidator {
 
   def fromConfig[R](conf: Config)(implicit reader: ConfigReader[R]): HtmlValidator[R] = {
-    if(conf.hasPath("exists")) {
+    if (conf.hasPath("exists")) {
       val extractor = SimpleExtractor[Elements, Elements](
         conf.getString("select.query"),
         ContentExtractors.elements, ContentParsers.asIs)
@@ -26,7 +26,7 @@ object HtmlValidator {
 
     } else {
       val extractor = HtmlExtractor.fromConfig[String](conf.getConfig("select"))
-      val matchIfTrue = if(conf.hasPath("invert")) !conf.getBoolean("invert") else true
+      val matchIfTrue = if (conf.hasPath("invert")) !conf.getBoolean("invert") else true
       val matcher = conf.getString("match").r.pattern.matcher(_: String).matches() == matchIfTrue
       val result = Try(reader.read(conf, "status")).toOption
       SimpleValidator(extractor, matcher, result)

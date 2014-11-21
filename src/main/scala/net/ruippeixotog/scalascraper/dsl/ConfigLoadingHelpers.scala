@@ -1,6 +1,6 @@
 package net.ruippeixotog.scalascraper.dsl
 
-import com.typesafe.config.{Config, ConfigFactory}
+import com.typesafe.config.{ Config, ConfigFactory }
 import net.ruippeixotog.scalascraper.scraper._
 import net.ruippeixotog.scalascraper.util._
 

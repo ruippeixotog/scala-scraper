@@ -5,7 +5,7 @@ import java.io.File
 import com.github.nscala_time.time.Imports._
 import net.ruippeixotog.scalascraper.browser.Browser
 import net.ruippeixotog.scalascraper.dsl.DSL._
-import net.ruippeixotog.scalascraper.scraper.ContentExtractors.{text => stext, _}
+import net.ruippeixotog.scalascraper.scraper.ContentExtractors.{ text => stext, _ }
 import net.ruippeixotog.scalascraper.scraper.ContentParsers._
 import net.ruippeixotog.scalascraper.scraper.HtmlExtractor
 import org.jsoup.select.Elements

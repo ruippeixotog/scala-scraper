@@ -1,3 +1,5 @@
+import scalariform.formatter.preferences._
+
 name := "scala-scraper"
 
 organization := "net.ruippeixotog"
@@ -15,6 +17,11 @@ libraryDependencies ++= Seq(
   "org.scalaz"                 %% "scalaz-core"     % "7.1.0",
   "junit"                       % "junit"           % "4.11"   % "test",
   "org.specs2"                 %% "specs2"          % "2.4.9"  % "test")
+
+scalariformSettings
+
+ScalariformKeys.preferences := ScalariformKeys.preferences.value.
+  setPreference(AlignParameters, true)
 
 scalacOptions ++= Seq(
   "-deprecation",

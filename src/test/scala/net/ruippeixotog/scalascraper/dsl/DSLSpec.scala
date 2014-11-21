@@ -4,9 +4,9 @@ import java.io.File
 
 import net.ruippeixotog.scalascraper.browser.Browser
 import net.ruippeixotog.scalascraper.dsl.DSL._
-import net.ruippeixotog.scalascraper.scraper.ContentExtractors.{text => stext, _}
+import net.ruippeixotog.scalascraper.scraper.ContentExtractors.{ text => stext, _ }
 import net.ruippeixotog.scalascraper.scraper.HtmlExtractor
-import net.ruippeixotog.scalascraper.util.Validated.{VFailure, VSuccess}
+import net.ruippeixotog.scalascraper.util.Validated.{ VFailure, VSuccess }
 import org.jsoup.nodes.Document
 import org.specs2.mutable.Specification
 

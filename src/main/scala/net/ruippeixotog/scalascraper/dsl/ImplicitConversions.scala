@@ -1,6 +1,6 @@
 package net.ruippeixotog.scalascraper.dsl
 
-import net.ruippeixotog.scalascraper.scraper.{HtmlExtractor, SimpleExtractor}
+import net.ruippeixotog.scalascraper.scraper.{ HtmlExtractor, SimpleExtractor }
 import net.ruippeixotog.scalascraper.util._
 import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
