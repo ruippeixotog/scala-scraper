@@ -34,6 +34,9 @@ class ConfigLoadingHelpersSpec extends Specification {
       doc ~/~ validatorAt(conf, "simple") mustEqual VSuccess(doc)
       docEmpty ~/~ validatorAt(conf, "simple") mustEqual VFailure(())
 
+      doc ~/~ validatorAt(conf, "attr") mustEqual VFailure(())
+      docEmpty ~/~ validatorAt(conf, "attr") mustEqual VFailure(())
+
       doc ~/~ validatorAt(conf, "with-result") mustEqual VSuccess(doc)
       doc errorIf validatorAt[Int](conf, "with-result") mustEqual VFailure(5)
 
