@@ -11,10 +11,10 @@ import org.specs2.mutable.Specification
 
 class DSLValidatingSpec extends Specification {
 
-  val file = new File(getClass.getClassLoader.getResource("test2.html").toURI)
-  val doc = new Browser().parseFile(file)
-
   "The scraping DSL" should {
+
+    val file = new File(getClass.getClassLoader.getResource("test2.html").toURI)
+    val doc = new Browser().parseFile(file)
 
     "allow validating content based on a validator" in {
       doc ~/~ validator("#content section")(_.length == 3) mustEqual VSuccess(doc)

@@ -12,10 +12,10 @@ import org.specs2.mutable.Specification
 
 class DSLSpec extends Specification {
 
-  val file = new File(getClass.getClassLoader.getResource("test2.html").toURI)
-  val doc = new Browser().parseFile(file)
-
   "The scraping DSL" should {
+
+    val file = new File(getClass.getClassLoader.getResource("test2.html").toURI)
+    val doc = new Browser().parseFile(file)
 
     "allow trying to extract content which may or may not exist" in {
       doc >?> stext("title") mustEqual Some("Test page")

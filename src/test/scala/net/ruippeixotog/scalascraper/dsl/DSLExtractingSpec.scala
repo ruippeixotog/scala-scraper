@@ -13,10 +13,10 @@ import org.specs2.mutable.Specification
 
 class DSLExtractingSpec extends Specification {
 
-  val file = new File(getClass.getClassLoader.getResource("test2.html").toURI)
-  val doc = new Browser().parseFile(file)
-
   "The scraping DSL" should {
+
+    val file = new File(getClass.getClassLoader.getResource("test2.html").toURI)
+    val doc = new Browser().parseFile(file)
 
     "allow extracting the first element matched by a CSS query" in {
       (doc >> element("#content > section > h3")).nodeName mustEqual "h3"
