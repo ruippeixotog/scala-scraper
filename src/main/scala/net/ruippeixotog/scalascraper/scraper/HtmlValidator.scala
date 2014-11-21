@@ -21,14 +21,14 @@ object HtmlValidator {
         ContentExtractors.elements, ContentParsers.asIs)
 
       val matcher = conf.getBoolean("exists") == (_: Elements).nonEmpty
-      val result = Try(reader(conf, "status")).toOption
+      val result = Try(reader.read(conf, "status")).toOption
       SimpleValidator(extractor, matcher, result)
 
     } else {
       val extractor = HtmlExtractor.fromConfig[String](conf.getConfig("select"))
       val matchIfTrue = if(conf.hasPath("invert")) !conf.getBoolean("invert") else true
       val matcher = conf.getString("match").r.pattern.matcher(_: String).matches() == matchIfTrue
-      val result = Try(reader(conf, "status")).toOption
+      val result = Try(reader.read(conf, "status")).toOption
       SimpleValidator(extractor, matcher, result)
     }
   }

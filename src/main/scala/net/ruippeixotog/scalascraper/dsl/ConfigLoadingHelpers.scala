@@ -8,8 +8,9 @@ import scala.collection.convert.WrapAsScala._
 
 trait ConfigLoadingHelpers extends ConfigReaders {
 
-  implicit def errorReader: ConfigReader[Nothing] = (_, _) =>
+  implicit def errorReader: ConfigReader[Nothing] = ConfigReader { (_, _) =>
     throw new Exception("A type must be provided for reading the result of a validator from config")
+  }
 
   def validatorAt[R: ConfigReader](config: Config): HtmlValidator[R] =
     HtmlValidator.fromConfig[R](config)
