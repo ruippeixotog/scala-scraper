@@ -6,17 +6,17 @@ organization := "net.ruippeixotog"
 
 version := "0.1.2-SNAPSHOT"
 
-scalaVersion := "2.11.4"
+scalaVersion := "2.11.6"
 
 resolvers += "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases"
 
 libraryDependencies ++= Seq(
-  "com.github.nscala-time"     %% "nscala-time"     % "1.6.0",
+  "com.github.nscala-time"     %% "nscala-time"     % "1.8.0",
   "com.typesafe"                % "config"          % "1.2.1",
   "org.jsoup"                   % "jsoup"           % "1.8.1",
-  "org.scalaz"                 %% "scalaz-core"     % "7.1.0",
-  "junit"                       % "junit"           % "4.11"   % "test",
-  "org.specs2"                 %% "specs2"          % "2.4.11" % "test")
+  "org.scalaz"                 %% "scalaz-core"     % "7.1.1",
+  "junit"                       % "junit"           % "4.12"   % "test",
+  "org.specs2"                 %% "specs2-core"     % "3.4"    % "test")
 
 scalariformSettings
 
