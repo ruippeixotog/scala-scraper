@@ -6,6 +6,7 @@ import net.ruippeixotog.scalascraper.browser.Browser
 import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.scraper.ContentExtractors.{ text => stext, _ }
 import net.ruippeixotog.scalascraper.scraper.HtmlValidator
+import net.ruippeixotog.scalascraper.scraper.HtmlValidator._
 import net.ruippeixotog.scalascraper.util.Validated._
 import org.specs2.mutable.Specification
 
@@ -47,8 +48,6 @@ class DSLValidatingSpec extends Specification {
     }
 
     "provide match-all and match-nothing validators" in {
-      import HtmlValidator._
-
       doc ~/~ matchAll mustEqual VSuccess(doc)
       doc.select("head") ~/~ matchAll mustEqual VSuccess(doc.select("head"))
       doc.select("body") ~/~ matchAll mustEqual VSuccess(doc.select("body"))

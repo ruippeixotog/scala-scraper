@@ -10,6 +10,9 @@ import scala.collection.convert.WrapAsScala._
 import scala.util.matching.Regex
 import scalaz.Monad
 
+import ContentExtractors._
+import ContentParsers._
+
 trait HtmlExtractor[+A] {
   def extract(doc: Elements): A
 }
@@ -34,9 +37,6 @@ trait HtmlExtractorInstances {
 object HtmlExtractor extends HtmlExtractorInstances {
 
   def fromConfig[A](conf: Config) = {
-    import net.ruippeixotog.scalascraper.scraper.ContentExtractors._
-    import net.ruippeixotog.scalascraper.scraper.ContentParsers._
-
     val cssQuery = conf.getString("query")
 
     val contentExtractor =
