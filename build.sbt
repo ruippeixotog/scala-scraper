@@ -11,7 +11,7 @@ scalaVersion := "2.11.6"
 resolvers += "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases"
 
 libraryDependencies ++= Seq(
-  "com.github.nscala-time"     %% "nscala-time"     % "1.8.0",
+  "com.github.nscala-time"     %% "nscala-time"     % "2.0.0",
   "com.typesafe"                % "config"          % "1.2.1",
   "org.jsoup"                   % "jsoup"           % "1.8.1",
   "org.scalaz"                 %% "scalaz-core"     % "7.1.1",
