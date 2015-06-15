@@ -12,11 +12,10 @@ resolvers += "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases"
 
 libraryDependencies ++= Seq(
   "com.github.nscala-time"     %% "nscala-time"     % "2.0.0",
-  "com.typesafe"                % "config"          % "1.2.1",
-  "org.jsoup"                   % "jsoup"           % "1.8.1",
-  "org.scalaz"                 %% "scalaz-core"     % "7.1.1",
-  "junit"                       % "junit"           % "4.12"   % "test",
-  "org.specs2"                 %% "specs2-core"     % "3.4"    % "test")
+  "com.typesafe"                % "config"          % "1.3.0",
+  "org.jsoup"                   % "jsoup"           % "1.8.2",
+  "org.scalaz"                 %% "scalaz-core"     % "7.1.2",
+  "org.specs2"                 %% "specs2-core"     % "3.6.1"  % "test")
 
 scalariformSettings
 
