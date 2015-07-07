@@ -10,6 +10,8 @@ import scala.collection.convert.WrapAsJava._
 import scala.collection.convert.WrapAsScala._
 import scala.collection.mutable.{ Map => MutableMap }
 
+import Browser._
+
 class Browser {
   val cookies = MutableMap.empty[String, String]
 
@@ -46,8 +48,12 @@ class Browser {
 
     val redirectUrl =
       if (res.hasHeader("Location")) Some(res.header("Location"))
-      else doc.select("head meta[http-equiv=refresh]").headOption.map { e =>
-        e.attr("content").split(";").find(_.startsWith("url")).head.split("=")(1)
+      else doc.select("head meta[http-equiv=refresh]").headOption.flatMap { e =>
+        e.attr("content") match {
+          case QuotedMetaRefreshUrl(url) => Some(url)
+          case MetaRefreshUrl(url) => Some(url)
+          case _ => None
+        }
       }
 
     redirectUrl match {
@@ -55,4 +61,10 @@ class Browser {
       case Some(url) => get(url)
     }
   }
+}
+
+object Browser {
+  // TODO this is a best effort, the specs define a much more complicated parsing process
+  private val QuotedMetaRefreshUrl = ".*URL='([^']+)'.*".r
+  private val MetaRefreshUrl = ".*URL=([^;]+).*".r
 }
