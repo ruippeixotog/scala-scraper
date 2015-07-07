@@ -3,6 +3,7 @@ package net.ruippeixotog.scalascraper.browser
 import java.io.File
 
 import org.jsoup.Connection.Method._
+import org.jsoup.Connection.Response
 import org.jsoup.nodes.Document
 import org.jsoup.{ Connection, Jsoup }
 
@@ -29,7 +30,7 @@ class Browser {
 
   def requestSettings(conn: Connection): Connection = conn
 
-  private[this] def defaultRequestSettings(conn: Connection) =
+  protected[this] def defaultRequestSettings(conn: Connection): Connection =
     conn.cookies(cookies).
       userAgent("jsoup/1.8.1").
       header("Accept", "text/html,application/xhtml+xml,application/xml").
@@ -37,13 +38,11 @@ class Browser {
       timeout(15000).
       maxBodySize(0)
 
-  private[this] val executePipeline: Connection => Document =
-    (defaultRequestSettings _).andThen(requestSettings).andThen(process)
+  protected[this] def executeRequest(conn: Connection): Response =
+    conn.execute()
 
-  private[this] def process(conn: Connection) = {
-    val res = conn.execute()
+  protected[this] def processResponse(res: Connection.Response): Document = {
     lazy val doc = res.parse
-
     cookies ++= res.cookies
 
     val redirectUrl =
@@ -61,6 +60,9 @@ class Browser {
       case Some(url) => get(url)
     }
   }
+
+  private[this] val executePipeline: Connection => Document =
+    (defaultRequestSettings _).andThen(requestSettings).andThen(executeRequest).andThen(processResponse)
 }
 
 object Browser {
