@@ -16,8 +16,8 @@ import Browser._
 class Browser {
   val cookies = MutableMap.empty[String, String]
 
-  def get(url: String) =
-    executePipeline(Jsoup.connect(url).method(GET))
+  def get(url: String, form: Map[String, String] = null) =
+    executePipeline(Jsoup.connect(url).method(GET).data(form))
 
   def post(url: String, form: Map[String, String]) =
     executePipeline(Jsoup.connect(url).method(POST).data(form))
