@@ -69,4 +69,6 @@ object Browser {
   // TODO this is a best effort, the specs define a much more complicated parsing process
   private val QuotedMetaRefreshUrl = ".*URL='([^']+)'.*".r
   private val MetaRefreshUrl = ".*URL=([^;]+).*".r
+
+  def apply(): Browser = new Browser()
 }

@@ -17,6 +17,13 @@ object ExampleMatchers {
   val errs = validatorsAt[Int]("error-matchers")
 }
 
+object ProxyApp extends App {
+  val browser = Browser().withHttpProxy("localhost", 3128)
+  val doc = browser.get("http://observador.pt")
+
+  println("=== OBSERVADOR HTTP & HTTPS PROXY ===")
+}
+
 object NewsApp extends App {
   val browser = new Browser
   val doc = browser.get("http://observador.pt")
