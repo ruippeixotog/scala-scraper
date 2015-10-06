@@ -264,6 +264,16 @@ doc tryExtract element("#optional")
 
 Matchers and validators can be loaded from a [Typesafe config](https://github.com/typesafehub/config) using the methods `matcherAt`, `validatorAt` and `validatorsAt` of the DSL. More documentation will be available soon - meanwhile, take a look at the [examples.conf](https://github.com/ruippeixotog/scala-scraper/blob/master/src/test/resources/examples.conf) config used [in the examples](https://github.com/ruippeixotog/scala-scraper/blob/master/src/test/scala/net/ruippeixotog/scalascraper/Examples.scala) and at the [application.conf](https://github.com/ruippeixotog/scala-scraper/blob/master/src/test/resources/examples.conf) used in tests.
 
+## Working under a HTTP/S Proxy
+The only way to configure a proxy is to do it JVM-wide because JSoup does not provide a way to do it. This means that every operation using Java's HttpURLConnection will be affected by the proxy configuration.
+
+Noticed about this you can use the ProxyUtils provided to set HTTP and HTTPS Proxy before invoke any operation on the Browser class:
+```scala
+ProxyUtils.setProxy("localhost", 3128)
+val browser = Browser()
+// Scraping operations...
+```
+
 ## Copyright
 
 Copyright (c) 2014 Rui Gonçalves. See LICENSE for details.
