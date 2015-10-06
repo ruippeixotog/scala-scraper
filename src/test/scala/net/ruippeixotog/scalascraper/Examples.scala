@@ -7,6 +7,7 @@ import net.ruippeixotog.scalascraper.ExampleMatchers._
 import net.ruippeixotog.scalascraper.browser.Browser
 import net.ruippeixotog.scalascraper.dsl.DSL.Extract._
 import net.ruippeixotog.scalascraper.dsl.DSL._
+import net.ruippeixotog.scalascraper.util.ProxyUtils
 import net.ruippeixotog.scalascraper.util.Validated._
 import org.jsoup.nodes.Element
 
@@ -18,7 +19,8 @@ object ExampleMatchers {
 }
 
 object ProxyApp extends App {
-  val browser = Browser().withHttpProxy("localhost", 3128)
+  ProxyUtils.setProxy("localhost", 3128)
+  val browser = Browser()
   val doc = browser.get("http://observador.pt")
 
   println("=== OBSERVADOR HTTP & HTTPS PROXY ===")
