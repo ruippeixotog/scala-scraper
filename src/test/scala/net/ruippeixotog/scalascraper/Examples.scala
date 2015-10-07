@@ -7,6 +7,7 @@ import net.ruippeixotog.scalascraper.ExampleMatchers._
 import net.ruippeixotog.scalascraper.browser.Browser
 import net.ruippeixotog.scalascraper.dsl.DSL.Extract._
 import net.ruippeixotog.scalascraper.dsl.DSL._
+import net.ruippeixotog.scalascraper.util.ProxyUtils
 import net.ruippeixotog.scalascraper.util.Validated._
 import org.jsoup.nodes.Element
 
@@ -15,6 +16,21 @@ import scala.collection.immutable.SortedMap
 object ExampleMatchers {
   val succ = validatorAt("success-matcher")
   val errs = validatorsAt[Int]("error-matchers")
+}
+
+object ProxyApp extends App {
+  ProxyUtils.setProxy("localhost", 3128)
+  val browser = Browser()
+  val doc = browser.get("http://observador.pt")
+
+  println("=== OBSERVADOR HTTP & HTTPS PROXY ===")
+
+  Thread.sleep(2000)
+
+  ProxyUtils.removeProxy()
+
+  // You should get a [java.net.SocketTimeoutException: connect timed out] if you are behind a proxy
+  browser.get("http://observador.pt")
 }
 
 object NewsApp extends App {
