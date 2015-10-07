@@ -2,10 +2,10 @@ package net.ruippeixotog.scalascraper.util
 
 object ProxyUtils {
 
-  private val HTTP_PROXY_HOST: String = "http.proxyHost"
-  private val HTTP_PROXY_PORT: String = "http.proxyPort"
-  private val HTTPS_PROXY_PORT: String = "https.proxyPort"
-  private val HTTPS_PROXY_HOST: String = "https.proxyHost"
+  private[this] val HTTP_PROXY_HOST: String = "http.proxyHost"
+  private[this] val HTTP_PROXY_PORT: String = "http.proxyPort"
+  private[this] val HTTPS_PROXY_PORT: String = "https.proxyPort"
+  private[this] val HTTPS_PROXY_HOST: String = "https.proxyHost"
 
   /**
    * Set HTTP and HTTPS proxy JVM-wide
