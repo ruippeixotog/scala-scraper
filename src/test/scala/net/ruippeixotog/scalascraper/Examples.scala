@@ -24,6 +24,13 @@ object ProxyApp extends App {
   val doc = browser.get("http://observador.pt")
 
   println("=== OBSERVADOR HTTP & HTTPS PROXY ===")
+
+  Thread.sleep(2000)
+
+  ProxyUtils.removeProxy()
+
+  // You should get a [java.net.SocketTimeoutException: connect timed out] if you are behind a proxy
+  browser.get("http://observador.pt")
 }
 
 object NewsApp extends App {
