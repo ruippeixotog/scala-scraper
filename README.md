@@ -264,15 +264,20 @@ doc tryExtract element("#optional")
 
 Matchers and validators can be loaded from a [Typesafe config](https://github.com/typesafehub/config) using the methods `matcherAt`, `validatorAt` and `validatorsAt` of the DSL. More documentation will be available soon - meanwhile, take a look at the [examples.conf](https://github.com/ruippeixotog/scala-scraper/blob/master/src/test/resources/examples.conf) config used [in the examples](https://github.com/ruippeixotog/scala-scraper/blob/master/src/test/scala/net/ruippeixotog/scalascraper/Examples.scala) and at the [application.conf](https://github.com/ruippeixotog/scala-scraper/blob/master/src/test/resources/examples.conf) used in tests.
 
-## Working under a HTTP/S Proxy
-The only way to configure a proxy is to do it JVM-wide because JSoup does not provide a way to do it. This means that every operation using Java's HttpURLConnection will be affected by the proxy configuration.
+## Working Behind an HTTP/HTTPS Proxy
 
-Noticed about this you can use the ProxyUtils provided to set HTTP and HTTPS Proxy before invoke any operation on the Browser class:
+If you are behind an HTTP proxy, you can configure `Browser` to make connections through it by setting the Java system properties `http.proxyHost`, `https.proxyHost`, `http.proxyPort` and `https.proxyPort`. Scala Scraper provides a `ProxyUtils` object that facilitates that configuration:
+
 ```scala
 ProxyUtils.setProxy("localhost", 3128)
 val browser = Browser()
-// Scraping operations...
+// HTTP requests and scraping operations...
+ProxyUtils.removeProxy()
 ```
+
+If the configured proxy is not reachable when a request is made, `Browser` will fallback to try the request directly.
+
+**NOTE**: `Browser` works by executing requests using Jsoup, which internally uses `java.net.HttpURLConnection`. Configuring those JVM-wide system properties will affect not only `Browser` instances, but _all_ requests done using `HttpURLConnection` directly or indirectly.
 
 ## Copyright
 
