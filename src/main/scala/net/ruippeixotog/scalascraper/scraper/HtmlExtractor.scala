@@ -82,13 +82,13 @@ object SimpleExtractor {
 }
 
 object ContentExtractors {
-  def element: Elements => Element = _.head
-  def elements: Elements => Elements = identity
-  def elementList: Elements => List[Element] = _.toList
+  val element: Elements => Element = _.head
+  val elements: Elements => Elements = identity
+  val elementList: Elements => List[Element] = _.toList
 
-  def text: Elements => String = _.head.text
-  def texts: Elements => Seq[String] = _.map(_.text)
-  def allText: Elements => String = _.text
+  val text: Elements => String = _.head.text
+  val texts: Elements => Seq[String] = _.map(_.text)
+  val allText: Elements => String = _.text
 
   def attr(attr: String): Elements => String = _.attr(attr)
   def attrs(attr: String): Elements => Seq[String] = _.map(_.attr(attr))
@@ -104,8 +104,8 @@ object ContentExtractors {
 object ContentParsers {
   def asIs[C] = identity[C] _
 
-  def asInt: String => Int = _.toInt
-  def asDouble: String => Double = _.toDouble
+  val asInt: String => Int = _.toInt
+  val asDouble: String => Double = _.toDouble
 
   def asDate(dateFormats: String*): String => DateTime = {
     val formatter = new DateTimeFormatterBuilder().append(null,
