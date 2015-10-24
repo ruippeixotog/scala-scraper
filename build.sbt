@@ -4,7 +4,7 @@ name := "scala-scraper"
 
 organization := "net.ruippeixotog"
 
-version := "0.1.2-SNAPSHOT"
+version := "0.1.2"
 
 scalaVersion := "2.11.7"
 
@@ -56,6 +56,6 @@ pomExtra :=
     <developer>
       <id>ruippeixotog</id>
       <name>Rui Gonçalves</name>
-      <url>http://ruippeixotog.net</url>
+      <url>http://www.ruippeixotog.net</url>
     </developer>
   </developers>
