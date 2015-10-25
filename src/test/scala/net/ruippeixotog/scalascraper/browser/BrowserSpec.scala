@@ -115,6 +115,17 @@ class BrowserSpec extends Specification {
       browser.get("http://example.com/original").body.attr("id") mustEqual "bid"
     }
 
+    "ignore redirects in meta refresh HTML tags inside noscripts" in {
+      val browser = new MockBrowser()
+      val redirectHtml =
+        """<head><noscript><meta http-equiv="refresh" content="0;URL='http://example.com/redirected'" /></noscript></head><body id='orig'></body>"""
+
+      browser.addMockResponse(MockResponse("http://example.com/original", body = redirectHtml))
+      browser.addMockResponse(MockResponse("http://example.com/redirected", body = html))
+
+      browser.get("http://example.com/original").body.attr("id") mustEqual "orig"
+    }
+
     "keep and use cookies between requests" in {
       val browser = new MockBrowser()
 

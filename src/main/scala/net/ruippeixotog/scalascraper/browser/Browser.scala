@@ -47,7 +47,7 @@ class Browser {
 
     val redirectUrl =
       if (res.hasHeader("Location")) Some(res.header("Location"))
-      else doc.select("head meta[http-equiv=refresh]").headOption.flatMap { e =>
+      else doc.select("head > meta[http-equiv=refresh]").headOption.flatMap { e =>
         e.attr("content") match {
           case QuotedMetaRefreshUrl(url) => Some(url)
           case MetaRefreshUrl(url) => Some(url)
