@@ -104,17 +104,6 @@ class BrowserSpec extends Specification {
       browser.get("http://example.com/original").body.attr("id") mustEqual "bid"
     }
 
-    "follow redirects specified in meta refresh HTML tags" in {
-      val browser = new MockBrowser()
-      val redirectHtml =
-        """<head><meta http-equiv="refresh" content="0;URL='http://example.com/redirected'" /></head>"""
-
-      browser.addMockResponse(MockResponse("http://example.com/original", body = redirectHtml))
-      browser.addMockResponse(MockResponse("http://example.com/redirected", body = html))
-
-      browser.get("http://example.com/original").body.attr("id") mustEqual "bid"
-    }
-
     "keep and use cookies between requests" in {
       val browser = new MockBrowser()
 

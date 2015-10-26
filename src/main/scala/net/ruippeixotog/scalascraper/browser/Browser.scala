@@ -9,12 +9,10 @@ import org.jsoup.{ Connection, Jsoup }
 
 import scala.collection.convert.WrapAsJava._
 import scala.collection.convert.WrapAsScala._
-import scala.collection.mutable.{ Map => MutableMap }
-
-import Browser._
+import scala.collection.mutable
 
 class Browser {
-  val cookies = MutableMap.empty[String, String]
+  val cookies = mutable.Map.empty[String, String]
 
   def get(url: String) =
     executePipeline(Jsoup.connect(url).method(GET))
@@ -45,30 +43,16 @@ class Browser {
     lazy val doc = res.parse
     cookies ++= res.cookies
 
-    val redirectUrl =
-      if (res.hasHeader("Location")) Some(res.header("Location"))
-      else doc.select("head meta[http-equiv=refresh]").headOption.flatMap { e =>
-        e.attr("content") match {
-          case QuotedMetaRefreshUrl(url) => Some(url)
-          case MetaRefreshUrl(url) => Some(url)
-          case _ => None
-        }
-      }
-
-    redirectUrl match {
-      case None => doc
-      case Some(url) => get(url)
-    }
+    if (res.hasHeader("Location")) get(res.header("Location")) else doc
   }
 
   private[this] val executePipeline: Connection => Document =
-    (defaultRequestSettings _).andThen(requestSettings).andThen(executeRequest).andThen(processResponse)
+    (defaultRequestSettings _)
+      .andThen(requestSettings)
+      .andThen(executeRequest)
+      .andThen(processResponse)
 }
 
 object Browser {
-  // TODO this is a best effort, the specs define a much more complicated parsing process
-  private val QuotedMetaRefreshUrl = ".*(?:URL|url)='([^']+)'.*".r
-  private val MetaRefreshUrl = ".*(?:URL|url)=([^;]+).*".r
-
   def apply(): Browser = new Browser()
 }
