@@ -35,14 +35,16 @@ import net.ruippeixotog.scalascraper.dsl.DSL.Parse._
 Content can then be extracted using the `>>` extraction operator and CSS queries:
 
 ```scala
+import org.jsoup.nodes.Element
+
 // Extract the text inside the first h1 element
 val title: String = doc >> text("h1")
 
 // Extract the elements with class "item"
-val items: Seq[Element] = doc >> elements(".item")
+val items: List[Element] = doc >> elementList(".item")
 
 // From each item, extract the text of the h3 element inside
-val itemTitles: Seq[String] = items.map(_ >> text("h3"))
+val itemTitles: List[String] = items.map(_ >> text("h3"))
 
 // From the meta element with "viewport" as its attribute name, extract the
 // text in the content attribute
