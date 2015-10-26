@@ -4,7 +4,7 @@ import java.io.File
 import java.net.URL
 
 import org.jsoup.Connection
-import org.jsoup.Connection.{ Method, Response }
+import org.jsoup.Connection._
 import org.jsoup.parser.Parser
 import org.specs2.mutable.Specification
 import scala.collection.convert.WrapAsJava._
@@ -48,13 +48,16 @@ class BrowserSpec extends Specification {
 
     implicit def stringAsUrl(str: String) = new URL(str)
 
-    class MockBrowser extends Browser {
+    class MockBrowser(userAgent: String = "jsoup/1.8") extends Browser(userAgent) {
+      val executedRequests = mutable.ListBuffer.empty[Request]
       val mockResponses = mutable.Map.empty[URL, Response]
+
       def addMockResponse(res: Response) = mockResponses += res.url -> res
 
       override def executeRequest(conn: Connection) = {
-        val url = conn.request.url
-        mockResponses.getOrElse(url, MockResponse(url))
+        val req = conn.request
+        executedRequests += req
+        mockResponses.getOrElse(req.url, MockResponse(req.url))
       }
     }
 
@@ -91,6 +94,14 @@ class BrowserSpec extends Specification {
       div.nodeName mustEqual "div"
       div.attr("id") mustEqual "a1"
       div.children.size mustEqual 2
+    }
+
+    "execute requests with the specified User-Agent" in {
+      val browser = new MockBrowser("test-agent")
+      browser.addMockResponse(MockResponse("http://example.com"))
+      browser.get("http://example.com")
+      browser.executedRequests.headOption must beSome.which(
+        _.header("User-Agent") mustEqual "test-agent")
     }
 
     "follow redirects specified in 'Location' headers" in {

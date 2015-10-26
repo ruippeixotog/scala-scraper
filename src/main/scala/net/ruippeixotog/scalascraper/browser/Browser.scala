@@ -11,7 +11,7 @@ import scala.collection.convert.WrapAsJava._
 import scala.collection.convert.WrapAsScala._
 import scala.collection.mutable
 
-class Browser {
+class Browser(userAgent: String = "jsoup/1.8") {
   val cookies = mutable.Map.empty[String, String]
 
   def get(url: String) =
@@ -30,7 +30,7 @@ class Browser {
 
   protected[this] def defaultRequestSettings(conn: Connection): Connection =
     conn.cookies(cookies).
-      userAgent("jsoup/1.8.1").
+      userAgent(userAgent).
       header("Accept", "text/html,application/xhtml+xml,application/xml").
       header("Accept-Charset", "utf-8").
       timeout(15000).
