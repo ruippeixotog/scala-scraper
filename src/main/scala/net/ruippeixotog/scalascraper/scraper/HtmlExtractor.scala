@@ -56,9 +56,10 @@ object HtmlExtractor extends HtmlExtractorInstances {
   }
 }
 
-case class SimpleExtractor[C, +A](cssQuery: String,
-                                  contentExtractor: Elements => C,
-                                  contentParser: C => A) extends HtmlExtractor[A] {
+case class SimpleExtractor[C, +A](
+    cssQuery: String,
+    contentExtractor: Elements => C,
+    contentParser: C => A) extends HtmlExtractor[A] {
 
   def extract(doc: Elements) = contentParser(contentExtractor(doc.select(cssQuery)))
 
@@ -108,8 +109,8 @@ object ContentParsers {
   val asDouble: String => Double = _.toDouble
 
   def asDate(dateFormats: String*): String => DateTime = {
-    val formatter = new DateTimeFormatterBuilder().append(null,
-      dateFormats.map(DateTimeFormat.forPattern(_).getParser).toArray).toFormatter
+    val dateParsers = dateFormats.map(DateTimeFormat.forPattern(_).getParser)
+    val formatter = new DateTimeFormatterBuilder().append(null, dateParsers.toArray).toFormatter
     formatter.parseDateTime
   }
 

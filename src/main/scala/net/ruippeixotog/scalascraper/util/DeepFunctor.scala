@@ -20,11 +20,11 @@ trait LowerPriorityDeepFunctor {
 }
 
 object DeepFunctor extends LowerPriorityDeepFunctor {
-  implicit def cons[FRA, RA](implicit u: Unapply[Functor, FRA] { type A = RA },
-                             rest: DeepFunctor[RA]) = new DeepFunctor[FRA] {
-    type A = rest.A
-    type F[X] = u.M[rest.F[X]]
-    val f = u.TC.compose(rest.f)
-    def asF(fa: FRA) = u.TC.map(u(fa)) { ma => rest.asF(ma) }
-  }
+  implicit def cons[FRA, RA](implicit u: Unapply[Functor, FRA] { type A = RA }, rest: DeepFunctor[RA]) =
+    new DeepFunctor[FRA] {
+      type A = rest.A
+      type F[X] = u.M[rest.F[X]]
+      val f = u.TC.compose(rest.f)
+      def asF(fa: FRA) = u.TC.map(u(fa)) { ma => rest.asF(ma) }
+    }
 }

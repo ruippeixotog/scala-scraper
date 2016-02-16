@@ -15,14 +15,15 @@ class BrowserSpec extends Specification {
 
   "A Browser" should {
 
-    case class MockResponse(url: URL,
-                            method: Method = Method.GET,
-                            statusCode: Int = 200,
-                            charset: String = "UTF-8",
-                            contentType: String = "text/html",
-                            body: String = "",
-                            cookieMap: Map[String, String] = Map.empty,
-                            headerMap: Map[String, String] = Map.empty) extends Response {
+    case class MockResponse(
+        url: URL,
+        method: Method = Method.GET,
+        statusCode: Int = 200,
+        charset: String = "UTF-8",
+        contentType: String = "text/html",
+        body: String = "",
+        cookieMap: Map[String, String] = Map.empty,
+        headerMap: Map[String, String] = Map.empty) extends Response {
 
       def statusMessage() = body
       def bodyAsBytes() = body.getBytes
@@ -107,7 +108,8 @@ class BrowserSpec extends Specification {
     "follow redirects specified in 'Location' headers" in {
       val browser = new MockBrowser()
 
-      browser.addMockResponse(MockResponse("http://example.com/original",
+      browser.addMockResponse(MockResponse(
+        "http://example.com/original",
         headerMap = Map("Location" -> "http://example.com/redirected")))
 
       browser.addMockResponse(MockResponse("http://example.com/redirected", body = html))
