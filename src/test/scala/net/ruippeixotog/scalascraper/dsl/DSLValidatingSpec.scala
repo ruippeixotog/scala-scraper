@@ -2,10 +2,9 @@ package net.ruippeixotog.scalascraper.dsl
 
 import java.io.File
 
-import net.ruippeixotog.scalascraper.browser.Browser
+import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.scraper.ContentExtractors.{ text => stext, _ }
-import net.ruippeixotog.scalascraper.scraper.HtmlValidator
 import net.ruippeixotog.scalascraper.scraper.HtmlValidator._
 import net.ruippeixotog.scalascraper.util.Validated._
 import org.specs2.mutable.Specification
@@ -15,11 +14,11 @@ class DSLValidatingSpec extends Specification {
   "The scraping DSL" should {
 
     val file = new File(getClass.getClassLoader.getResource("test2.html").toURI)
-    val doc = new Browser().parseFile(file)
+    val doc = JsoupBrowser().parseFile(file)
 
     "allow validating content based on a validator" in {
-      doc ~/~ validator("#content section")(_.length == 3) mustEqual VSuccess(doc)
-      doc ~/~ validator("#content section")(_.length == 4) mustEqual VFailure(())
+      doc ~/~ validator("#content section")(_.size == 3) mustEqual VSuccess(doc)
+      doc ~/~ validator("#content section")(_.size == 4) mustEqual VFailure(())
     }
 
     "allow identifying and possibly returning an error status in a validation" in {

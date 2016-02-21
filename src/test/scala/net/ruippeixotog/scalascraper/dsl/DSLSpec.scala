@@ -2,12 +2,12 @@ package net.ruippeixotog.scalascraper.dsl
 
 import java.io.File
 
-import net.ruippeixotog.scalascraper.browser.Browser
+import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 import net.ruippeixotog.scalascraper.dsl.DSL._
+import net.ruippeixotog.scalascraper.model.Document
 import net.ruippeixotog.scalascraper.scraper.ContentExtractors.{ text => stext, _ }
 import net.ruippeixotog.scalascraper.scraper.HtmlExtractor
 import net.ruippeixotog.scalascraper.util.Validated.{ VFailure, VSuccess }
-import org.jsoup.nodes.Document
 import org.specs2.mutable.Specification
 
 class DSLSpec extends Specification {
@@ -15,7 +15,7 @@ class DSLSpec extends Specification {
   "The scraping DSL" should {
 
     val file = new File(getClass.getClassLoader.getResource("test2.html").toURI)
-    val doc = new Browser().parseFile(file)
+    val doc = JsoupBrowser().parseFile(file)
 
     "allow trying to extract content which may or may not exist" in {
       doc >?> stext("title") mustEqual Some("Test page")
@@ -44,7 +44,7 @@ class DSLSpec extends Specification {
     }
 
     "support mapping over extractors" in {
-      val ext = elements("#menu span").map(_.length)
+      val ext = elements("#menu span").map(_.size)
       doc >> ext mustEqual 4
     }
 
@@ -57,8 +57,8 @@ class DSLSpec extends Specification {
     "support creating chained extractors as objects for later use" in {
       val ext1 = element("#menu") >?> stext(".active")
       val ext2 = elementList("#menu span") >?> stext("a")
-      val ext3 = elementList("#menu span") >?> stext("a") map { _.length }
-      val ext4 = elementList("#menu span") >?> stext("a") map { _.flatten.length }
+      val ext3 = elementList("#menu span") >?> stext("a") map { _.size }
+      val ext4 = elementList("#menu span") >?> stext("a") map { _.flatten.size }
 
       def useExtractor[A](ext: HtmlExtractor[A]) = doc >> ext
 

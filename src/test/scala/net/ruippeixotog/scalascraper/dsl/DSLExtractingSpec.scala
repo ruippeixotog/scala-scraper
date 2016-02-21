@@ -3,12 +3,12 @@ package net.ruippeixotog.scalascraper.dsl
 import java.io.File
 
 import com.github.nscala_time.time.Imports._
-import net.ruippeixotog.scalascraper.browser.Browser
+import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 import net.ruippeixotog.scalascraper.dsl.DSL._
+import net.ruippeixotog.scalascraper.model.{ ElementQuery, Element }
 import net.ruippeixotog.scalascraper.scraper.ContentExtractors.{ text => stext, _ }
 import net.ruippeixotog.scalascraper.scraper.ContentParsers._
 import net.ruippeixotog.scalascraper.scraper.HtmlExtractor
-import org.jsoup.select.Elements
 import org.specs2.mutable.Specification
 
 class DSLExtractingSpec extends Specification {
@@ -16,10 +16,10 @@ class DSLExtractingSpec extends Specification {
   "The scraping DSL" should {
 
     val file = new File(getClass.getClassLoader.getResource("test2.html").toURI)
-    val doc = new Browser().parseFile(file)
+    val doc = JsoupBrowser().parseFile(file)
 
     "allow extracting the first element matched by a CSS query" in {
-      (doc >> element("#content > section > h3")).nodeName mustEqual "h3"
+      (doc >> element("#content > section > h3")).tagName mustEqual "h3"
       (doc >> element("#content > section > h3")).text mustEqual "Section 1 h3"
 
       (doc >> element(".active")).text mustEqual "Section 2"
@@ -35,7 +35,7 @@ class DSLExtractingSpec extends Specification {
     }
 
     "allow extracting all elements matched by a CSS query" in {
-      (doc >> elements("#content > section")).map(_.nodeName) mustEqual Seq("section", "section", "section")
+      (doc >> elements("#content > section")).map(_.tagName) mustEqual Seq("section", "section", "section")
 
       (doc >> elements("#content > section > h3")).map(_.text) mustEqual
         Seq("Section 1 h3", "Section 2 h3", "Section 3 h3")
@@ -45,7 +45,7 @@ class DSLExtractingSpec extends Specification {
     }
 
     "allow extracting the content of all elements matched by a CSS query" in {
-      (doc >> "#content > section").length mustEqual 3
+      (doc >> "#content > section").size mustEqual 3
       doc >> "#content > section > h3" mustEqual Seq("Section 1 h3", "Section 2 h3", "Section 3 h3")
       doc >> "#menu .active" mustEqual Seq("Section 2")
     }
@@ -93,7 +93,7 @@ class DSLExtractingSpec extends Specification {
       case class MyPage(title: String, date: LocalDate, section: String)
 
       val myExtractor = new HtmlExtractor[MyPage] {
-        def extract(doc: Elements) = MyPage(
+        def extract(doc: ElementQuery) = MyPage(
           doc >> stext("title"),
           (doc >> extractor("#date", stext, asDate("yyyy-MM-dd"))).toLocalDate,
           doc >> stext("#menu .active"))

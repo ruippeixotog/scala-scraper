@@ -4,7 +4,7 @@ import java.io.File
 
 import com.github.nscala_time.time.Imports._
 import com.typesafe.config.ConfigFactory
-import net.ruippeixotog.scalascraper.browser.Browser
+import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.util.Validated.{ VFailure, VSuccess }
 import org.specs2.mutable.Specification
@@ -15,8 +15,8 @@ class ConfigLoadingHelpersSpec extends Specification {
 
     val file = new File(getClass.getClassLoader.getResource("test2.html").toURI)
     val fileEmpty = new File(getClass.getClassLoader.getResource("test.html").toURI)
-    val doc = new Browser().parseFile(file)
-    val docEmpty = new Browser().parseFile(fileEmpty)
+    val doc = JsoupBrowser().parseFile(file)
+    val docEmpty = JsoupBrowser().parseFile(fileEmpty)
 
     "be able to create extractors from configuration files" in {
       val conf = ConfigFactory.load.getConfig("test-extractors")

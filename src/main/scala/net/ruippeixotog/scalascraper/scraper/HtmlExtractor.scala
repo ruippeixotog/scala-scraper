@@ -1,10 +1,9 @@
 package net.ruippeixotog.scalascraper.scraper
 
 import com.typesafe.config.Config
+import net.ruippeixotog.scalascraper.model.{ ElementQuery, Element }
 import org.joda.time.DateTime
 import org.joda.time.format._
-import org.jsoup.nodes.Element
-import org.jsoup.select.Elements
 
 import scala.collection.convert.WrapAsScala._
 import scala.util.matching.Regex
@@ -14,22 +13,22 @@ import ContentExtractors._
 import ContentParsers._
 
 trait HtmlExtractor[+A] {
-  def extract(doc: Elements): A
+  def extract(doc: ElementQuery): A
 }
 
 trait HtmlExtractorInstances {
 
   implicit val extractorInstance = new Monad[HtmlExtractor] {
     def point[A](a: => A) = new HtmlExtractor[A] {
-      def extract(doc: Elements) = a
+      def extract(doc: ElementQuery) = a
     }
 
     def bind[A, B](fa: HtmlExtractor[A])(f: A => HtmlExtractor[B]) = new HtmlExtractor[B] {
-      def extract(doc: Elements) = f(fa.extract(doc)).extract(doc)
+      def extract(doc: ElementQuery) = f(fa.extract(doc)).extract(doc)
     }
 
     override def map[A, B](fa: HtmlExtractor[A])(f: A => B) = new HtmlExtractor[B] {
-      def extract(doc: Elements) = f(fa.extract(doc))
+      def extract(doc: ElementQuery) = f(fa.extract(doc))
     }
   }
 }
@@ -58,16 +57,16 @@ object HtmlExtractor extends HtmlExtractorInstances {
 
 case class SimpleExtractor[C, +A](
     cssQuery: String,
-    contentExtractor: Elements => C,
+    contentExtractor: ElementQuery => C,
     contentParser: C => A) extends HtmlExtractor[A] {
 
-  def extract(doc: Elements) = contentParser(contentExtractor(doc.select(cssQuery)))
+  def extract(doc: ElementQuery) = contentParser(contentExtractor(doc.select(cssQuery)))
 
   def withQuery(cssQuery: String) = copy(cssQuery = cssQuery)
 
-  def extractWith[C2](contentExtractor: Elements => C) = copy(contentExtractor = contentExtractor)
+  def extractWith[C2](contentExtractor: ElementQuery => C) = copy(contentExtractor = contentExtractor)
 
-  def extractWith[C2, A2](contentExtractor: Elements => C2, contentParser: C2 => A2) =
+  def extractWith[C2, A2](contentExtractor: ElementQuery => C2, contentParser: C2 => A2) =
     copy(contentExtractor = contentExtractor, contentParser = contentParser)
 
   def parseWith[A2](contentExtractor: C => A2) = copy(contentParser = contentParser)
@@ -75,30 +74,30 @@ case class SimpleExtractor[C, +A](
 
 object SimpleExtractor {
 
-  def apply(cssQuery: String): SimpleExtractor[Seq[String], Seq[String]] =
+  def apply(cssQuery: String): SimpleExtractor[Iterable[String], Iterable[String]] =
     SimpleExtractor(cssQuery, ContentExtractors.texts, ContentParsers.asIs)
 
-  def apply[C](cssQuery: String, contentExtractor: Elements => C): SimpleExtractor[C, C] =
+  def apply[C](cssQuery: String, contentExtractor: ElementQuery => C): SimpleExtractor[C, C] =
     SimpleExtractor(cssQuery, contentExtractor, ContentParsers.asIs)
 }
 
 object ContentExtractors {
-  val element: Elements => Element = _.head
-  val elements: Elements => Elements = identity
-  val elementList: Elements => List[Element] = _.toList
+  val element: ElementQuery => Element = _.head
+  val elements: ElementQuery => ElementQuery = identity
+  val elementList: ElementQuery => List[Element] = _.toList
 
-  val text: Elements => String = _.head.text
-  val texts: Elements => Seq[String] = _.map(_.text)
-  val allText: Elements => String = _.text
+  val text: ElementQuery => String = _.head.text
+  val texts: ElementQuery => Iterable[String] = _.map(_.text)
+  val allText: ElementQuery => String = _.map(_.text).mkString
 
-  def attr(attr: String): Elements => String = _.attr(attr)
-  def attrs(attr: String): Elements => Seq[String] = _.map(_.attr(attr))
+  def attr(attr: String): ElementQuery => String = _.head.attr(attr)
+  def attrs(attr: String): ElementQuery => Iterable[String] = _.map(_.attr(attr))
 
-  def formData: Elements => Map[String, String] =
-    _.select("input").map { e => e.attr("name") -> e.attr("value") }.toMap
+  def formData: ElementQuery => Map[String, String] =
+    _.map(_.select("input").map { e => e.attr("name") -> e.attr("value") }.toMap).reduce(_ ++ _)
 
-  def formDataAndAction: Elements => (Map[String, String], String) = { elems =>
-    (formData(elems), elems.attr("action"))
+  def formDataAndAction: ElementQuery => (Map[String, String], String) = { elems =>
+    (formData(elems), attr("action")(elems))
   }
 }
 

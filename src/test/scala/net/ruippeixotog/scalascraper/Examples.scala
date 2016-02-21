@@ -4,12 +4,12 @@ import java.io.PrintStream
 
 import com.typesafe.config.ConfigFactory
 import net.ruippeixotog.scalascraper.ExampleMatchers._
-import net.ruippeixotog.scalascraper.browser.Browser
+import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 import net.ruippeixotog.scalascraper.dsl.DSL.Extract._
 import net.ruippeixotog.scalascraper.dsl.DSL._
+import net.ruippeixotog.scalascraper.model.Element
 import net.ruippeixotog.scalascraper.util.ProxyUtils
 import net.ruippeixotog.scalascraper.util.Validated._
-import org.jsoup.nodes.Element
 
 import scala.collection.immutable.SortedMap
 
@@ -20,7 +20,7 @@ object ExampleMatchers {
 
 object ProxyApp extends App {
   ProxyUtils.setProxy("localhost", 3128)
-  val browser = Browser()
+  val browser = JsoupBrowser()
   val doc = browser.get("http://observador.pt")
 
   println("=== OBSERVADOR HTTP & HTTPS PROXY ===")
@@ -34,7 +34,7 @@ object ProxyApp extends App {
 }
 
 object NewsApp extends App {
-  val browser = new Browser
+  val browser = JsoupBrowser()
   val doc = browser.get("http://observador.pt")
 
   println()
@@ -50,7 +50,7 @@ object NewsApp extends App {
 }
 
 object HeadlineApp extends App {
-  val browser = new Browser
+  val browser = JsoupBrowser()
 
   browser.get("http://observador.pt") ~/~ (succ, errs) >> "h1" match {
     case VSuccess(headline) => println("HEADLINE: " + headline.head)
@@ -59,7 +59,7 @@ object HeadlineApp extends App {
 }
 
 object HeadlineBetterApp extends App {
-  val browser = new Browser
+  val browser = JsoupBrowser()
 
   for {
     headline <- browser.get("http://observador.pt") ~/~ (succ, errs) >> element("h1 a")
@@ -70,7 +70,7 @@ object HeadlineBetterApp extends App {
 object HeadlineVerboseApp extends App {
   val conf = ConfigFactory.load
 
-  val browser = new Browser
+  val browser = JsoupBrowser()
 
   for {
     headline <- browser.get("http://observador.pt") validateWith (succ, errs) extract element("h1 a")
@@ -79,10 +79,10 @@ object HeadlineVerboseApp extends App {
 }
 
 object MusicGenreTreeApp extends App {
-  val browser = new Browser
+  val browser = JsoupBrowser()
 
   case class GenreNode(root: Element) {
-    def leaves = root >> elements("> a.genre") map { e => e.text -> e }
+    def leaves = root >> elementList("> a.genre") map { e => e.text -> e }
     def nodes = root >> elementList("> div:has(b:has(a.genre))") >> (text(".genre"), element("blockquote"))
 
     def children: Map[String, GenreNode] = SortedMap(leaves ++ nodes: _*).mapValues(GenreNode.apply)

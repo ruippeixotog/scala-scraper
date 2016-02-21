@@ -11,9 +11,9 @@ import scala.collection.convert.WrapAsJava._
 import scala.collection.mutable
 
 // TODO missing tests for HTTP request execution
-class BrowserSpec extends Specification {
+class JsoupBrowserSpec extends Specification {
 
-  "A Browser" should {
+  "A JsoupBrowser" should {
 
     case class MockResponse(
         url: URL,
@@ -49,7 +49,7 @@ class BrowserSpec extends Specification {
 
     implicit def stringAsUrl(str: String) = new URL(str)
 
-    class MockBrowser(userAgent: String = "jsoup/1.8") extends Browser(userAgent) {
+    class MockJsoupBrowser(userAgent: String = "jsoup/1.8") extends JsoupBrowser(userAgent) {
       val executedRequests = mutable.ListBuffer.empty[Request]
       val mockResponses = mutable.Map.empty[URL, Response]
 
@@ -73,32 +73,32 @@ class BrowserSpec extends Specification {
       <html>"""
 
     "parse correctly HTML from a string" in {
-      val body = new Browser().parseString(html).body
+      val body = JsoupBrowser().parseString(html).body
 
-      body.nodeName mustEqual "body"
+      body.tagName mustEqual "body"
       body.children.size mustEqual 1
 
-      val div = body.child(0)
-      div.nodeName mustEqual "div"
+      val div = body.children.head
+      div.tagName mustEqual "div"
       div.attr("id") mustEqual "a1"
       div.children.size mustEqual 2
     }
 
     "parse correctly HTML from a file" in {
       val file = new File(getClass.getClassLoader.getResource("test.html").toURI)
-      val body = new Browser().parseFile(file).body
+      val body = JsoupBrowser().parseFile(file).body
 
-      body.nodeName mustEqual "body"
+      body.tagName mustEqual "body"
       body.children.size mustEqual 1
 
-      val div = body.child(0)
-      div.nodeName mustEqual "div"
+      val div = body.children.head
+      div.tagName mustEqual "div"
       div.attr("id") mustEqual "a1"
       div.children.size mustEqual 2
     }
 
     "execute requests with the specified User-Agent" in {
-      val browser = new MockBrowser("test-agent")
+      val browser = new MockJsoupBrowser("test-agent")
       browser.addMockResponse(MockResponse("http://example.com"))
       browser.get("http://example.com")
       browser.executedRequests.headOption must beSome.which(
@@ -106,7 +106,7 @@ class BrowserSpec extends Specification {
     }
 
     "follow redirects specified in 'Location' headers" in {
-      val browser = new MockBrowser()
+      val browser = new MockJsoupBrowser()
 
       browser.addMockResponse(MockResponse(
         "http://example.com/original",
@@ -118,7 +118,7 @@ class BrowserSpec extends Specification {
     }
 
     "keep and use cookies between requests" in {
-      val browser = new MockBrowser()
+      val browser = new MockJsoupBrowser()
 
       browser.addMockResponse(MockResponse("http://example.com?id=2", cookieMap = Map("a" -> "4")))
       browser.get("http://example.com?id=2")

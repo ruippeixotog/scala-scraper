@@ -1,20 +1,20 @@
 package net.ruippeixotog.scalascraper.dsl
 
+import net.ruippeixotog.scalascraper.model._
 import net.ruippeixotog.scalascraper.scraper.{ HtmlExtractor, SimpleExtractor }
 import net.ruippeixotog.scalascraper.util._
-import org.jsoup.nodes.Element
-import org.jsoup.select.Elements
 
 trait ImplicitConversions {
 
-  implicit def cssQueryAsExtractor(cssQuery: String): HtmlExtractor[Seq[String]] =
+  implicit def cssQueryAsExtractor(cssQuery: String): HtmlExtractor[Iterable[String]] =
     SimpleExtractor(cssQuery)
 
-  implicit def contentExtractorAsExtractor[C](contentExtractor: Elements => C): String => HtmlExtractor[C] = {
+  implicit def contentExtractorAsExtractor[C](contentExtractor: ElementQuery => C): String => HtmlExtractor[C] = {
     cssQuery: String => SimpleExtractor(cssQuery, contentExtractor)
   }
 
-  implicit def elementAsElements(elem: Element) = new Elements(elem)
+  implicit def elementAsElementQuery(elem: Element) = ElementQuery(elem)
+  implicit def documentAsElementQuery(doc: Document) = ElementQuery(doc.root)
 
   implicit def projectValidatedSuccess[R, A](either: Validated[R, A]) = either.right
 }

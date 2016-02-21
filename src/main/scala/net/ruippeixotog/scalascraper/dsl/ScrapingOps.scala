@@ -1,9 +1,9 @@
 package net.ruippeixotog.scalascraper.dsl
 
+import net.ruippeixotog.scalascraper.model.ElementQuery
 import net.ruippeixotog.scalascraper.scraper.{ HtmlExtractor, HtmlValidator }
 import net.ruippeixotog.scalascraper.util.Validated.{ VFailure, VSuccess }
 import net.ruippeixotog.scalascraper.util._
-import org.jsoup.select.Elements
 
 import scala.util.Try
 import scalaz._
@@ -11,7 +11,7 @@ import scalaz.syntax.ToFunctorOps
 
 trait ScrapingOps extends syntax.ToIdOps with ToFunctorOps with std.AllInstances with IdInstances {
 
-  implicit class ElementsScrapingOps[+F[_]: Functor, A <% Elements](val self: F[A]) {
+  implicit class ElementsScrapingOps[+F[_]: Functor, A <% ElementQuery](val self: F[A]) {
 
     def extract[B](extractor: HtmlExtractor[B]) = self.map(extractor.extract(_))
 
@@ -87,7 +87,7 @@ trait ScrapingOps extends syntax.ToIdOps with ToFunctorOps with std.AllInstances
     @inline final def and = self
   }
 
-  implicit def deepFunctorOps[FA, A1](self: FA)(implicit df: DeepFunctor[FA] { type A = A1 }, conv: A1 => Elements) =
+  implicit def deepFunctorOps[FA, A1](self: FA)(implicit df: DeepFunctor[FA] { type A = A1 }, conv: A1 => ElementQuery) =
     new ElementsScrapingOps[df.F, df.A](df.asF(self))(df.f, conv)
 }
 
