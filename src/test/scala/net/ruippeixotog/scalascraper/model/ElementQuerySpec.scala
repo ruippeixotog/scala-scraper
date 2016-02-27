@@ -30,6 +30,7 @@ class ElementQuerySpec extends Specification {
       query("#menu, #myform", "a").toSet mustEqual Set("Home", "Section 1", "Section 3", "Add field")
       query("#menu, #myform", ".active, *[href=#]").toSet mustEqual Set("Section 2", "Add field")
       query("section + section", "h3, p").toSet mustEqual Set("Section 2 h3", "Section 3 h3")
+      query("body", "section", "span").toSet mustEqual Set("My Form")
     }
 
     "return the target element if no query was provided" in {
