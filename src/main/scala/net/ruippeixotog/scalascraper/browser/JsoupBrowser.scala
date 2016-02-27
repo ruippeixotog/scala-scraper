@@ -69,7 +69,10 @@ object JsoupBrowser {
     def innerHtml = underlying.html
     def outerHtml = underlying.outerHtml
 
-    def select(cssQuery: String) = ElementQuery(underlying.select(cssQuery).map(JsoupElement))
+    private[this] def selectUnderlying(cssQuery: String): Iterator[Element] =
+      underlying.select(cssQuery).iterator.map(JsoupElement)
+
+    def select(cssQuery: String) = ElementQuery(cssQuery, underlying, selectUnderlying _)
   }
 
   case class JsoupDocument(underlying: org.jsoup.nodes.Document) extends Document {
