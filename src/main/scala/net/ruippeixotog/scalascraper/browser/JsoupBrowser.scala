@@ -60,7 +60,7 @@ object JsoupBrowser {
   case class JsoupElement(underlying: org.jsoup.nodes.Element) extends Element {
     def tagName = underlying.tagName
     def parent = Option(underlying.parent).map(JsoupElement)
-    def children = underlying.children.map(JsoupElement)
+    def children = underlying.children.toIterable.map(JsoupElement)
 
     def attrs = underlying.attributes.map { attr => attr.getKey -> attr.getValue }.toMap
     def attr(name: String) = underlying.attr(name)

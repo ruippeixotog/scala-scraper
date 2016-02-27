@@ -2,7 +2,6 @@ package net.ruippeixotog.scalascraper.model
 
 trait ElementQuery extends Iterable[Element] {
   def select(query: String): ElementQuery
-  def selectFirst(query: String): Option[Element] = select(query).headOption
 }
 
 private[model] class RootElementQuery[A](
