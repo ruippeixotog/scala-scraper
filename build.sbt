@@ -4,18 +4,18 @@ name := "scala-scraper"
 
 organization := "net.ruippeixotog"
 
-version := "0.2.0-SNAPSHOT"
+version := "1.0.0-SNAPSHOT"
 
 scalaVersion := "2.11.7"
 
 resolvers += "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases"
 
 libraryDependencies ++= Seq(
-  "com.github.nscala-time"     %% "nscala-time"     % "2.8.0",
+  "com.github.nscala-time"     %% "nscala-time"     % "2.10.0",
   "com.typesafe"                % "config"          % "1.3.0",
   "org.jsoup"                   % "jsoup"           % "1.8.3",
   "org.scalaz"                 %% "scalaz-core"     % "7.2.0",
-  "org.specs2"                 %% "specs2-core"     % "3.7.1"  % "test")
+  "org.specs2"                 %% "specs2-core"     % "3.7.1"       % "test")
 
 scalariformPreferences := scalariformPreferences.value
   .setPreference(DanglingCloseParenthesis, Prevent)
