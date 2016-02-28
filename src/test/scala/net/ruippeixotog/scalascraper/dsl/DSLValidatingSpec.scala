@@ -46,6 +46,15 @@ class DSLValidatingSpec extends Specification {
       doc errorIf errors mustEqual VFailure("Shouldn't be in Section 2")
     }
 
+    "allow extracting content before and after validating it" in {
+      val v = validator("#content section")(_.size == 3)
+
+      doc >> element("body") ~/~ v mustEqual VSuccess(doc.body)
+      doc >> element("#myform") ~/~ v mustEqual VFailure(())
+      doc ~/~ v >> element("body") mustEqual VSuccess(doc.body)
+      doc ~/~ v >> element("#myform") mustEqual VSuccess(doc.root.select("#myform").head)
+    }
+
     "provide match-all and match-nothing validators" in {
       doc ~/~ matchAll mustEqual VSuccess(doc)
       doc.select("head") ~/~ matchAll mustEqual VSuccess(doc.select("head"))
