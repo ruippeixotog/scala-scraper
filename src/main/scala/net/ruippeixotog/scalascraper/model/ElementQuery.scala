@@ -4,11 +4,11 @@ trait ElementQuery extends Iterable[Element] {
   def select(query: String): ElementQuery
 }
 
-private[model] class RootElementQuery[A](
-    private val target: A,
+private[model] class RootElementQuery(
+    private val target: Element,
     exec: String => Iterator[Element]) extends ElementQuery {
 
-  def iterator = exec(":root")
+  def iterator = Iterator(target)
 
   def select(query: String): ElementQuery =
     new LazyElementQuery(query.split(","), target, exec)
@@ -19,11 +19,13 @@ private[model] class RootElementQuery[A](
   }
 
   override def hashCode() = iterator.toSeq.hashCode()
+
+  override def toString() = s"RootElementQuery($target)"
 }
 
-private[model] class LazyElementQuery[A](
+private[model] class LazyElementQuery(
     private val queries: Seq[String],
-    private val target: A,
+    private val target: Element,
     exec: String => Iterator[Element]) extends ElementQuery {
 
   def iterator = exec(queries.mkString(","))
@@ -39,19 +41,18 @@ private[model] class LazyElementQuery[A](
   }
 
   override def hashCode() = iterator.toSeq.hashCode()
+
+  override def toString() = s"LazyElementQuery($queries, $target)"
 }
 
 object ElementQuery {
 
   def apply(target: Element): ElementQuery =
-    new RootElementQuery[Element](target, target.select(_).iterator)
+    new RootElementQuery(target, target.select(_).iterator)
 
   def apply(cssQuery: String, target: Element): ElementQuery =
-    new LazyElementQuery[Element](cssQuery.split(",").toList, target, target.select(_).iterator)
+    new LazyElementQuery(cssQuery.split(",").toList, target, target.select(_).iterator)
 
-  def apply[A](target: A, exec: String => Iterator[Element]): ElementQuery =
-    new RootElementQuery(target, exec)
-
-  def apply[A](cssQuery: String, target: A, exec: String => Iterator[Element]): ElementQuery =
+  def apply[A](cssQuery: String, target: Element, exec: String => Iterator[Element]): ElementQuery =
     new LazyElementQuery(cssQuery.split(",").toList, target, exec)
 }
