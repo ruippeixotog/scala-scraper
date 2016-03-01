@@ -77,31 +77,6 @@ class JsoupBrowserSpec extends Specification {
 
   "A JsoupBrowser" should {
 
-    "parse correctly HTML from a string" in {
-      val body = JsoupBrowser().parseString(html).body
-
-      body.tagName mustEqual "body"
-      body.children.size mustEqual 3
-
-      val div = body.children.head
-      div.tagName mustEqual "div"
-      div.attr("id") mustEqual "a1"
-      div.children.size mustEqual 2
-    }
-
-    "parse correctly HTML from a file" in {
-      val file = new File(getClass.getClassLoader.getResource("test.html").toURI)
-      val body = JsoupBrowser().parseFile(file).body
-
-      body.tagName mustEqual "body"
-      body.children.size mustEqual 1
-
-      val div = body.children.head
-      div.tagName mustEqual "div"
-      div.attr("id") mustEqual "a1"
-      div.children.size mustEqual 2
-    }
-
     "execute requests with the specified User-Agent" in {
       val browser = new MockJsoupBrowser("test-agent")
       browser.addMockResponse(MockResponse("http://example.com"))
