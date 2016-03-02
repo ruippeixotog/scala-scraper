@@ -2,6 +2,7 @@ package net.ruippeixotog.scalascraper.browser
 
 import java.io.File
 import java.net.URL
+import java.util.UUID
 
 import scala.collection.convert.WrapAsJava._
 import scala.collection.convert.WrapAsScala._
@@ -16,26 +17,35 @@ class HtmlUnitBrowser extends Browser {
   val client = new WebClient(BrowserVersion.CHROME)
   client.getOptions.setThrowExceptionOnScriptError(false)
 
-  def get(url: String) = HtmlUnitDocument(client.getPage(url))
+  private[this] def newRequest(url: String, method: HttpMethod = HttpMethod.GET) =
+    new WebRequest(new URL(url), method)
+
+  private[this] def newWindow(): WebWindow =
+    client.openTargetWindow(client.getCurrentWindow, null, UUID.randomUUID().toString)
+
+  private[this] def openInNewWindow(req: WebRequest): HtmlUnitDocument =
+    HtmlUnitDocument(client.getPage(newWindow(), req))
+
+  def get(url: String) = openInNewWindow(newRequest(url))
 
   def post(url: String, form: Map[String, String]) = {
-    val req = new WebRequest(new URL(url), HttpMethod.POST)
+    val req = newRequest(url, HttpMethod.POST)
     req.setRequestParameters(form.map { case (k, v) => new NameValuePair(k, v) }.toSeq)
-    HtmlUnitDocument(client.getPage(req))
+    openInNewWindow(req)
   }
 
   def parseFile(path: String, charset: String) =
-    HtmlUnitDocument(client.getPage(s"file://$path"))
+    openInNewWindow(newRequest(s"file://$path"))
 
   def parseFile(file: File) =
-    HtmlUnitDocument(client.getPage(s"file://${file.getAbsolutePath}"))
+    openInNewWindow(newRequest(s"file://${file.getAbsolutePath}"))
 
   def parseFile(file: File, charset: String) =
-    HtmlUnitDocument(client.getPage(s"file://${file.getAbsolutePath}"))
+    openInNewWindow(newRequest(s"file://${file.getAbsolutePath}"))
 
   def parseString(html: String) = {
     val response = new StringWebResponse(html, WebClient.URL_ABOUT_BLANK)
-    HtmlUnitDocument(HTMLParser.parseHtml(response, client.getCurrentWindow))
+    HtmlUnitDocument(HTMLParser.parseHtml(response, newWindow()))
   }
 }
 
