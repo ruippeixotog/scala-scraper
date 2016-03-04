@@ -12,9 +12,15 @@ import com.gargoylesoftware.htmlunit.html.{ DomElement, HTMLParser, HtmlPage }
 import com.gargoylesoftware.htmlunit.util.NameValuePair
 import net.ruippeixotog.scalascraper.browser.HtmlUnitBrowser._
 import net.ruippeixotog.scalascraper.model._
+import net.ruippeixotog.scalascraper.util.ProxyUtils
 
-class HtmlUnitBrowser(version: BrowserVersion = BrowserVersion.CHROME) extends Browser {
-  val client = new WebClient(version)
+class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME) extends Browser {
+
+  val client = ProxyUtils.getProxy match {
+    case Some((proxyHost, proxyPort)) => new WebClient(browserType, proxyHost, proxyPort)
+    case None => new WebClient(browserType)
+  }
+
   client.getOptions.setThrowExceptionOnScriptError(false)
 
   def exec(req: WebRequest): Document =

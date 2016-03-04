@@ -8,7 +8,9 @@ object ProxyUtils {
   private[this] val HTTPS_PROXY_HOST: String = "https.proxyHost"
 
   /**
-   * Set HTTP and HTTPS proxy JVM-wide
+   * Sets the JVM-wide HTTP and HTTPS proxy configuration.
+   * @param host the proxy host
+   * @param port the proxy port
    */
   def setProxy(host: String, port: Int): Unit = {
     System.setProperty(HTTP_PROXY_HOST, host)
@@ -18,7 +20,18 @@ object ProxyUtils {
   }
 
   /**
-   * Remove HTTP and HTTPS proxy configuration JVM-wide
+   * Returns the current JVM-wide HTTP and HTTPS proxy configuration.
+   * @return the current JVM-wide HTTP and HTTPS proxy configuration.
+   */
+  def getProxy: Option[(String, Int)] = {
+    for {
+      host <- Option(System.getProperty(HTTP_PROXY_HOST))
+      port <- Option(System.getProperty(HTTP_PROXY_PORT))
+    } yield (host, port.toInt)
+  }
+
+  /**
+   * Unsets the JVM-wide HTTP and HTTPS proxy configuration.
    */
   def removeProxy(): Unit = {
     System.clearProperty(HTTP_PROXY_HOST)
@@ -26,5 +39,4 @@ object ProxyUtils {
     System.clearProperty(HTTPS_PROXY_HOST)
     System.clearProperty(HTTPS_PROXY_PORT)
   }
-
 }
