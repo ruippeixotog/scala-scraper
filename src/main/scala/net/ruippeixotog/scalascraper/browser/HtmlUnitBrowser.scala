@@ -13,40 +13,41 @@ import com.gargoylesoftware.htmlunit.util.NameValuePair
 import net.ruippeixotog.scalascraper.browser.HtmlUnitBrowser._
 import net.ruippeixotog.scalascraper.model._
 
-class HtmlUnitBrowser extends Browser {
-  val client = new WebClient(BrowserVersion.CHROME)
+class HtmlUnitBrowser(version: BrowserVersion = BrowserVersion.CHROME) extends Browser {
+  val client = new WebClient(version)
   client.getOptions.setThrowExceptionOnScriptError(false)
+
+  def exec(req: WebRequest): Document =
+    HtmlUnitDocument(client.getPage(newWindow(), req))
+
+  def get(url: String): Document =
+    exec(newRequest(url))
+
+  def post(url: String, form: Map[String, String]): Document = {
+    val req = newRequest(url, HttpMethod.POST)
+    req.setRequestParameters(form.map { case (k, v) => new NameValuePair(k, v) }.toSeq)
+    exec(req)
+  }
+
+  def parseFile(path: String, charset: String): Document =
+    exec(newRequest(s"file://$path"))
+
+  def parseFile(file: File): Document =
+    exec(newRequest(s"file://${file.getAbsolutePath}"))
+
+  def parseFile(file: File, charset: String): Document =
+    exec(newRequest(s"file://${file.getAbsolutePath}"))
+
+  def parseString(html: String): Document = {
+    val response = new StringWebResponse(html, WebClient.URL_ABOUT_BLANK)
+    HtmlUnitDocument(HTMLParser.parseHtml(response, newWindow()))
+  }
 
   private[this] def newRequest(url: String, method: HttpMethod = HttpMethod.GET) =
     new WebRequest(new URL(url), method)
 
   private[this] def newWindow(): WebWindow =
     client.openTargetWindow(client.getCurrentWindow, null, UUID.randomUUID().toString)
-
-  private[this] def openInNewWindow(req: WebRequest): HtmlUnitDocument =
-    HtmlUnitDocument(client.getPage(newWindow(), req))
-
-  def get(url: String) = openInNewWindow(newRequest(url))
-
-  def post(url: String, form: Map[String, String]) = {
-    val req = newRequest(url, HttpMethod.POST)
-    req.setRequestParameters(form.map { case (k, v) => new NameValuePair(k, v) }.toSeq)
-    openInNewWindow(req)
-  }
-
-  def parseFile(path: String, charset: String) =
-    openInNewWindow(newRequest(s"file://$path"))
-
-  def parseFile(file: File) =
-    openInNewWindow(newRequest(s"file://${file.getAbsolutePath}"))
-
-  def parseFile(file: File, charset: String) =
-    openInNewWindow(newRequest(s"file://${file.getAbsolutePath}"))
-
-  def parseString(html: String) = {
-    val response = new StringWebResponse(html, WebClient.URL_ABOUT_BLANK)
-    HtmlUnitDocument(HTMLParser.parseHtml(response, newWindow()))
-  }
 }
 
 object HtmlUnitBrowser {

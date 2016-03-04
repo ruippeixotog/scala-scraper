@@ -15,17 +15,23 @@ import scala.collection.mutable
 class JsoupBrowser(userAgent: String = "jsoup/1.8") extends Browser {
   val cookies = mutable.Map.empty[String, String]
 
-  def get(url: String) =
+  def get(url: String): Document =
     executePipeline(Jsoup.connect(url).method(GET))
 
-  def post(url: String, form: Map[String, String]) =
+  def post(url: String, form: Map[String, String]): Document =
     executePipeline(Jsoup.connect(url).method(POST).data(form))
 
-  def parseFile(path: String, charset: String = "UTF-8") = JsoupDocument(Jsoup.parse(new File(path), charset))
-  def parseFile(file: File) = JsoupDocument(Jsoup.parse(file, "UTF-8"))
-  def parseFile(file: File, charset: String) = JsoupDocument(Jsoup.parse(file, charset))
+  def parseFile(path: String, charset: String = "UTF-8"): Document =
+    JsoupDocument(Jsoup.parse(new File(path), charset))
 
-  def parseString(html: String) = JsoupDocument(Jsoup.parse(html))
+  def parseFile(file: File): Document =
+    JsoupDocument(Jsoup.parse(file, "UTF-8"))
+
+  def parseFile(file: File, charset: String): Document =
+    JsoupDocument(Jsoup.parse(file, charset))
+
+  def parseString(html: String): Document =
+    JsoupDocument(Jsoup.parse(html))
 
   def requestSettings(conn: Connection): Connection = conn
 
