@@ -8,8 +8,8 @@ import scala.collection.convert.WrapAsJava._
 import scala.collection.convert.WrapAsScala._
 
 import com.gargoylesoftware.htmlunit._
-import com.gargoylesoftware.htmlunit.html.{ DomElement, HTMLParser, HtmlPage }
-import com.gargoylesoftware.htmlunit.util.NameValuePair
+import com.gargoylesoftware.htmlunit.html.{ DomText, DomElement, HTMLParser, HtmlPage }
+import com.gargoylesoftware.htmlunit.util.{ StringUtils, NameValuePair }
 import net.ruippeixotog.scalascraper.browser.HtmlUnitBrowser._
 import net.ruippeixotog.scalascraper.model._
 import net.ruippeixotog.scalascraper.util.ProxyUtils
@@ -23,8 +23,15 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME) exten
 
   client.getOptions.setThrowExceptionOnScriptError(false)
 
-  def exec(req: WebRequest): Document =
-    HtmlUnitDocument(client.getPage(newWindow(), req))
+  def exec(req: WebRequest): Document = {
+    client.getPage(newWindow(), req).asInstanceOf[Page] match {
+      case page: SgmlPage => HtmlUnitDocument(page)
+      case page: TextPage =>
+        val response = new StringWebResponse(page.getContent, page.getUrl)
+        val htmlPage = HTMLParser.parseHtml(response, page.getEnclosingWindow)
+        HtmlUnitDocument(htmlPage)
+    }
+  }
 
   def get(url: String): Document =
     exec(newRequest(url))
@@ -49,8 +56,16 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME) exten
     HtmlUnitDocument(HTMLParser.parseHtml(response, newWindow()))
   }
 
-  private[this] def newRequest(url: String, method: HttpMethod = HttpMethod.GET) =
-    new WebRequest(new URL(url), method)
+  private[this] def newRequest(url: String, method: HttpMethod = HttpMethod.GET) = {
+    val req = new WebRequest(new URL(url), method)
+    defaultRequestSettings(req)
+    req
+  }
+
+  protected[this] def defaultRequestSettings(req: WebRequest): Unit = {
+    req.setAdditionalHeader("Accept", "text/html,application/xhtml+xml,application/xml")
+    req.setAdditionalHeader("Accept-Charset", "utf-8")
+  }
 
   private[this] def newWindow(): WebWindow =
     client.openTargetWindow(client.getCurrentWindow, null, UUID.randomUUID().toString)
@@ -68,8 +83,18 @@ object HtmlUnitBrowser {
     def attr(name: String) = underlying.getAttribute(name)
     def text = underlying.getTextContent
 
-    def innerHtml = underlying.getChildElements.map(_.asXml).mkString
-    def outerHtml = underlying.asXml
+    def innerHtml = underlying.getChildNodes.iterator.map {
+      case node: DomElement => HtmlUnitElement(node).outerHtml
+      case node: DomText => node.getWholeText
+      case node => node.asXml.trim
+    }.mkString
+
+    def outerHtml = {
+      val a = attrs.map { case (k, v) => s"""$k="${StringUtils.escapeXmlAttributeValue(v)}"""" }
+      val attrsStr = if (a.isEmpty) "" else a.mkString(" ", " ", "")
+
+      s"<$tagName$attrsStr>$innerHtml</$tagName>"
+    }
 
     private[this] def selectUnderlying(cssQuery: String): Iterator[Element] =
       underlying.querySelectorAll(cssQuery).iterator.collect { case elem: DomElement => HtmlUnitElement(elem) }
@@ -77,14 +102,15 @@ object HtmlUnitBrowser {
     def select(cssQuery: String) = ElementQuery(cssQuery, this, selectUnderlying _)
   }
 
-  case class HtmlUnitDocument(underlying: HtmlPage) extends Document {
-    def location = underlying.getDocumentURI
+  case class HtmlUnitDocument(underlying: SgmlPage) extends Document {
+    def location = underlying.getUrl.toString
     def root = HtmlUnitElement(underlying.getDocumentElement)
 
-    override def title = underlying.getTitleText
-    override def head = HtmlUnitElement(underlying.getHead)
-    override def body = HtmlUnitElement(underlying.getBody)
+    override def title = underlying match {
+      case page: HtmlPage => page.getTitleText
+      case _ => ""
+    }
 
-    def toHtml = underlying.asXml
+    def toHtml = root.outerHtml
   }
 }
