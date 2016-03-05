@@ -1,7 +1,6 @@
 package net.ruippeixotog.scalascraper.browser
 
-import java.io.{ ByteArrayInputStream, File }
-import javax.xml.parsers.DocumentBuilderFactory
+import java.io.File
 
 import org.http4s.HttpService
 import org.http4s.dsl._
