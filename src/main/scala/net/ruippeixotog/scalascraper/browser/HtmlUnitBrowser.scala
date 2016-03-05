@@ -99,7 +99,7 @@ object HtmlUnitBrowser {
     private[this] def selectUnderlying(cssQuery: String): Iterator[Element] =
       underlying.querySelectorAll(cssQuery).iterator.collect { case elem: DomElement => HtmlUnitElement(elem) }
 
-    def select(cssQuery: String) = ElementQuery(cssQuery, this, selectUnderlying _)
+    def select(cssQuery: String) = ElementQuery(cssQuery, this, selectUnderlying)
   }
 
   case class HtmlUnitDocument(underlying: SgmlPage) extends Document {

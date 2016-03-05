@@ -53,6 +53,6 @@ object ElementQuery {
   def apply(cssQuery: String, target: Element): ElementQuery =
     new LazyElementQuery(cssQuery.split(",").toList, target, target.select(_).iterator)
 
-  def apply[A](cssQuery: String, target: Element, exec: String => Iterator[Element]): ElementQuery =
+  def apply(cssQuery: String, target: Element, exec: String => Iterator[Element]): ElementQuery =
     new LazyElementQuery(cssQuery.split(",").toList, target, exec)
 }
