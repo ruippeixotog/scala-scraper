@@ -48,7 +48,11 @@ class JsoupBrowser(userAgent: String = "jsoup/1.8") extends Browser {
 
   protected[this] def processResponse(res: Connection.Response): Document = {
     lazy val doc = res.parse
-    cookies ++= res.cookies
+
+    cookies ++= res.cookies.mapValues { v =>
+      if (v.head == '"' && v.last == '"') v.substring(1, v.length - 1)
+      else v // TODO investigate more thoroughly this parsing problem
+    }
 
     if (res.hasHeader("Location")) get(res.header("Location")) else JsoupDocument(doc)
   }
