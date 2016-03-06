@@ -26,6 +26,7 @@ libraryDependencies ++= Seq(
 scalariformPreferences := scalariformPreferences.value
   .setPreference(DanglingCloseParenthesis, Prevent)
   .setPreference(DoubleIndentClassDeclaration, true)
+  .setPreference(PlaceScaladocAsterisksBeneathSecondAsterisk, true)
 
 scalacOptions ++= Seq(
   "-deprecation",

@@ -1,6 +1,20 @@
 package net.ruippeixotog.scalascraper.model
 
+/**
+  * The result of a query to an [[Element]]. It works as a collection of `Element` instances and provides a way to
+  * further query the elements.
+  */
 trait ElementQuery extends Iterable[Element] {
+
+  /**
+    * Executes an additional query over the elements of this query using a CSS selector.
+    *
+    * Semantically, the result of returned composite query is equivalent to iterating over the elements of this query,
+    * applying the CSS selector on each individual node and flattening the result while eliminating duplicate results.
+    *
+    * @param query the CSS selector used to select elements to be returned
+    * @return an `ElementQuery` instance representing the result of the composed query
+    */
   def select(query: String): ElementQuery
 }
 
