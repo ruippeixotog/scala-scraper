@@ -22,8 +22,18 @@ class DSLSpec extends Specification {
       doc >?> stext("unknown") mustEqual None
     }
 
-    "support using two extractors at once" in {
-      doc >> (stext("title"), stext("#menu .active")) mustEqual ("Test page", "Section 2")
+    "support using two or three extractors at once" in {
+      doc >> (stext("title"), stext("#menu .active")) mustEqual
+        ("Test page", "Section 2")
+
+      doc >> (stext("title"), stext("#menu .active"), extractor("#rating", stext, Parse.asDouble)) mustEqual
+        ("Test page", "Section 2", 4.5)
+
+      doc >?> (stext("title"), stext("unknown")) mustEqual
+        (Some("Test page"), None)
+
+      doc >?> (stext("title"), stext("unknown"), extractor("#rating", stext, Parse.asDouble)) mustEqual
+        (Some("Test page"), None, Some(4.5))
     }
 
     "support extracting content inside Options and Lists" in {
