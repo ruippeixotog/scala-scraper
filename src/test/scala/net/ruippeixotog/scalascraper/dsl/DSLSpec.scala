@@ -87,5 +87,23 @@ class DSLSpec extends Specification {
       useExtractor(ext1) mustEqual VSuccess(Some("Section 2"))
       useExtractor(ext2) mustEqual VFailure(())
     }
+
+    "support for comprehensions with Validated values" in {
+      val menu = doc >> element("#menu")
+
+      val text = for {
+        m <- menu ~/~ validator("span")(_.nonEmpty)
+        t = m >> stext(".active")
+      } yield t
+
+      text mustEqual VSuccess("Section 2")
+
+      val text2 = for {
+        m <- menu ~/~ validator(".active")(_.isEmpty)
+        t = m >> stext(".active")
+      } yield t
+
+      text2 mustEqual VFailure(())
+    }
   }
 }
