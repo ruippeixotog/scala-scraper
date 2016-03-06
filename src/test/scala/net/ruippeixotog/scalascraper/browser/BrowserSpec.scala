@@ -2,7 +2,7 @@ package net.ruippeixotog.scalascraper.browser
 
 import java.io.File
 
-import org.http4s.HttpService
+import org.http4s.{ headers, Uri, HttpService }
 import org.http4s.dsl._
 import org.specs2.mutable.Specification
 
@@ -23,8 +23,21 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
       </body>
     <html>"""
 
+  def uri(uriStr: String) = Uri.fromString(uriStr).validation.getOrElse(throw new Exception)
+  def wrapHtml(str: String) = s"<html><body>$str</body></html>"
+
   lazy val testService = HttpService {
     case req @ GET -> Root / "hello" => Ok(html)
+
+    case GET -> Root / "redirect" => Found(uri(s"http://localhost:$testServerPort/redirected"))
+    case GET -> Root / "redirected" => Ok(wrapHtml("redirected"))
+
+    case GET -> Root / "setcookieA" => Ok("cookie set").addCookie("a", "4")
+    case GET -> Root / "setcookieB" => Ok("cookie set").addCookie("b", "5")
+    case req @ GET -> Root / "cookies" =>
+      val cookies = req.headers.get(headers.Cookie).toSeq.flatMap(_.values.list).sortBy(_.name)
+      val cookiesStr = cookies.map { c => s"${c.name}=${c.content}" }.mkString(";")
+      Ok(wrapHtml(cookiesStr))
   }
 
   "A Browser" should {
@@ -54,6 +67,22 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
         div.tagName mustEqual "div"
         div.attr("id") mustEqual "a1"
         div.children.size mustEqual 2
+      }
+
+      "follow redirects" in {
+        val doc = browser.get(s"http://localhost:$testServerPort/redirect")
+        doc.location mustEqual s"http://localhost:$testServerPort/redirected"
+        doc.body.text mustEqual "redirected"
+      }
+
+      "keep and use cookies between requests" in {
+        browser.get(s"http://localhost:$testServerPort/setcookieA")
+        val doc = browser.get(s"http://localhost:$testServerPort/cookies")
+        doc.body.text mustEqual "a=4"
+
+        browser.get(s"http://localhost:$testServerPort/setcookieB")
+        val doc2 = browser.get(s"http://localhost:$testServerPort/cookies")
+        doc2.body.text mustEqual "a=4;b=5"
       }
 
       "return Document implementations" in {
