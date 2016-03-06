@@ -24,13 +24,9 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME) exten
   client.getOptions.setThrowExceptionOnScriptError(false)
 
   def exec(req: WebRequest): Document = {
-    client.getPage(newWindow(), req).asInstanceOf[Page] match {
-      case page: SgmlPage => HtmlUnitDocument(page)
-      case page: TextPage =>
-        val response = new StringWebResponse(page.getContent, page.getUrl)
-        val htmlPage = HTMLParser.parseHtml(response, page.getEnclosingWindow)
-        HtmlUnitDocument(htmlPage)
-    }
+    val window = newWindow()
+    client.getPage(window, req)
+    HtmlUnitDocument(window)
   }
 
   def get(url: String): Document =
@@ -53,7 +49,9 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME) exten
 
   def parseString(html: String): Document = {
     val response = new StringWebResponse(html, WebClient.URL_ABOUT_BLANK)
-    HtmlUnitDocument(HTMLParser.parseHtml(response, newWindow()))
+    val window = newWindow()
+    HTMLParser.parseHtml(response, window)
+    HtmlUnitDocument(window)
   }
 
   private[this] def newRequest(url: String, method: HttpMethod = HttpMethod.GET) = {
@@ -102,7 +100,21 @@ object HtmlUnitBrowser {
     def select(cssQuery: String) = ElementQuery(cssQuery, this, selectUnderlying)
   }
 
-  case class HtmlUnitDocument(underlying: SgmlPage) extends Document {
+  case class HtmlUnitDocument(window: WebWindow) extends Document {
+    private[this] var _underlying: SgmlPage = null
+
+    def underlying: SgmlPage = {
+      if (_underlying == null || window.getEnclosedPage.getUrl != _underlying.getUrl) {
+        _underlying = window.getEnclosedPage match {
+          case page: SgmlPage => page
+          case page: TextPage =>
+            val response = new StringWebResponse(page.getContent, page.getUrl)
+            HTMLParser.parseHtml(response, page.getEnclosingWindow)
+        }
+      }
+      _underlying
+    }
+
     def location = underlying.getUrl.toString
     def root = HtmlUnitElement(underlying.getDocumentElement)
 
