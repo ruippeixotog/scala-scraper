@@ -16,8 +16,8 @@ class HtmlUnitBrowserSpec extends Specification with TestServer {
     getClass.getClassLoader.getResource(name).toURI).mkString)
 
   lazy val testService = HttpService {
-    case req @ GET -> Root / "jsredirect" => serveResource("testjs2.1.html")
-    case req @ GET -> Root / "jsredirected" => serveResource("testjs2.2.html")
+    case GET -> Root / "jsredirect" => serveResource("testjs2.1.html")
+    case GET -> Root / "jsredirected" => serveResource("testjs2.2.html")
   }
 
   "A JsoupBrowser" should {

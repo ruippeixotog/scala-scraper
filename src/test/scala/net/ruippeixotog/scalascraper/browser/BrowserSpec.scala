@@ -2,7 +2,7 @@ package net.ruippeixotog.scalascraper.browser
 
 import java.io.File
 
-import org.http4s.{ headers, Uri, HttpService }
+import org.http4s.{ UrlForm, headers, Uri, HttpService }
 import org.http4s.dsl._
 import org.specs2.mutable.Specification
 
@@ -27,7 +27,13 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
   def wrapHtml(str: String) = s"<html><body>$str</body></html>"
 
   lazy val testService = HttpService {
-    case req @ GET -> Root / "hello" => Ok(html)
+    case GET -> Root / "hello" => Ok(html)
+
+    case req @ POST -> Root / "form" =>
+      req.decode[UrlForm] { form =>
+        val dataHtml = form.values.map { case (k, vs) => s"""<span id="$k">${vs.head}</span>""" }.mkString
+        Ok(wrapHtml(dataHtml))
+      }
 
     case GET -> Root / "redirect" => Found(uri(s"http://localhost:$testServerPort/redirected"))
     case GET -> Root / "redirected" => Ok(wrapHtml("redirected"))
@@ -43,6 +49,27 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
   "A Browser" should {
 
     usingBrowsers(JsoupBrowser(), HtmlUnitBrowser()) { browser =>
+
+      "do GET requests and parse correctly the returned HTML" in {
+        val body = browser.get(s"http://localhost:$testServerPort/hello").body
+
+        body.tagName mustEqual "body"
+        body.children.size mustEqual 3
+
+        val div = body.children.head
+        div.tagName mustEqual "div"
+        div.attr("id") mustEqual "a1"
+        div.children.size mustEqual 2
+      }
+
+      "do POST requests and parse correctly the returned HTML" in {
+        val params = Map("a" -> "1", "b" -> "bbb", "c1" -> "data")
+        val doc = browser.post(s"http://localhost:$testServerPort/form", params)
+
+        doc.root.select("#a").head.text mustEqual "1"
+        doc.root.select("#b").head.text mustEqual "bbb"
+        doc.root.select("#c1").head.text mustEqual "data"
+      }
 
       "parse correctly HTML from a string" in {
         val body = browser.parseString(html).body
