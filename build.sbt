@@ -6,7 +6,7 @@ organization := "net.ruippeixotog"
 
 version := "1.0.0-SNAPSHOT"
 
-scalaVersion := "2.11.7"
+scalaVersion := "2.11.8"
 
 resolvers ++= Seq(
   Resolver.sonatypeRepo("snapshots"),
@@ -15,13 +15,13 @@ resolvers ++= Seq(
 libraryDependencies ++= Seq(
   "com.github.nscala-time"     %% "nscala-time"          % "2.10.0",
   "com.typesafe"                % "config"               % "1.3.0",
-  "net.sourceforge.htmlunit"    % "htmlunit"             % "2.19",
+  "net.sourceforge.htmlunit"    % "htmlunit"             % "2.20",
   "org.jsoup"                   % "jsoup"                % "1.8.3",
-  "org.scalaz"                 %% "scalaz-core"          % "7.2.0",
+  "org.scalaz"                 %% "scalaz-core"          % "7.2.1",
   "org.http4s"                 %% "http4s-blaze-server"  % "0.14.0-SNAPSHOT"      % "test",
   "org.http4s"                 %% "http4s-dsl"           % "0.14.0-SNAPSHOT"      % "test",
   "org.slf4j"                   % "slf4j-nop"            % "1.7.18"               % "test",
-  "org.specs2"                 %% "specs2-core"          % "3.7.1"                % "test")
+  "org.specs2"                 %% "specs2-core"          % "3.7.2"                % "test")
 
 scalariformPreferences := scalariformPreferences.value
   .setPreference(DanglingCloseParenthesis, Prevent)
