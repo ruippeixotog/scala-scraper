@@ -79,7 +79,7 @@ object HtmlUnitBrowser {
 
     def attrs = underlying.getAttributesMap.mapValues(_.getValue).toMap
     def attr(name: String) = underlying.getAttribute(name)
-    def text = underlying.getTextContent
+    def text = underlying.getTextContent.trim
 
     def innerHtml = underlying.getChildNodes.iterator.map {
       case node: DomElement => HtmlUnitElement(node).outerHtml

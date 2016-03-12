@@ -34,6 +34,7 @@ class DSLExtractingSpec extends Specification with BrowserHelper {
         doc >> stext("#content > section > h3") mustEqual "Section 1 h3"
         doc >> stext(".active") mustEqual "Section 2"
         doc >> stext("p") mustEqual "Some text for testing"
+        doc >> stext("#footer") mustEqual "No copyright 2014"
       }
 
       "allow extracting all elements matched by a CSS query" in {
