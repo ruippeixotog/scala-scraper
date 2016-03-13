@@ -37,6 +37,7 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME) exten
     case None => new WebClient(browserType)
   }
 
+  client.getOptions.setCssEnabled(false)
   client.getOptions.setThrowExceptionOnScriptError(false)
 
   def exec(req: WebRequest): Document = {
