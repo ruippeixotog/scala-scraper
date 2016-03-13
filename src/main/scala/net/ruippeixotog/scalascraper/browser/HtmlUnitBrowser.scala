@@ -14,6 +14,22 @@ import net.ruippeixotog.scalascraper.browser.HtmlUnitBrowser._
 import net.ruippeixotog.scalascraper.model._
 import net.ruippeixotog.scalascraper.util.ProxyUtils
 
+/**
+  * A [[Browser]] implementation based on [[http://htmlunit.sourceforge.net HtmlUnit]], a GUI-less browser for Java
+  * programs. `HtmlUnitBrowser` simulates thoroughly a web browser, executing JavaScript code in the pages besides
+  * parsing and modelling its HTML content. It supports several compatibility modes, allowing it to emulate browsers
+  * such as Internet Explorer.
+  *
+  * Both the [[Document]] and the [[Element]] instances obtained from `HtmlUnitBrowser` can be mutated in the
+  * background. JavaScript code can at any time change attributes and the content of elements, reflected both in queries
+  * to `Document` and on previously stored references to `Element`s. The `Document` instance will always represent the
+  * current page in the browser's "window". This means the `Document`'s `location` value can change, together with its
+  * root element, in the event of client-side page refreshes or redirections. However, `Element` instances belong to a
+  * fixed DOM tree and they stop being meaningful as soon as they are removed from the DOM or a client-side page reload
+  * occurs.
+  *
+  * @param browserType the browser type and version to simulate
+  */
 class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME) extends Browser {
 
   val client = ProxyUtils.getProxy match {

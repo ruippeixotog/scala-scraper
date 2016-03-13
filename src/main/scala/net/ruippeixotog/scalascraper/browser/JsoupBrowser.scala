@@ -12,6 +12,20 @@ import scala.collection.convert.WrapAsJava._
 import scala.collection.convert.WrapAsScala._
 import scala.collection.mutable
 
+/**
+  * A [[Browser]] implementation based on [[http://jsoup.org jsoup]], a Java HTML parser library. `JsoupBrowser`
+  * provides powerful and efficient document querying, but it doesn't run JavaScript in the pages. As such, it is
+  * limited to working strictly with the HTML send in the page source.
+  *
+  * Currently, `JsoupBrowser` does not keep separate cookie stores for different domains and paths. In each request all
+  * cookies set previously will be sent, regardless of the domain they were set on. If you do requests to different
+  * domains and do not want this behavior, use different `JsoupBrowser` instances.
+  *
+  * As the documents parsed by `JsoupBrowser` instances are not changed after loading, `Document` and `Element`
+  * instances obtained from them are guaranteed to be immutable.
+  *
+  * @param userAgent the user agent with which requests should be made
+  */
 class JsoupBrowser(userAgent: String = "jsoup/1.8") extends Browser {
   val cookies = mutable.Map.empty[String, String]
 
