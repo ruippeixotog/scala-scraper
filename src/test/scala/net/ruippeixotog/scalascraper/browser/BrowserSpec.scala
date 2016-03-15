@@ -2,7 +2,7 @@ package net.ruippeixotog.scalascraper.browser
 
 import java.io.File
 
-import org.http4s.{ UrlForm, headers, Uri, HttpService }
+import org.http4s._
 import org.http4s.dsl._
 import org.specs2.mutable.Specification
 
@@ -35,11 +35,15 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
         Ok(wrapHtml(dataHtml))
       }
 
+    case req @ GET -> Root / "agent" =>
+      val userAgent = req.headers.get("User-Agent".ci).fold("")(_.value)
+      Ok(wrapHtml(userAgent))
+
     case GET -> Root / "redirect" => Found(uri(s"http://localhost:$testServerPort/redirected"))
     case GET -> Root / "redirected" => Ok(wrapHtml("redirected"))
 
-    case GET -> Root / "setcookieA" => Ok("cookie set").addCookie("a", "4")
-    case GET -> Root / "setcookieB" => Ok("cookie set").addCookie("b", "5")
+    case GET -> Root / "setcookieA" => Ok("cookie set").putHeaders(Header.Raw("Set-Cookie".ci, "a=4"))
+    case GET -> Root / "setcookieB" => Ok("cookie set").putHeaders(Header.Raw("Set-Cookie".ci, "b=5"))
     case req @ GET -> Root / "cookies" =>
       val cookies = req.headers.get(headers.Cookie).toSeq.flatMap(_.values.list).sortBy(_.name)
       val cookiesStr = cookies.map { c => s"${c.name}=${c.content}" }.mkString(";")
@@ -96,6 +100,11 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
         div.children.size mustEqual 2
       }
 
+      "do requests with the same user agent as returned by userAgent" in {
+        val doc = browser.get(s"http://localhost:$testServerPort/agent")
+        doc.body.text mustEqual browser.userAgent
+      }
+
       "follow redirects" in {
         val doc = browser.get(s"http://localhost:$testServerPort/redirect")
         doc.location mustEqual s"http://localhost:$testServerPort/redirected"
@@ -103,13 +112,20 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
       }
 
       "keep and use cookies between requests" in {
+        browser.cookies(s"http://localhost:$testServerPort") mustEqual Map.empty
+
         browser.get(s"http://localhost:$testServerPort/setcookieA")
         val doc = browser.get(s"http://localhost:$testServerPort/cookies")
         doc.body.text mustEqual "a=4"
 
+        browser.cookies(s"http://localhost:$testServerPort/setcookieA") mustEqual Map("a" -> "4")
+        browser.cookies(s"http://localhost:$testServerPort") mustEqual Map("a" -> "4")
+
         browser.get(s"http://localhost:$testServerPort/setcookieB")
         val doc2 = browser.get(s"http://localhost:$testServerPort/cookies")
         doc2.body.text mustEqual "a=4;b=5"
+
+        browser.cookies(s"http://localhost:$testServerPort") mustEqual Map("a" -> "4", "b" -> "5")
       }
 
       "return Document implementations" in {

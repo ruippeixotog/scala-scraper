@@ -18,6 +18,7 @@ class JsoupBrowserSpec extends Specification with TestServer {
 
     "execute requests with the specified user agent" in {
       val browser = new JsoupBrowser("test-agent")
+      browser.userAgent mustEqual "test-agent"
 
       val doc = browser.get(s"http://localhost:$testServerPort/agent")
       doc.body.text mustEqual "test-agent"

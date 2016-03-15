@@ -32,13 +32,16 @@ import net.ruippeixotog.scalascraper.util.ProxyUtils
   */
 class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME) extends Browser {
 
-  val client = ProxyUtils.getProxy match {
-    case Some((proxyHost, proxyPort)) => new WebClient(browserType, proxyHost, proxyPort)
-    case None => new WebClient(browserType)
+  private[this] lazy val client = {
+    val c = ProxyUtils.getProxy match {
+      case Some((proxyHost, proxyPort)) => new WebClient(browserType, proxyHost, proxyPort)
+      case None => new WebClient(browserType)
+    }
+    defaultClientSettings(c)
+    c
   }
 
-  client.getOptions.setCssEnabled(false)
-  client.getOptions.setThrowExceptionOnScriptError(false)
+  def userAgent = browserType.getUserAgent
 
   def exec(req: WebRequest): Document = {
     val window = newWindow()
@@ -71,15 +74,23 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME) exten
     HtmlUnitDocument(window)
   }
 
-  private[this] def newRequest(url: String, method: HttpMethod = HttpMethod.GET) = {
-    val req = new WebRequest(new URL(url), method)
-    defaultRequestSettings(req)
-    req
+  def cookies(url: String) =
+    client.getCookies(new URL(url)).map { c => c.getName -> c.getValue }.toMap
+
+  protected[this] def defaultClientSettings(client: WebClient): Unit = {
+    client.getOptions.setCssEnabled(false)
+    client.getOptions.setThrowExceptionOnScriptError(false)
   }
 
   protected[this] def defaultRequestSettings(req: WebRequest): Unit = {
     req.setAdditionalHeader("Accept", "text/html,application/xhtml+xml,application/xml")
     req.setAdditionalHeader("Accept-Charset", "utf-8")
+  }
+
+  private[this] def newRequest(url: String, method: HttpMethod = HttpMethod.GET) = {
+    val req = new WebRequest(new URL(url), method)
+    defaultRequestSettings(req)
+    req
   }
 
   private[this] def newWindow(): WebWindow =

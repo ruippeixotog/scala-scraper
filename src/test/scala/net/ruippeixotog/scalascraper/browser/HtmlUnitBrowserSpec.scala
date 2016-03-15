@@ -4,6 +4,7 @@ import java.io.File
 
 import scala.io.Source
 
+import com.gargoylesoftware.htmlunit.BrowserVersion
 import org.http4s.HttpService
 import org.http4s.dsl._
 import org.specs2.mutable.Specification
@@ -16,11 +17,23 @@ class HtmlUnitBrowserSpec extends Specification with TestServer {
     getClass.getClassLoader.getResource(name).toURI).mkString)
 
   lazy val testService = HttpService {
+    case req @ GET -> Root / "agent" =>
+      val userAgent = req.headers.get("User-Agent".ci).fold("")(_.value)
+      Ok(wrapHtml(userAgent))
+
     case GET -> Root / "jsredirect" => serveResource("testjs2.1.html")
     case GET -> Root / "jsredirected" => serveResource("testjs2.2.html")
   }
 
   "An HtmlUnitBrowser" should {
+
+    "execute requests with the user agent for the chosen browser" in {
+      val browser = new HtmlUnitBrowser(BrowserVersion.FIREFOX_38)
+      browser.userAgent must contain("Firefox/38.0")
+
+      val doc = browser.get(s"http://localhost:$testServerPort/agent")
+      doc.body.text mustEqual browser.userAgent
+    }
 
     "execute JavaScript in HTML pages" in {
       val file = new File(getClass.getClassLoader.getResource("testjs.html").toURI)

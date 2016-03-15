@@ -5,6 +5,7 @@ import java.io.File
 import net.ruippeixotog.scalascraper.model.Document
 
 trait Browser {
+  def userAgent: String
 
   def get(url: String): Document
   def post(url: String, form: Map[String, String]): Document
@@ -14,4 +15,6 @@ trait Browser {
   def parseFile(file: File, charset: String): Document
 
   def parseString(html: String): Document
+
+  def cookies(url: String): Map[String, String]
 }

@@ -26,8 +26,8 @@ import scala.collection.mutable
   *
   * @param userAgent the user agent with which requests should be made
   */
-class JsoupBrowser(userAgent: String = "jsoup/1.8") extends Browser {
-  val cookies = mutable.Map.empty[String, String]
+class JsoupBrowser(val userAgent: String = "jsoup/1.8") extends Browser {
+  private[this] val cookieMap = mutable.Map.empty[String, String]
 
   def get(url: String): Document =
     executePipeline(Jsoup.connect(url).method(GET))
@@ -47,10 +47,12 @@ class JsoupBrowser(userAgent: String = "jsoup/1.8") extends Browser {
   def parseString(html: String): Document =
     JsoupDocument(Jsoup.parse(html))
 
+  def cookies(url: String) = cookieMap.toMap
+
   def requestSettings(conn: Connection): Connection = conn
 
   protected[this] def defaultRequestSettings(conn: Connection): Connection =
-    conn.cookies(cookies).
+    conn.cookies(cookieMap).
       userAgent(userAgent).
       header("Accept", "text/html,application/xhtml+xml,application/xml").
       header("Accept-Charset", "utf-8").
@@ -62,12 +64,7 @@ class JsoupBrowser(userAgent: String = "jsoup/1.8") extends Browser {
 
   protected[this] def processResponse(res: Connection.Response): Document = {
     lazy val doc = res.parse
-
-    cookies ++= res.cookies.mapValues { v =>
-      if (v.head == '"' && v.last == '"') v.substring(1, v.length - 1)
-      else v // TODO investigate more thoroughly this parsing problem
-    }
-
+    cookieMap ++= res.cookies
     if (res.hasHeader("Location")) get(res.header("Location")) else JsoupDocument(doc)
   }
 
