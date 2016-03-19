@@ -2,8 +2,6 @@ package net.ruippeixotog.scalascraper.browser
 
 import java.io.File
 
-import scala.io.Source
-
 import com.gargoylesoftware.htmlunit.BrowserVersion
 import org.http4s.HttpService
 import org.http4s.dsl._
@@ -11,15 +9,10 @@ import org.specs2.mutable.Specification
 
 class HtmlUnitBrowserSpec extends Specification with TestServer {
 
-  def wrapHtml(str: String) = s"<html><body>$str</body></html>"
-
-  def serveResource(name: String) = Ok(Source.fromFile(
-    getClass.getClassLoader.getResource(name).toURI).mkString)
-
   lazy val testService = HttpService {
     case req @ GET -> Root / "agent" =>
       val userAgent = req.headers.get("User-Agent".ci).fold("")(_.value)
-      Ok(wrapHtml(userAgent))
+      serveText(userAgent)
 
     case GET -> Root / "jsredirect" => serveResource("testjs2.1.html")
     case GET -> Root / "jsredirected" => serveResource("testjs2.2.html")

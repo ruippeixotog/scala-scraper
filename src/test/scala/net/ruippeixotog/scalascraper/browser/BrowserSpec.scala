@@ -24,7 +24,6 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
     <html>"""
 
   def uri(uriStr: String) = Uri.fromString(uriStr).validation.getOrElse(throw new Exception)
-  def wrapHtml(str: String) = s"<html><body>$str</body></html>"
 
   lazy val testService = HttpService {
     case GET -> Root / "hello" => Ok(html)
@@ -32,22 +31,22 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
     case req @ POST -> Root / "form" =>
       req.decode[UrlForm] { form =>
         val dataHtml = form.values.map { case (k, vs) => s"""<span id="$k">${vs.head}</span>""" }.mkString
-        Ok(wrapHtml(dataHtml))
+        serveText(dataHtml)
       }
 
     case req @ GET -> Root / "agent" =>
       val userAgent = req.headers.get("User-Agent".ci).fold("")(_.value)
-      Ok(wrapHtml(userAgent))
+      serveText(userAgent)
 
-    case GET -> Root / "redirect" => Found(uri(s"http://localhost:$testServerPort/redirected"))
-    case GET -> Root / "redirected" => Ok(wrapHtml("redirected"))
+    case GET -> Root / "redirect" => Found(uri(testServerUri("redirected")))
+    case GET -> Root / "redirected" => serveText("redirected")
 
     case GET -> Root / "setcookieA" => Ok("cookie set").putHeaders(Header.Raw("Set-Cookie".ci, "a=4"))
     case GET -> Root / "setcookieB" => Ok("cookie set").putHeaders(Header.Raw("Set-Cookie".ci, "b=5"))
     case req @ GET -> Root / "cookies" =>
       val cookies = req.headers.get(headers.Cookie).toSeq.flatMap(_.values.list).sortBy(_.name)
       val cookiesStr = cookies.map { c => s"${c.name}=${c.content}" }.mkString(";")
-      Ok(wrapHtml(cookiesStr))
+      serveText(cookiesStr)
   }
 
   "A Browser" should {
@@ -55,7 +54,7 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
     usingBrowsers(JsoupBrowser(), HtmlUnitBrowser()) { browser =>
 
       "do GET requests and parse correctly the returned HTML" in {
-        val body = browser.get(s"http://localhost:$testServerPort/hello").body
+        val body = browser.get(testServerUri("hello")).body
 
         body.tagName mustEqual "body"
         body.children.size mustEqual 3
@@ -68,7 +67,7 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
 
       "do POST requests and parse correctly the returned HTML" in {
         val params = Map("a" -> "1", "b" -> "bbb", "c1" -> "data")
-        val doc = browser.post(s"http://localhost:$testServerPort/form", params)
+        val doc = browser.post(testServerUri("form"), params)
 
         doc.root.select("#a").head.text mustEqual "1"
         doc.root.select("#b").head.text mustEqual "bbb"
@@ -101,28 +100,28 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
       }
 
       "do requests with the same user agent as returned by userAgent" in {
-        val doc = browser.get(s"http://localhost:$testServerPort/agent")
+        val doc = browser.get(testServerUri("agent"))
         doc.body.text mustEqual browser.userAgent
       }
 
       "follow redirects" in {
-        val doc = browser.get(s"http://localhost:$testServerPort/redirect")
-        doc.location mustEqual s"http://localhost:$testServerPort/redirected"
+        val doc = browser.get(testServerUri("redirect"))
+        doc.location mustEqual testServerUri("redirected")
         doc.body.text mustEqual "redirected"
       }
 
       "keep and use cookies between requests" in {
-        browser.cookies(s"http://localhost:$testServerPort") mustEqual Map.empty
+        browser.cookies(testServerUri("")) mustEqual Map.empty
 
-        browser.get(s"http://localhost:$testServerPort/setcookieA")
-        val doc = browser.get(s"http://localhost:$testServerPort/cookies")
+        browser.get(testServerUri("setcookieA"))
+        val doc = browser.get(testServerUri("cookies"))
         doc.body.text mustEqual "a=4"
 
-        browser.cookies(s"http://localhost:$testServerPort/setcookieA") mustEqual Map("a" -> "4")
-        browser.cookies(s"http://localhost:$testServerPort") mustEqual Map("a" -> "4")
+        browser.cookies(testServerUri("setcookieA")) mustEqual Map("a" -> "4")
+        browser.cookies(testServerUri("")) mustEqual Map("a" -> "4")
 
-        browser.get(s"http://localhost:$testServerPort/setcookieB")
-        val doc2 = browser.get(s"http://localhost:$testServerPort/cookies")
+        browser.get(testServerUri("setcookieB"))
+        val doc2 = browser.get(testServerUri("cookies"))
         doc2.body.text mustEqual "a=4;b=5"
 
         browser.cookies(s"http://localhost:$testServerPort") mustEqual Map("a" -> "4", "b" -> "5")
@@ -131,13 +130,13 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
       "return Document implementations" in {
 
         "with a correct location method" in {
-          val doc = browser.get(s"http://localhost:$testServerPort/hello")
+          val doc = browser.get(testServerUri("hello"))
 
-          doc.location mustEqual s"http://localhost:$testServerPort/hello"
+          doc.location mustEqual testServerUri("hello")
         }
 
         "with correct title, head and body methods" in {
-          val doc = browser.get(s"http://localhost:$testServerPort/hello")
+          val doc = browser.get(testServerUri("hello"))
 
           doc.title mustEqual "Test Page"
           doc.head.attr("id") mustEqual "hid"
@@ -145,7 +144,7 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
         }
 
         "with a correct toHtml method" in {
-          val doc = browser.get(s"http://localhost:$testServerPort/hello")
+          val doc = browser.get(testServerUri("hello"))
           val docStr = doc.toHtml
 
           browser.parseString(docStr).toHtml mustEqual docStr

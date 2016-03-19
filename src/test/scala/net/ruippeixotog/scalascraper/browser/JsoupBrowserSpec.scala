@@ -6,12 +6,10 @@ import org.specs2.mutable.Specification
 
 class JsoupBrowserSpec extends Specification with TestServer {
 
-  def wrapHtml(str: String) = s"<html><body>$str</body></html>"
-
   lazy val testService = HttpService {
     case req @ GET -> Root / "agent" =>
       val userAgent = req.headers.get("User-Agent".ci).fold("")(_.value)
-      Ok(wrapHtml(userAgent))
+      serveText(userAgent)
   }
 
   "A JsoupBrowser" should {
@@ -20,7 +18,7 @@ class JsoupBrowserSpec extends Specification with TestServer {
       val browser = new JsoupBrowser("test-agent")
       browser.userAgent mustEqual "test-agent"
 
-      val doc = browser.get(s"http://localhost:$testServerPort/agent")
+      val doc = browser.get(testServerUri("agent"))
       doc.body.text mustEqual "test-agent"
     }
   }
