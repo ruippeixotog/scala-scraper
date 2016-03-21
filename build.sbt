@@ -1,9 +1,7 @@
 import scalariform.formatter.preferences._
 
 name := "scala-scraper"
-
 organization := "net.ruippeixotog"
-
 version := "1.0.0-SNAPSHOT"
 
 scalaVersion := "2.11.8"
@@ -18,8 +16,8 @@ libraryDependencies ++= Seq(
   "net.sourceforge.htmlunit"    % "htmlunit"             % "2.20",
   "org.jsoup"                   % "jsoup"                % "1.8.3",
   "org.scalaz"                 %% "scalaz-core"          % "7.2.1",
-  "org.http4s"                 %% "http4s-blaze-server"  % "0.14.0-SNAPSHOT"      % "test",
-  "org.http4s"                 %% "http4s-dsl"           % "0.14.0-SNAPSHOT"      % "test",
+  "org.http4s"                 %% "http4s-blaze-server"  % "0.13.0a-SNAPSHOT"     % "test",
+  "org.http4s"                 %% "http4s-dsl"           % "0.13.0a-SNAPSHOT"     % "test",
   "org.slf4j"                   % "slf4j-nop"            % "1.7.18"               % "test",
   "org.specs2"                 %% "specs2-core"          % "3.7.2"                % "test")
 
@@ -44,15 +42,11 @@ publishTo <<= version { v =>
 }
 
 publishMavenStyle := true
-
 publishArtifact in Test := false
-
 pomIncludeRepository := { _ => false }
 
 licenses := Seq("MIT License" -> url("http://www.opensource.org/licenses/mit-license.php"))
-
 homepage := Some(url("https://github.com/ruippeixotog/scala-scraper"))
-
 pomExtra :=
   <scm>
     <url>https://github.com/ruippeixotog/scala-scraper</url>
