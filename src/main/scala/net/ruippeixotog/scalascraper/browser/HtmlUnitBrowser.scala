@@ -58,14 +58,11 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME) exten
     exec(req)
   }
 
-  def parseFile(path: String, charset: String): Document =
-    exec(newRequest(s"file://$path"))
-
-  def parseFile(file: File): Document =
-    exec(newRequest(s"file://${file.getAbsolutePath}"))
-
-  def parseFile(file: File, charset: String): Document =
-    exec(newRequest(s"file://${file.getAbsolutePath}"))
+  def parseFile(file: File, charset: String): Document = {
+    val req = newRequest(s"file://${file.getAbsolutePath}", HttpMethod.GET)
+    req.setCharset(charset)
+    exec(req)
+  }
 
   def parseString(html: String): Document = {
     val response = new StringWebResponse(html, WebClient.URL_ABOUT_BLANK)

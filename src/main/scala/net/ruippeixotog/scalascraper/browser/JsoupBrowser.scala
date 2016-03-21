@@ -35,12 +35,6 @@ class JsoupBrowser(val userAgent: String = "jsoup/1.8") extends Browser {
   def post(url: String, form: Map[String, String]): Document =
     executePipeline(Jsoup.connect(url).method(POST).data(form))
 
-  def parseFile(path: String, charset: String = "UTF-8"): Document =
-    JsoupDocument(Jsoup.parse(new File(path), charset))
-
-  def parseFile(file: File): Document =
-    JsoupDocument(Jsoup.parse(file, "UTF-8"))
-
   def parseFile(file: File, charset: String): Document =
     JsoupDocument(Jsoup.parse(file, charset))
 

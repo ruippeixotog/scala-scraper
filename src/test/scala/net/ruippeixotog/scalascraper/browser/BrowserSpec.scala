@@ -2,8 +2,10 @@ package net.ruippeixotog.scalascraper.browser
 
 import java.io.File
 
+import net.ruippeixotog.scalascraper.model.Document
 import org.http4s._
 import org.http4s.dsl._
+import org.http4s.headers.`Content-Encoding`
 import org.specs2.mutable.Specification
 
 class BrowserSpec extends Specification with BrowserHelper with TestServer {
@@ -27,6 +29,9 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
 
   lazy val testService = HttpService {
     case GET -> Root / "hello" => Ok(html)
+    case GET -> Root / "encoding" / charset =>
+      serveResource(s"encoding-${charset.toLowerCase}.html", charset)
+        .putHeaders(`Content-Encoding`(charset.ci))
 
     case req @ POST -> Root / "form" =>
       req.decode[UrlForm] { form =>
@@ -65,6 +70,17 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
         div.children.size mustEqual 2
       }
 
+      "do GET requests and parse correctly the returned HTML with different charsets" in {
+        val testPhrase = "El veloz murciélago hindú comía feliz cardillo y kiwi. " +
+          "La cigüeña tocaba el saxofón detrás del palenque de paja."
+
+        def getText(doc: Document) = doc.root.select("#a").head.text
+
+        getText(browser.get(testServerUri("encoding/UTF-8"))) mustEqual testPhrase
+        getText(browser.get(testServerUri("encoding/ISO-8859-1"))) mustEqual testPhrase
+        getText(browser.get(testServerUri("encoding/UTF-16BE"))) mustEqual testPhrase
+      }
+
       "do POST requests and parse correctly the returned HTML" in {
         val params = Map("a" -> "1", "b" -> "bbb", "c1" -> "data")
         val doc = browser.post(testServerUri("form"), params)
@@ -97,6 +113,25 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
         div.tagName mustEqual "div"
         div.attr("id") mustEqual "a1"
         div.children.size mustEqual 2
+      }
+
+      "parse correctly HTML from files with different charsets" in {
+        val testPhrase = "El veloz murciélago hindú comía feliz cardillo y kiwi. " +
+          "La cigüeña tocaba el saxofón detrás del palenque de paja."
+
+        def getText(doc: Document) = doc.root.select("#a").head.text
+
+        val utf8File = new File(getClass.getClassLoader.getResource("encoding-utf-8.html").toURI)
+        getText(browser.parseFile(utf8File)) mustEqual testPhrase
+        getText(browser.parseFile(utf8File, "ISO-8859-1")) must not(beEqualTo(testPhrase))
+
+        val isoFile = new File(getClass.getClassLoader.getResource("encoding-iso-8859-1.html").toURI)
+        getText(browser.parseFile(isoFile)) must not(beEqualTo(testPhrase))
+        getText(browser.parseFile(isoFile, "ISO-8859-1")) mustEqual testPhrase
+
+        val utf16File = new File(getClass.getClassLoader.getResource("encoding-utf-16be.html").toURI)
+        getText(browser.parseFile(utf16File)) must throwAn[Exception] // file is not valid HTML in UTF-8
+        getText(browser.parseFile(utf16File, "UTF-16BE")) mustEqual testPhrase
       }
 
       "do requests with the same user agent as returned by userAgent" in {

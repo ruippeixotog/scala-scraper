@@ -19,12 +19,14 @@ trait TestServer extends BeforeAfterAll { this: Specification =>
   private[this] var server = Option.empty[Server]
 
   def beforeAll() = server = Some(BlazeBuilder.bindHttp(testServerPort).mountService(testService, "/").run)
-  def afterAll() = server.map(_.shutdownNow())
+  def afterAll() = server.foreach(_.shutdownNow())
 
   def serveText(str: String) = Ok(s"<html><body>$str</body></html>")
 
-  def serveResource(name: String) = Ok(Source.fromFile(
-    getClass.getClassLoader.getResource(name).toURI).mkString)
+  def serveResource(name: String, charset: String = "UTF-8") = {
+    val content = Source.fromFile(getClass.getClassLoader.getResource(name).toURI, charset).mkString
+    Ok(content)
+  }
 
   def testServerUri(path: String) = s"http://localhost:$testServerPort/$path"
 }

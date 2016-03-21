@@ -10,9 +10,10 @@ trait Browser {
   def get(url: String): Document
   def post(url: String, form: Map[String, String]): Document
 
-  def parseFile(path: String, charset: String = "UTF-8"): Document
-  def parseFile(file: File): Document
   def parseFile(file: File, charset: String): Document
+  def parseFile(file: File): Document = parseFile(file, "UTF-8")
+  def parseFile(path: String, charset: String): Document = parseFile(new File(path), charset)
+  def parseFile(path: String): Document = parseFile(new File(path), "UTF-8")
 
   def parseString(html: String): Document
 
