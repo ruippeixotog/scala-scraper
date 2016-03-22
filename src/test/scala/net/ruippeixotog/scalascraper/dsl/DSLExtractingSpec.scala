@@ -77,9 +77,13 @@ class DSLExtractingSpec extends Specification with BrowserHelper {
 
       "allow immediate parsing with a regex after extraction" in {
         doc >> extractor("#content h3", allText, regexMatch("Section (\\d*) h3")) mustEqual "Section 1 h3"
+        doc >> extractor("#content h3", allText, regexMatch("Section (\\d*) h3".r)) mustEqual "Section 1 h3"
         doc >> extractor("#content h3", allText, regexMatch("Section (\\d*) h3").captured) mustEqual "1"
 
         doc >> extractor("#content h3", allText, regexMatches("Section (\\d*) h3")) mustEqual
+          Seq("Section 1 h3", "Section 2 h3", "Section 3 h3")
+
+        doc >> extractor("#content h3", allText, regexMatches("Section (\\d*) h3".r)) mustEqual
           Seq("Section 1 h3", "Section 2 h3", "Section 3 h3")
 
         doc >> extractor("#content h3", allText, regexMatches("Section (\\d*) h3").captured) mustEqual
