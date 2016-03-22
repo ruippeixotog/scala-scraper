@@ -65,13 +65,19 @@ class DSLValidatingSpec extends Specification with BrowserHelper {
       "provide match-all and match-nothing validators" in {
         doc ~/~ matchAll mustEqual VSuccess(doc)
         doc.select("head") ~/~ matchAll mustEqual VSuccess(doc.select("head"))
-        doc.select("body") ~/~ matchAll mustEqual VSuccess(doc.select("body"))
         doc.select("legs") ~/~ matchAll mustEqual VSuccess(doc.select("legs"))
 
-        doc ~/~ matchNothing mustEqual VFailure(())
-        doc.select("head") ~/~ matchNothing mustEqual VFailure(())
-        doc.select("body") ~/~ matchNothing mustEqual VFailure(())
-        doc.select("legs") ~/~ matchNothing mustEqual VFailure(())
+        doc errorIf matchAll(42) mustEqual VFailure(42)
+        doc.select("head") errorIf matchAll("42") mustEqual VFailure("42")
+        doc.select("legs") errorIf matchAll(42.0) mustEqual VFailure(42.0)
+
+        doc ~/~ matchNothing(42) mustEqual VFailure(())
+        doc.select("head") ~/~ matchNothing("42") mustEqual VFailure(())
+        doc.select("legs") ~/~ matchNothing(42.0) mustEqual VFailure(())
+
+        doc errorIf matchNothing mustEqual VSuccess(doc)
+        doc.select("head") errorIf matchNothing mustEqual VSuccess(doc.select("head"))
+        doc.select("legs") errorIf matchNothing mustEqual VSuccess(doc.select("legs"))
       }
     }
   }
