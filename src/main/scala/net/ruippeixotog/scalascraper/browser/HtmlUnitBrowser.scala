@@ -90,8 +90,9 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME) exten
     req
   }
 
-  private[this] def newWindow(): WebWindow =
+  private[this] def newWindow(): WebWindow = client.synchronized {
     client.openTargetWindow(client.getCurrentWindow, null, UUID.randomUUID().toString)
+  }
 }
 
 object HtmlUnitBrowser {
