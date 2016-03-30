@@ -78,7 +78,12 @@ object JsoupBrowser {
     def children = underlying.children.toIterable.map(JsoupElement)
 
     def attrs = underlying.attributes.map { attr => attr.getKey -> attr.getValue }.toMap
-    def attr(name: String) = underlying.attr(name)
+
+    def attr(name: String) = {
+      if (underlying.hasAttr(name)) underlying.attr(name)
+      else throw new NoSuchElementException
+    }
+
     def text = underlying.text
 
     def innerHtml = underlying.html

@@ -104,7 +104,12 @@ object HtmlUnitBrowser {
     def children = underlying.getChildElements.map(HtmlUnitElement)
 
     def attrs = underlying.getAttributesMap.mapValues(_.getValue).toMap
-    def attr(name: String) = underlying.getAttribute(name)
+
+    def attr(name: String) = {
+      val v = underlying.getAttribute(name)
+      if (v ne DomElement.ATTRIBUTE_NOT_DEFINED) v else throw new NoSuchElementException
+    }
+
     def text = underlying.getTextContent.trim
 
     def innerHtml = underlying.getChildNodes.iterator.map {

@@ -207,6 +207,7 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
           body.attrs mustEqual Map("id" -> "bid", "data-a" -> "a", "data-b" -> "b")
           body.attr("id") mustEqual "bid"
           body.attr("data-b") mustEqual "b"
+          body.attr("data-c") must throwA[NoSuchElementException]
         }
 
         "with correct innerHtml and outerHtml methods" in {

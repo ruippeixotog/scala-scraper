@@ -55,6 +55,7 @@ class DSLExtractingSpec extends Specification with BrowserHelper {
 
       "allow extracting an attribute of the first element matched by a CSS query" in {
         doc >> extractor(".active", attr("class")) mustEqual "active"
+        doc >> extractor(".active", attr("data-a")) must throwA[NoSuchElementException]
       }
 
       "allow extracting an attribute of all elements matched by a CSS query" in {

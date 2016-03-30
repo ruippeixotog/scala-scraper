@@ -20,6 +20,8 @@ class DSLSpec extends Specification {
     "allow trying to extract content which may or may not exist" in {
       doc >?> stext("title") mustEqual Some("Test page")
       doc >?> stext("unknown") mustEqual None
+      doc >?> extractor(".active", attr("class")) mustEqual Some("active")
+      doc >?> extractor(".active", attr("data-a")) mustEqual None
     }
 
     "support using two or three extractors at once" in {
