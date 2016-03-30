@@ -16,8 +16,8 @@ libraryDependencies ++= Seq(
   "net.sourceforge.htmlunit"    % "htmlunit"             % "2.20",
   "org.jsoup"                   % "jsoup"                % "1.8.3",
   "org.scalaz"                 %% "scalaz-core"          % "7.2.1",
-  "org.http4s"                 %% "http4s-blaze-server"  % "0.13.0a-SNAPSHOT"     % "test",
-  "org.http4s"                 %% "http4s-dsl"           % "0.13.0a-SNAPSHOT"     % "test",
+  "org.http4s"                 %% "http4s-blaze-server"  % "0.13.0a"              % "test",
+  "org.http4s"                 %% "http4s-dsl"           % "0.13.0a"              % "test",
   "org.slf4j"                   % "slf4j-nop"            % "1.7.18"               % "test",
   "org.specs2"                 %% "specs2-core"          % "3.7.2"                % "test")
 
