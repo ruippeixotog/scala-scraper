@@ -9,20 +9,22 @@ Take a look at [Examples.scala](https://github.com/ruippeixotog/scala-scraper/bl
 To use Scala Scraper in an existing SBT project with Scala 2.11.x, add the following dependency to your `build.sbt`:
 
 ```scala
-libraryDependencies += "net.ruippeixotog" %% "scala-scraper" % "0.1.2"
+libraryDependencies += "net.ruippeixotog" %% "scala-scraper" % "1.0.0-SNAPSHOT"
 ```
 
-A `Browser` object can be used to fetch HTML from the web or to parse a local HTML file or a string.
+If you are using an older version of this library, see this document for the version you're using: [0.1](https://github.com/ruippeixotog/scala-scraper/blob/v0.1/README.md), [0.1.1](https://github.com/ruippeixotog/scala-scraper/blob/v0.1.1/README.md), [0.1.2](https://github.com/ruippeixotog/scala-scraper/blob/v0.1.2/README.md).
+
+An implementation of the `Browser` trait, such as `JsoupBrowser`, can be used to fetch HTML from the web or to parse a local HTML file or a string.
 
 ```scala
-import net.ruippeixotog.scalascraper.browser.Browser
+import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 
-val browser = new Browser
+val browser = JsoupBrowser()
 val doc = browser.get("http://example.com/")
 val doc2 = browser.parseFile("file.html")
 ```
 
-The returned object is a [jsoup](http://jsoup.org/) [Document](http://jsoup.org/apidocs/org/jsoup/nodes/Document.html) that already provides several methods for manipulating and querying HTML elements. For simple use cases, it can be enough. For others, this library improves the content extracting process by providing a powerful DSL.
+The returned object is a `Document`, which already provides several methods for manipulating and querying HTML elements. For simple use cases, it can be enough. For others, this library improves the content extracting process by providing a powerful DSL.
 
 First of all, the DSL methods and conversions must be imported:
 
@@ -35,7 +37,7 @@ import net.ruippeixotog.scalascraper.dsl.DSL.Parse._
 Content can then be extracted using the `>>` extraction operator and CSS queries:
 
 ```scala
-import org.jsoup.nodes.Element
+import net.ruippeixotog.scalascraper.model.Element
 
 // Extract the text inside the first h1 element
 val title: String = doc >> text("h1")
@@ -68,10 +70,25 @@ With only these two operators, some useful things can already be achieved:
 for {
   headline <- browser.get("http://observador.pt") >?> element("h1 a")
   headlineDesc = browser.get(headline.attr("href")) >> text(".lead")
-} println("==" + headline.text + "==\n" + headlineDesc)
+} println("== " + headline.text + " ==\n" + headlineDesc)
 ```
 
-The next sections describe the full capabilities of the DSL, including the ability to parse content after extracting, validating the contents of a page and defining custom extractors or validators.
+In the next two sections the core classes used by this library are presented. They are followed by a description of the full capabilities of the DSL, including the ability to parse content after extracting, validating the contents of a page and defining custom extractors or validators.
+
+## Core Model
+
+The library represents HTML documents and their elements by [Document](https://github.com/ruippeixotog/scala-scraper/blob/master/src/main/scala/net/ruippeixotog/scalascraper/model/Document.scala) and [Element](https://github.com/ruippeixotog/scala-scraper/blob/master/src/main/scala/net/ruippeixotog/scalascraper/model/Element.scala) objects, simple interfaces containing several methods for retrieving information and navigating throughout the DOM.
+
+[Browser](https://github.com/ruippeixotog/scala-scraper/blob/master/src/main/scala/net/ruippeixotog/scalascraper/browser/Browser.scala) implementations are the entrypoints for obtaining `Document` instances. They implement most notably `get`, `post`, `parseFile` and `parseString` methods for retrieving documents from different sources. Depending on the browser used, `Document` and `Element` instances may have different semantics, mainly on their immutability guarantees.
+
+## Browsers
+
+The library currently provides two built-in implementations of `Browser`:
+
+* [JsoupBrowser](https://github.com/ruippeixotog/scala-scraper/blob/master/src/main/scala/net/ruippeixotog/scalascraper/browser/JsoupBrowser.scala) is backed by [jsoup](http://jsoup.org/), a Java HTML parser library. `JsoupBrowser` provides powerful and efficient document querying, but it doesn't run JavaScript in the pages. As such, it is limited to working strictly with the HTML send in the page source;
+* [HtmlUnitBrowser](https://github.com/ruippeixotog/scala-scraper/blob/master/src/main/scala/net/ruippeixotog/scalascraper/browser/HtmlUnitBrowser.scala) is based on [HtmlUnit](http://htmlunit.sourceforge.net), a GUI-less browser for Java programs. `HtmlUnitBrowser` simulates thoroughly a web browser, executing JavaScript code in the pages besides parsing and modelling its HTML content. It supports several compatibility modes, allowing it to emulate browsers such as Internet Explorer.
+
+Due to its speed and maturity, `JsoupBrowser` is the recommended browser to use when JavaScript execution is not needed. More information about each browser and its semantics can be obtained in each implementations' Scaladoc.
 
 ## Content Extraction
 
@@ -100,14 +117,14 @@ The DSL provides several `contentExtractor` and `contentParser` instances, which
 Some usage examples:
 
 ```scala
-// Extract the text of all ".price" elements and parse them as numbers
-doc >> extractor("section .price", texts, asDouble)
-
 // Extract the date from the "#date-taken" element
 doc >> extractor("#date-taken", text, asDate("yyyy-MM-dd"))
 
+// Extract the text of all ".price" elements and parse each of them as a number
+doc >> extractor("section .price", texts, seq(asDouble))
+
 // Extract an element "#card" and do no parsing (the default parsing behavior)
-doc >> extractor("#card", element, asIs)
+doc >> extractor("#card", element, asIs[Element])
 ```
 
 The DSL also provides implicit conversions to write more succinctly the most common extractor types:
@@ -157,6 +174,8 @@ The result of a validation is a `Validated[A, R]` instance, where `A` is the typ
 Some validation examples:
 
 ```scala
+import net.ruippeixotog.scalascraper.util.Validated._
+
 // Check if the title of the page is "My Page"
 doc ~/~ validator(text("title"))(_ == "My Page") match {
   case VSuccess(_) => println("Correct!")
@@ -164,7 +183,7 @@ doc ~/~ validator(text("title"))(_ == "My Page") match {
 }
 
 // Check if there are at least 3 items
-doc ~/~ validator(".item")(_.length >= 3)
+doc ~/~ validator(".item")(_.size >= 3)
 
 // Check if the text in ".desc" contains the word "blue"
 doc ~/~ validator(text(".desc"))(_.contains("blue"))
@@ -176,7 +195,7 @@ When a document fails a validation, it may be useful to identify the problem by 
 val succ = validator(text("title"))(_ == "My Page")
 val errors = Seq(
   validator(text(".msg"))(_.contains("sign in")) withResult "Not logged in",
-  validator(".item")(_.length < 3) withResult "Too few items",
+  validator(".item")(_.size < 3) withResult "Too few items",
   validator(text("h1"))(_.contains("500")) withResult "Internal Server Error")
 
 doc ~/~ (succ, errors) match {
@@ -244,7 +263,7 @@ val linkCountExtractor = linksExtractor.map(_.length)
 doc >> linkCountExtractor
 ```
 
-Just remember that you can only apply extraction operators `>>` and `>?>` to jsoup documents/elements or to functors "containing" them, which means that the following is a compile-time error:
+Just remember that you can only apply extraction operators `>>` and `>?>` to documents, elements or functors "containing" them, which means that the following is a compile-time error:
 
 ```scala
 // The `texts` extractor extracts a list of strings and extractors cannot be
@@ -262,24 +281,26 @@ doc extract text("title")
 doc tryExtract element("#optional")
 ```
 
-## Integration with Typesafe Config Files
+## Integration with Typesafe Config
 
-Matchers and validators can be loaded from a [Typesafe config](https://github.com/typesafehub/config) using the methods `matcherAt`, `validatorAt` and `validatorsAt` of the DSL. More documentation will be available soon - meanwhile, take a look at the [examples.conf](https://github.com/ruippeixotog/scala-scraper/blob/master/src/test/resources/examples.conf) config used [in the examples](https://github.com/ruippeixotog/scala-scraper/blob/master/src/test/scala/net/ruippeixotog/scalascraper/Examples.scala) and at the [application.conf](https://github.com/ruippeixotog/scala-scraper/blob/master/src/test/resources/examples.conf) used in tests.
+Matchers and validators can be loaded from a [Typesafe config](https://github.com/typesafehub/config) using the methods `matcherAt`, `validatorAt` and `validatorsAt` of the DSL. Take a look at the [examples.conf](https://github.com/ruippeixotog/scala-scraper/blob/master/src/test/resources/examples.conf) config used [in the examples](https://github.com/ruippeixotog/scala-scraper/blob/master/src/test/scala/net/ruippeixotog/scalascraper/Examples.scala) and at the [application.conf](https://github.com/ruippeixotog/scala-scraper/blob/master/src/test/resources/examples.conf) used in tests to see how they can be used.
+
+_NOTE: this feature is in a beta stage. Please expect API changes in future releases._
 
 ## Working Behind an HTTP/HTTPS Proxy
 
-If you are behind an HTTP proxy, you can configure `Browser` to make connections through it by setting the Java system properties `http.proxyHost`, `https.proxyHost`, `http.proxyPort` and `https.proxyPort`. Scala Scraper provides a `ProxyUtils` object that facilitates that configuration:
+If you are behind an HTTP proxy, you can configure `Browser` implementations to make connections through it by setting the Java system properties `http.proxyHost`, `https.proxyHost`, `http.proxyPort` and `https.proxyPort`. Scala Scraper provides a `ProxyUtils` object that facilitates that configuration:
 
 ```scala
 ProxyUtils.setProxy("localhost", 3128)
-val browser = Browser()
+val browser = JsoupBrowser()
 // HTTP requests and scraping operations...
 ProxyUtils.removeProxy()
 ```
 
-If the configured proxy is not reachable when a request is made, `Browser` will fallback to try the request directly.
+`JsoupBrowser` uses internally `java.net.HttpURLConnection`. Configuring those JVM-wide system properties will affect not only `Browser` instances, but _all_ requests done using `HttpURLConnection` directly or indirectly. `HtmlUnitBrowser` was implementated so that it reads the same system properties for configuration, but once the browser is created they will be used on every request done by the instance, regardless of the properties' values at the time of the request.
 
-**NOTE**: `Browser` works by executing requests using Jsoup, which internally uses `java.net.HttpURLConnection`. Configuring those JVM-wide system properties will affect not only `Browser` instances, but _all_ requests done using `HttpURLConnection` directly or indirectly.
+_NOTE: this feature is in a beta stage. Please expect API changes in future releases._
 
 ## Copyright
 
