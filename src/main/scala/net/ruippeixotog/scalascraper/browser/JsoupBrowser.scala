@@ -43,6 +43,8 @@ class JsoupBrowser(val userAgent: String = "jsoup/1.8") extends Browser {
 
   def cookies(url: String) = cookieMap.toMap
 
+  def clearCookies() = cookieMap.clear()
+
   def requestSettings(conn: Connection): Connection = conn
 
   protected[this] def defaultRequestSettings(conn: Connection): Connection =

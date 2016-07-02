@@ -18,4 +18,5 @@ trait Browser {
   def parseString(html: String): Document
 
   def cookies(url: String): Map[String, String]
+  def clearCookies(): Unit
 }

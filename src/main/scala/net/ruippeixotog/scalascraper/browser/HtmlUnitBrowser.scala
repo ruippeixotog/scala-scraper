@@ -74,6 +74,8 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME) exten
   def cookies(url: String) =
     client.getCookies(new URL(url)).map { c => c.getName -> c.getValue }.toMap
 
+  def clearCookies() = client.getCookieManager.clearCookies()
+
   protected[this] def defaultClientSettings(client: WebClient): Unit = {
     client.getOptions.setCssEnabled(false)
     client.getOptions.setThrowExceptionOnScriptError(false)

@@ -159,7 +159,13 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
         val doc2 = browser.get(testServerUri("cookies"))
         doc2.body.text mustEqual "a=4;b=5"
 
-        browser.cookies(s"http://localhost:$testServerPort") mustEqual Map("a" -> "4", "b" -> "5")
+        browser.cookies(testServerUri("")) mustEqual Map("a" -> "4", "b" -> "5")
+
+        browser.clearCookies()
+        val doc3 = browser.get(testServerUri("cookies"))
+        doc3.body.text mustEqual ""
+
+        browser.cookies(testServerUri("")) mustEqual Map.empty
       }
 
       "return Document implementations" in {
