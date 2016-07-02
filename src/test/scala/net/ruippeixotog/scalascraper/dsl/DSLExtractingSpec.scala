@@ -63,8 +63,8 @@ class DSLExtractingSpec extends Specification with BrowserHelper {
       }
 
       "allow extracting form data from a HTML form" in {
-        doc >> formData("#myform") mustEqual Map("a" -> "4", "b" -> "user", "c" -> "data")
-        doc >> formDataAndAction("#myform") mustEqual (Map("a" -> "4", "b" -> "user", "c" -> "data"), "submit.html")
+        doc >> formData("#myform") mustEqual Map("name" -> "John", "address" -> "")
+        doc >> formDataAndAction("#myform") mustEqual (Map("name" -> "John", "address" -> ""), "submit.html")
       }
 
       "support immediate parsing of numbers after extraction" in {

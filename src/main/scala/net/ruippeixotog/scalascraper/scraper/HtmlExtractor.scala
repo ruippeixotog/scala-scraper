@@ -1,10 +1,9 @@
 package net.ruippeixotog.scalascraper.scraper
 
 import com.typesafe.config.Config
-import net.ruippeixotog.scalascraper.model.{ ElementQuery, Element }
+import net.ruippeixotog.scalascraper.model.{ Element, ElementQuery }
 import org.joda.time.DateTime
 import org.joda.time.format._
-
 import scala.collection.convert.WrapAsScala._
 import scala.util.matching.Regex
 import scalaz.Monad
@@ -93,8 +92,14 @@ object ContentExtractors {
   def attr(attr: String): ElementQuery => String = _.head.attr(attr)
   def attrs(attr: String): ElementQuery => Iterable[String] = _.map(_.attr(attr))
 
+  // TODO add support for <select> and <textarea> elements
+  // TODO add proper support for checkboxes and radio buttons
+  // See: https://www.w3.org/TR/html5/forms.html#constructing-form-data-set
   def formData: ElementQuery => Map[String, String] =
-    _.map(_.select("input").map { e => e.attr("name") -> e.attr("value") }.toMap).reduce(_ ++ _)
+    _.select("input")
+      .filter(_.hasAttr("name"))
+      .map { e => e.attr("name") -> (if (e.hasAttr("value")) e.attr("value") else "") }
+      .toMap
 
   def formDataAndAction: ElementQuery => (Map[String, String], String) = { elems =>
     (formData(elems), attr("action")(elems))
