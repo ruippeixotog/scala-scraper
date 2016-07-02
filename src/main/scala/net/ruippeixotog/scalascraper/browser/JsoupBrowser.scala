@@ -81,6 +81,8 @@ object JsoupBrowser {
 
     def attrs = underlying.attributes.map { attr => attr.getKey -> attr.getValue }.toMap
 
+    def hasAttr(name: String) = underlying.hasAttr(name)
+
     def attr(name: String) = {
       if (underlying.hasAttr(name)) underlying.attr(name)
       else throw new NoSuchElementException

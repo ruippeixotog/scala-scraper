@@ -206,13 +206,16 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
           a.children must beEmpty
         }
 
-        "with correct attr and attrs methods" in {
+        "with correct attr, hasAttr and attrs methods" in {
           val doc = browser.parseString(html)
 
           val body = doc.body
           body.attrs mustEqual Map("id" -> "bid", "data-a" -> "a", "data-b" -> "b")
+          body.hasAttr("id") must beTrue
           body.attr("id") mustEqual "bid"
+          body.hasAttr("data-b") must beTrue
           body.attr("data-b") mustEqual "b"
+          body.hasAttr("data-c") must beFalse
           body.attr("data-c") must throwA[NoSuchElementException]
         }
 

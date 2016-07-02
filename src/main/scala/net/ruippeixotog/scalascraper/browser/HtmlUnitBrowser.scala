@@ -107,6 +107,9 @@ object HtmlUnitBrowser {
 
     def attrs = underlying.getAttributesMap.mapValues(_.getValue).toMap
 
+    def hasAttr(name: String) = underlying.hasAttribute(name) &&
+      (underlying.getAttribute(name) ne DomElement.ATTRIBUTE_NOT_DEFINED)
+
     def attr(name: String) = {
       val v = underlying.getAttribute(name)
       if (v ne DomElement.ATTRIBUTE_NOT_DEFINED) v else throw new NoSuchElementException

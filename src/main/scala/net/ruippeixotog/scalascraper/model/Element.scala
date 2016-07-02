@@ -30,6 +30,13 @@ trait Element {
   def attrs: Map[String, String]
 
   /**
+    * Checks if an attribute is defined in this element.
+    * @param name the name of the attribute
+    * @return `true` if the attribute is defined, `false` otherwise
+    */
+  def hasAttr(name: String): Boolean
+
+  /**
     * Returns the value associated with an attribute of this element.
     *
     * @param name the name of the attribute
