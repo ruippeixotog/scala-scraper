@@ -1,7 +1,5 @@
 package net.ruippeixotog.scalascraper.browser
 
-import java.io.File
-
 import com.gargoylesoftware.htmlunit.BrowserVersion
 import org.http4s.HttpService
 import org.http4s.dsl._
@@ -29,17 +27,14 @@ class HtmlUnitBrowserSpec extends Specification with TestServer {
     }
 
     "execute JavaScript in HTML pages" in {
-      val file = new File(getClass.getClassLoader.getResource("testjs.html").toURI)
-      val doc = new HtmlUnitBrowser().parseFile(file)
+      val doc = new HtmlUnitBrowser().parseResource("/testjs.html")
 
       doc.root.select("#t").head.text mustEqual "Before"
       doc.root.select("#t").head.text must beEqualTo("After").eventually
     }
 
     "keep the documented mutability semantics on element changes" in {
-      val file = new File(getClass.getClassLoader.getResource("testjs.html").toURI)
-
-      val doc = new HtmlUnitBrowser().parseFile(file)
+      val doc = new HtmlUnitBrowser().parseResource("/testjs.html")
       val elem = doc.root.select("#t").head
 
       doc.root.select("#t").head.text mustEqual "Before"

@@ -1,7 +1,5 @@
 package net.ruippeixotog.scalascraper.dsl
 
-import java.io.File
-
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.model.Document
@@ -14,8 +12,7 @@ class DSLSpec extends Specification {
 
   "The scraping DSL" should {
 
-    val file = new File(getClass.getClassLoader.getResource("test2.html").toURI)
-    val doc = JsoupBrowser().parseFile(file)
+    val doc = JsoupBrowser().parseResource("/test2.html")
 
     "allow trying to extract content which may or may not exist" in {
       doc >?> stext("title") mustEqual Some("Test page")

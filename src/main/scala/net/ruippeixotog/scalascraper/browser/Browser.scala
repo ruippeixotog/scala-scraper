@@ -15,6 +15,8 @@ trait Browser {
   def parseFile(path: String, charset: String): Document = parseFile(new File(path), charset)
   def parseFile(path: String): Document = parseFile(new File(path), "UTF-8")
 
+  def parseResource(name: String, charset: String = "UTF-8"): Document = parseFile(new File(getClass.getResource(name).toURI), charset)
+
   def parseString(html: String): Document
 
   def cookies(url: String): Map[String, String]
