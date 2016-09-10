@@ -15,14 +15,10 @@ trait Browser {
   def parseFile(path: String, charset: String): Document = parseFile(new File(path), charset)
   def parseFile(path: String): Document = parseFile(new File(path), "UTF-8")
 
-  def parseResource(name: String, charset: String = "UTF-8"): Document = {
-    val stream = getClass.getResourceAsStream(name)
-    val document = parseInputStream(stream, charset)
-    stream.close()
-    document
-  }
+  def parseResource(name: String, charset: String = "UTF-8"): Document =
+    parseInputStream(getClass.getResourceAsStream(name), charset)
 
-  /** Does not close the InputStream after reading */
+  /** Closes the InputStream after reading */
   def parseInputStream(inputStream: InputStream, charset: String = "UTF-8"): Document
 
   def parseString(html: String): Document

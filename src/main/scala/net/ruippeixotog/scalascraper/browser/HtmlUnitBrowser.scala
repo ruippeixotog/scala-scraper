@@ -99,6 +99,7 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME) exten
 
   private[this] def newWebResponseData(inputStream: InputStream, charset: String): WebResponseData = {
     val bytes = IOUtils.toByteArray(inputStream)
+    inputStream.close()
     val compiledHeaders = List(new NameValuePair("Content-Type", "text/html; charset=" + charset))
     new WebResponseData(bytes, HttpStatus.SC_OK, "OK", compiledHeaders)
   }
