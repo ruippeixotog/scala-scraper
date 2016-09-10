@@ -1,6 +1,5 @@
 package net.ruippeixotog.scalascraper.dsl
 
-import java.io.File
 import net.ruippeixotog.scalascraper.browser._
 import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.scraper.ContentExtractors.{ text => stext, _ }
@@ -12,10 +11,8 @@ class DSLValidatingSpec extends Specification with BrowserHelper {
 
   "The scraping DSL" should {
 
-    val file = new File(getClass.getClassLoader.getResource("test2.html").toURI)
-
     usingBrowsers(JsoupBrowser(), HtmlUnitBrowser()) { browser =>
-      val doc = browser.parseFile(file)
+      val doc = browser.parseResource("/test2.html")
 
       "allow validating content based on a validator" in {
         doc ~/~ validator("#content section")(_.size == 3) mustEqual VSuccess(doc)

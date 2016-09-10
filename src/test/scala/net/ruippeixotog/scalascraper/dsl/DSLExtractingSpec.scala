@@ -1,7 +1,5 @@
 package net.ruippeixotog.scalascraper.dsl
 
-import java.io.File
-
 import com.github.nscala_time.time.Imports._
 import net.ruippeixotog.scalascraper.browser._
 import net.ruippeixotog.scalascraper.dsl.DSL._
@@ -15,10 +13,8 @@ class DSLExtractingSpec extends Specification with BrowserHelper {
 
   "The scraping DSL" should {
 
-    val file = new File(getClass.getClassLoader.getResource("test2.html").toURI)
-
     usingBrowsers(JsoupBrowser(), HtmlUnitBrowser()) { browser =>
-      val doc = browser.parseFile(file)
+      val doc = browser.parseResource("/test2.html")
 
       "allow extracting the first element matched by a CSS query" in {
         (doc >> element("#content > section > h3")).tagName mustEqual "h3"

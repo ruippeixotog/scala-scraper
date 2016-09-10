@@ -1,6 +1,5 @@
 package net.ruippeixotog.scalascraper.model
 
-import java.io.File
 import net.ruippeixotog.scalascraper.browser._
 import org.specs2.mutable.Specification
 
@@ -8,10 +7,8 @@ class ElementQuerySpec extends Specification with BrowserHelper {
 
   "An ElementQuery" should {
 
-    val file = new File(getClass.getClassLoader.getResource("test2.html").toURI)
-
     usingBrowsers(JsoupBrowser(), HtmlUnitBrowser()) { browser =>
-      val doc = browser.parseFile(file)
+      val doc = browser.parseResource("/test2.html")
 
       "provide the correct results in single CSS queries" in {
         def query(cssQuery: String) = ElementQuery(cssQuery, doc.root).map(_.text)

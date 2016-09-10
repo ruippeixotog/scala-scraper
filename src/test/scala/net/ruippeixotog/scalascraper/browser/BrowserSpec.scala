@@ -103,8 +103,20 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
       }
 
       "parse correctly HTML from a file" in {
-        val file = new File(getClass.getClassLoader.getResource("test.html").toURI)
+        val file = new File(getClass.getResource("/test.html").toURI)
         val body = browser.parseFile(file).body
+
+        body.tagName mustEqual "body"
+        body.children.size mustEqual 1
+
+        val div = body.children.head
+        div.tagName mustEqual "div"
+        div.attr("id") mustEqual "a1"
+        div.children.size mustEqual 2
+      }
+
+      "parse correctly HTML from a resource" in {
+        val body = browser.parseResource("/test.html").body
 
         body.tagName mustEqual "body"
         body.children.size mustEqual 1
@@ -121,17 +133,16 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
 
         def getText(doc: Document) = doc.root.select("#a").head.text
 
-        val utf8File = new File(getClass.getClassLoader.getResource("encoding-utf-8.html").toURI)
-        getText(browser.parseFile(utf8File)) mustEqual testPhrase
-        getText(browser.parseFile(utf8File, "ISO-8859-1")) must not(beEqualTo(testPhrase))
+        getText(browser.parseResource("/encoding-utf-8.html")) mustEqual testPhrase
+        getText(browser.parseResource(
+          "/encoding-utf-8.html",
+          "ISO-8859-1")) must not(beEqualTo(testPhrase))
 
-        val isoFile = new File(getClass.getClassLoader.getResource("encoding-iso-8859-1.html").toURI)
-        getText(browser.parseFile(isoFile)) must not(beEqualTo(testPhrase))
-        getText(browser.parseFile(isoFile, "ISO-8859-1")) mustEqual testPhrase
+        getText(browser.parseResource("/encoding-iso-8859-1.html")) must not(beEqualTo(testPhrase))
+        getText(browser.parseResource("/encoding-iso-8859-1.html", "ISO-8859-1")) mustEqual testPhrase
 
-        val utf16File = new File(getClass.getClassLoader.getResource("encoding-utf-16be.html").toURI)
-        getText(browser.parseFile(utf16File)) must throwAn[Exception] // file is not valid HTML in UTF-8
-        getText(browser.parseFile(utf16File, "UTF-16BE")) mustEqual testPhrase
+        getText(browser.parseResource("/encoding-utf-16be.html")) must throwAn[Exception] // file is not valid HTML in UTF-8
+        getText(browser.parseResource("/encoding-utf-16be.html", "UTF-16BE")) mustEqual testPhrase
       }
 
       "do requests with the same user agent as returned by userAgent" in {

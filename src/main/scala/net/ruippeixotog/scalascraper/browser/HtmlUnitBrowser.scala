@@ -1,12 +1,14 @@
 package net.ruippeixotog.scalascraper.browser
 
-import java.io.File
+import java.io.{ File, InputStream }
 import java.net.URL
 import java.util.UUID
 
 import scala.collection.convert.WrapAsJava._
 import scala.collection.convert.WrapAsScala._
 
+import org.apache.commons.io.IOUtils
+import org.apache.http.HttpStatus
 import com.gargoylesoftware.htmlunit._
 import com.gargoylesoftware.htmlunit.html.{ DomText, DomElement, HTMLParser, HtmlPage }
 import com.gargoylesoftware.htmlunit.util.{ StringUtils, NameValuePair }
@@ -50,22 +52,31 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME) exten
   }
 
   def get(url: String): Document =
-    exec(newRequest(url))
+    exec(newRequest(new URL(url)))
 
   def post(url: String, form: Map[String, String]): Document = {
-    val req = newRequest(url, HttpMethod.POST)
+    val req = newRequest(new URL(url), HttpMethod.POST)
     req.setRequestParameters(form.map { case (k, v) => new NameValuePair(k, v) }.toSeq)
     exec(req)
   }
 
   def parseFile(file: File, charset: String): Document = {
-    val req = newRequest(s"file://${file.getAbsolutePath}", HttpMethod.GET)
+    val req = newRequest(new URL(s"file://${file.getAbsolutePath}"), HttpMethod.GET)
     req.setCharset(charset)
     exec(req)
   }
 
   def parseString(html: String): Document = {
     val response = new StringWebResponse(html, WebClient.URL_ABOUT_BLANK)
+    val window = newWindow()
+    HTMLParser.parseHtml(response, window)
+    HtmlUnitDocument(window)
+  }
+
+  def parseInputStream(inputStream: InputStream, charset: String): Document = {
+    val response = new WebResponse(
+      newWebResponseData(inputStream, charset),
+      newRequest(WebClient.URL_ABOUT_BLANK, charset = Some(charset)), 0)
     val window = newWindow()
     HTMLParser.parseHtml(response, window)
     HtmlUnitDocument(window)
@@ -86,8 +97,16 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME) exten
     req.setAdditionalHeader("Accept-Charset", "utf-8")
   }
 
-  private[this] def newRequest(url: String, method: HttpMethod = HttpMethod.GET) = {
-    val req = new WebRequest(new URL(url), method)
+  private[this] def newWebResponseData(inputStream: InputStream, charset: String): WebResponseData = {
+    val bytes = IOUtils.toByteArray(inputStream)
+    inputStream.close()
+    val compiledHeaders = List(new NameValuePair("Content-Type", "text/html; charset=" + charset))
+    new WebResponseData(bytes, HttpStatus.SC_OK, "OK", compiledHeaders)
+  }
+
+  private[this] def newRequest(url: URL, method: HttpMethod = HttpMethod.GET, charset: Option[String] = None) = {
+    val req = new WebRequest(url, method)
+    charset.foreach(req.setCharset(_))
     defaultRequestSettings(req)
     req
   }

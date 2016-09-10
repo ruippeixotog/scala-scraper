@@ -1,7 +1,5 @@
 package net.ruippeixotog.scalascraper.dsl
 
-import java.io.File
-
 import com.github.nscala_time.time.Imports._
 import com.typesafe.config.ConfigFactory
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
@@ -13,10 +11,8 @@ class ConfigLoadingHelpersSpec extends Specification {
 
   "The scraping DSL" should {
 
-    val file = new File(getClass.getClassLoader.getResource("test2.html").toURI)
-    val fileEmpty = new File(getClass.getClassLoader.getResource("test.html").toURI)
-    val doc = JsoupBrowser().parseFile(file)
-    val docEmpty = JsoupBrowser().parseFile(fileEmpty)
+    val doc = JsoupBrowser().parseResource("/test2.html")
+    val docEmpty = JsoupBrowser().parseResource("/test.html")
 
     "be able to create extractors from configuration files" in {
       val conf = ConfigFactory.load.getConfig("test-extractors")
