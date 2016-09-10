@@ -1,12 +1,14 @@
 package net.ruippeixotog.scalascraper.browser
 
-import java.io.File
+import java.io.{ File, InputStream }
 import java.net.URL
 import java.util.UUID
 
 import scala.collection.convert.WrapAsJava._
 import scala.collection.convert.WrapAsScala._
 
+import org.apache.commons.io.IOUtils
+import org.apache.http.HttpStatus
 import com.gargoylesoftware.htmlunit._
 import com.gargoylesoftware.htmlunit.html.{ DomText, DomElement, HTMLParser, HtmlPage }
 import com.gargoylesoftware.htmlunit.util.{ StringUtils, NameValuePair }
@@ -69,6 +71,25 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME) exten
     val window = newWindow()
     HTMLParser.parseHtml(response, window)
     HtmlUnitDocument(window)
+  }
+
+  def parseInputStream(inputStream: InputStream, charset: String): Document = {
+    val response = new WebResponse(getWebResponseData(inputStream, charset), getWebRequest(charset), 0)
+    val window = newWindow()
+    HTMLParser.parseHtml(response, window)
+    HtmlUnitDocument(window)
+  }
+
+  def getWebRequest(charset: String): WebRequest = {
+    val webRequest = new WebRequest(WebClient.URL_ABOUT_BLANK, HttpMethod.GET)
+    webRequest.setCharset(charset)
+    webRequest
+  }
+
+  def getWebResponseData(inputStream: InputStream, charset: String): WebResponseData = {
+    val bytes = IOUtils.toByteArray(inputStream)
+    val compiledHeaders = List(new NameValuePair("Content-Type", "text/html; charset=" + charset))
+    new WebResponseData(bytes, HttpStatus.SC_OK, "OK", compiledHeaders)
   }
 
   def cookies(url: String) =

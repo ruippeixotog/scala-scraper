@@ -1,6 +1,6 @@
 package net.ruippeixotog.scalascraper.browser
 
-import java.io.File
+import java.io.{ File, InputStream }
 
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser._
 import net.ruippeixotog.scalascraper.model.{ ElementQuery, Document, Element }
@@ -40,6 +40,9 @@ class JsoupBrowser(val userAgent: String = "jsoup/1.8") extends Browser {
 
   def parseString(html: String): Document =
     JsoupDocument(Jsoup.parse(html))
+
+  def parseInputStream(inputStream: InputStream, charset: String): Document =
+    JsoupDocument(Jsoup.parse(inputStream, charset, ""))
 
   def cookies(url: String) = cookieMap.toMap
 
