@@ -1,5 +1,7 @@
 package net.ruippeixotog.scalascraper.browser
 
+import java.io.File
+
 import net.ruippeixotog.scalascraper.model.Document
 import org.http4s._
 import org.http4s.dsl._
@@ -101,6 +103,19 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
       }
 
       "parse correctly HTML from a file" in {
+        val file = new File(getClass.getResource("/test.html").toURI)
+        val body = browser.parseFile(file).body
+
+        body.tagName mustEqual "body"
+        body.children.size mustEqual 1
+
+        val div = body.children.head
+        div.tagName mustEqual "div"
+        div.attr("id") mustEqual "a1"
+        div.children.size mustEqual 2
+      }
+
+      "parse correctly HTML from a resource" in {
         val body = browser.parseResource("/test.html").body
 
         body.tagName mustEqual "body"
