@@ -1,4 +1,3 @@
 .idea
 target/
-/.ensime
-/.ensime_cache
+.ensime*
