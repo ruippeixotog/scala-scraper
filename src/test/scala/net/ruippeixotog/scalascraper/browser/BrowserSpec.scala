@@ -22,6 +22,23 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
         </div>
         <span></span>
         <span id="t">this is <b>some</b> text</span>
+        <div id="siblings">
+          <div id="sibling1">
+            1
+          </div>
+          <div id="sibling2">
+            2
+          </div>
+          <div id="sibling3">
+            3
+          </div>
+          <div id="sibling4">
+            4
+          </div>
+          <div id="sibling5">
+            5
+          </div>
+        </div>
       </body>
     <html>"""
 
@@ -62,7 +79,7 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
         val body = browser.get(testServerUri("hello")).body
 
         body.tagName mustEqual "body"
-        body.children.size mustEqual 3
+        body.children.size mustEqual 4
 
         val div = body.children.head
         div.tagName mustEqual "div"
@@ -94,7 +111,7 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
         val body = browser.parseString(html).body
 
         body.tagName mustEqual "body"
-        body.children.size mustEqual 3
+        body.children.size mustEqual 4
 
         val div = body.children.head
         div.tagName mustEqual "div"
@@ -210,7 +227,7 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
 
           val body = doc.body
           body.parent must beSome.which { p => p.tagName mustEqual "html" }
-          body.children.map(_.tagName) mustEqual Iterable("div", "span", "span")
+          body.children.map(_.tagName) mustEqual Iterable("div", "span", "span", "div")
 
           val a = doc.root.select("a").head
           a.parent must beSome.which { p => p.attr("id") mustEqual "a1" }
@@ -236,6 +253,17 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
           val textNode = doc.root.select("#t").head
           textNode.innerHtml mustEqual "this is <b>some</b> text"
           textNode.outerHtml mustEqual "<span id=\"t\">this is <b>some</b> text</span>"
+        }
+
+        "with correct siblings methods" in {
+          val doc = browser.parseString(html)
+
+          val middleDiv = doc.root.select("#sibling3").head
+          val Seq(sibling1, sibling2, sibling4, sibling5) = middleDiv.siblings
+          sibling1.attr("id") mustEqual "sibling1"
+          sibling2.attr("id") mustEqual "sibling2"
+          sibling4.attr("id") mustEqual "sibling4"
+          sibling5.attr("id") mustEqual "sibling5"
         }
       }
     }

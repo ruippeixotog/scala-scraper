@@ -84,6 +84,7 @@ object JsoupBrowser {
     def tagName = underlying.tagName
     def parent = Option(underlying.parent).map(JsoupElement)
     def children = underlying.children.toIterable.map(JsoupElement)
+    def siblings = underlying.siblingElements.map(JsoupElement)
 
     def attrs = underlying.attributes.map { attr => attr.getKey -> attr.getValue }.toMap
 
