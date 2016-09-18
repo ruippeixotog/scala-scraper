@@ -25,6 +25,11 @@ trait Element {
   def children: Iterable[Element]
 
   /**
+    * The list of siblings of this element.
+    */
+  def siblings: Iterable[Element]
+
+  /**
     * The map of attributes of this element.
     */
   def attrs: Map[String, String]

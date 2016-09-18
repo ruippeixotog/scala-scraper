@@ -123,6 +123,11 @@ object HtmlUnitBrowser {
     def tagName = underlying.getTagName
     def parent = Option(underlying.getParentNode).collect { case elem: DomElement => HtmlUnitElement(elem) }
     def children = underlying.getChildElements.map(HtmlUnitElement)
+    def siblings = {
+      val previousSiblings = Stream.iterate(underlying)(_.getPreviousElementSibling).tail.takeWhile(_ != null)
+      val nextSiblings = Stream.iterate(underlying)(_.getNextElementSibling).tail.takeWhile(_ != null)
+      (previousSiblings.reverse ++ nextSiblings).map(HtmlUnitElement)
+    }
 
     def attrs = underlying.getAttributesMap.mapValues(_.getValue).toMap
 
