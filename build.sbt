@@ -2,7 +2,7 @@ import scalariform.formatter.preferences._
 
 name := "scala-scraper"
 organization := "net.ruippeixotog"
-version := "1.1.0-SNAPSHOT"
+version := "1.1.0"
 
 scalaVersion := "2.11.8"
 
