@@ -1,4 +1,4 @@
-# Scala Scraper
+# Scala Scraper [![Build Status](https://travis-ci.org/ruippeixotog/scala-scraper.svg?branch=master)](https://travis-ci.org/ruippeixotog/scala-scraper) [![Coverage Status](https://coveralls.io/repos/github/ruippeixotog/scala-scraper/badge.svg?branch=master)](https://coveralls.io/github/ruippeixotog/scala-scraper?branch=master)
 
 A library providing a DSL for loading and extracting content from HTML pages.
 
