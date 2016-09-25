@@ -1,4 +1,4 @@
-### 1.1.0 (unreleased)
+### 1.1.0 (Sep 25, 2016)
 
 - New features
   - New methods `clearCookies`, `parseInputStream` and `parseResource` in `Browser`;
@@ -8,6 +8,6 @@
 - Bug fixes
   - Correct handling of missing name and value attributes in the `formData` extractor.
 
-### 1.0.0 (April 5, 2016)
+### 1.0.0 (Apr 5, 2016)
 
 First stable version.
