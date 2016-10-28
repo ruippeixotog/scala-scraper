@@ -75,5 +75,15 @@ class HtmlUnitBrowserSpec extends Specification with TestServer {
         elem.text mustEqual "Between" // Element from an outdated element tree
       }
     }
+
+    "allow closing all the pages opened in it" in {
+      val file = new File(getClass.getClassLoader.getResource("testjs.html").toURI)
+      val browser = new HtmlUnitBrowser()
+      val doc = browser.parseFile(file)
+
+      doc.root.select("#t").head.text mustEqual "Before"
+      browser.closeAll()
+      doc.root.select("#t").head.text must not(beEqualTo("After").eventually)
+    }
   }
 }

@@ -87,6 +87,11 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME) exten
 
   def clearCookies() = client.getCookieManager.clearCookies()
 
+  /**
+    * Closes all windows opened in this browser.
+    */
+  def closeAll() = client.close()
+
   protected[this] def defaultClientSettings(client: WebClient): Unit = {
     client.getOptions.setCssEnabled(false)
     client.getOptions.setThrowExceptionOnScriptError(false)
