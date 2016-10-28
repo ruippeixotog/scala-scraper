@@ -1,3 +1,8 @@
+### 1.2.0 (unreleased)
+
+- New features
+  - New method `clearAll` in `HtmlUnitBrowser`, for closing opened windows.
+
 ### 1.1.0 (Sep 25, 2016)
 
 - New features
