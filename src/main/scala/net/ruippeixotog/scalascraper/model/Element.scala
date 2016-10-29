@@ -25,9 +25,19 @@ trait Element {
   def children: Iterable[Element]
 
   /**
+    * The list of child nodes of this element.
+    */
+  def childNodes: Iterable[Node]
+
+  /**
     * The list of siblings of this element.
     */
   def siblings: Iterable[Element]
+
+  /**
+    * The list of sibling nodes of this element.
+    */
+  def siblingNodes: Iterable[Node]
 
   /**
     * The map of attributes of this element.

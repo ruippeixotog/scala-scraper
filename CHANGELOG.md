@@ -1,7 +1,9 @@
 ### 1.2.0 (unreleased)
 
 - New features
-  - New method `clearAll` in `HtmlUnitBrowser`, for closing opened windows.
+  - New method `clearAll` in `HtmlUnitBrowser`, for closing opened windows;
+  - New model `Node` representing a DOM node - in this library, either a `ElementNode` or a `TextNode`;
+  - New methods `childNodes` and `siblingNodes` in `Element`.
 
 ### 1.1.0 (Sep 25, 2016)
 

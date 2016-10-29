@@ -2,11 +2,12 @@ package net.ruippeixotog.scalascraper.browser
 
 import java.io.File
 
-import net.ruippeixotog.scalascraper.model.Document
 import org.http4s._
 import org.http4s.dsl._
 import org.http4s.headers.`Content-Encoding`
 import org.specs2.mutable.Specification
+
+import net.ruippeixotog.scalascraper.model._
 
 class BrowserSpec extends Specification with BrowserHelper with TestServer {
 
@@ -21,7 +22,7 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
           <div></div>
         </div>
         <span></span>
-        <span id="t">this is <b>some</b> text</span>
+        <span id="t">this is <b>some</b> text with <i>many</i> styles</span>
         <div id="siblings">
           <div id="sibling1">
             1
@@ -234,6 +235,18 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
           a.children must beEmpty
         }
 
+        "with correct parent and children methods" in {
+          val doc = browser.parseString(html)
+
+          val body = doc.body
+          body.parent must beSome.which { p => p.tagName mustEqual "html" }
+          body.children.map(_.tagName) mustEqual Iterable("div", "span", "span", "div")
+
+          val a = doc.root.select("a").head
+          a.parent must beSome.which { p => p.attr("id") mustEqual "a1" }
+          a.children must beEmpty
+        }
+
         "with correct attr, hasAttr and attrs methods" in {
           val doc = browser.parseString(html)
 
@@ -251,8 +264,8 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
           val doc = browser.parseString(html)
 
           val textNode = doc.root.select("#t").head
-          textNode.innerHtml mustEqual "this is <b>some</b> text"
-          textNode.outerHtml mustEqual "<span id=\"t\">this is <b>some</b> text</span>"
+          textNode.innerHtml mustEqual "this is <b>some</b> text with <i>many</i> styles"
+          textNode.outerHtml mustEqual "<span id=\"t\">this is <b>some</b> text with <i>many</i> styles</span>"
         }
 
         "with correct siblings methods" in {
@@ -264,6 +277,21 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
           sibling2.attr("id") mustEqual "sibling2"
           sibling4.attr("id") mustEqual "sibling4"
           sibling5.attr("id") mustEqual "sibling5"
+        }
+
+        "with correct childNodes and siblingNodes methods" in {
+          val doc = browser.parseString(html)
+
+          val textNode = doc.root.select("#t").head
+          val Seq(b, i) = textNode.select("b, i").toSeq
+
+          textNode.children mustEqual Seq(b, i)
+          textNode.childNodes mustEqual Seq(
+            TextNode("this is "), ElementNode(b), TextNode(" text with "), ElementNode(i), TextNode(" styles"))
+
+          b.siblings mustEqual Seq(i)
+          b.siblingNodes mustEqual Seq(
+            TextNode("this is "), TextNode(" text with "), ElementNode(i), TextNode(" styles"))
         }
       }
     }

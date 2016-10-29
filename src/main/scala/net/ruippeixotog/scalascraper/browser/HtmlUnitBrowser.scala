@@ -10,8 +10,8 @@ import scala.collection.convert.WrapAsScala._
 import org.apache.commons.io.IOUtils
 import org.apache.http.HttpStatus
 import com.gargoylesoftware.htmlunit._
-import com.gargoylesoftware.htmlunit.html.{ DomText, DomElement, HTMLParser, HtmlPage }
-import com.gargoylesoftware.htmlunit.util.{ StringUtils, NameValuePair }
+import com.gargoylesoftware.htmlunit.html._
+import com.gargoylesoftware.htmlunit.util.{ NameValuePair, StringUtils }
 import net.ruippeixotog.scalascraper.browser.HtmlUnitBrowser._
 import net.ruippeixotog.scalascraper.model._
 import net.ruippeixotog.scalascraper.util.ProxyUtils
@@ -134,6 +134,14 @@ object HtmlUnitBrowser {
       (previousSiblings.reverse ++ nextSiblings).map(HtmlUnitElement)
     }
 
+    def childNodes = underlying.getChildNodes.flatMap(HtmlUnitNode.apply)
+
+    def siblingNodes = {
+      val previousSiblings = Stream.iterate[DomNode](underlying)(_.getPreviousSibling).tail.takeWhile(_ != null)
+      val nextSiblings = Stream.iterate[DomNode](underlying)(_.getNextSibling).tail.takeWhile(_ != null)
+      (previousSiblings.reverse ++ nextSiblings).flatMap(HtmlUnitNode.apply)
+    }
+
     def attrs = underlying.getAttributesMap.mapValues(_.getValue).toMap
 
     def hasAttr(name: String) = underlying.hasAttribute(name) &&
@@ -163,6 +171,14 @@ object HtmlUnitBrowser {
       underlying.querySelectorAll(cssQuery).iterator.collect { case elem: DomElement => HtmlUnitElement(elem) }
 
     def select(cssQuery: String) = ElementQuery(cssQuery, this, selectUnderlying)
+  }
+
+  object HtmlUnitNode {
+    def apply(underlying: DomNode): Option[Node] = underlying match {
+      case elem: DomElement => Some(ElementNode(HtmlUnitElement(elem)))
+      case textNode: DomText => Some(TextNode(textNode.getWholeText))
+      case _ => None
+    }
   }
 
   case class HtmlUnitDocument(window: WebWindow) extends Document {

@@ -3,11 +3,10 @@ package net.ruippeixotog.scalascraper.browser
 import java.io.{ File, InputStream }
 
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser._
-import net.ruippeixotog.scalascraper.model.{ ElementQuery, Document, Element }
+import net.ruippeixotog.scalascraper.model._
 import org.jsoup.Connection.Method._
 import org.jsoup.Connection.Response
 import org.jsoup.{ Connection, Jsoup }
-
 import scala.collection.convert.WrapAsJava._
 import scala.collection.convert.WrapAsScala._
 import scala.collection.mutable
@@ -86,6 +85,9 @@ object JsoupBrowser {
     def children = underlying.children.toIterable.map(JsoupElement)
     def siblings = underlying.siblingElements.map(JsoupElement)
 
+    def childNodes = underlying.childNodes.flatMap(JsoupNode.apply)
+    def siblingNodes = underlying.siblingNodes.flatMap(JsoupNode.apply)
+
     def attrs = underlying.attributes.map { attr => attr.getKey -> attr.getValue }.toMap
 
     def hasAttr(name: String) = underlying.hasAttr(name)
@@ -104,6 +106,14 @@ object JsoupBrowser {
       underlying.select(cssQuery).iterator.map(JsoupElement)
 
     def select(cssQuery: String) = ElementQuery(cssQuery, this, selectUnderlying)
+  }
+
+  object JsoupNode {
+    def apply(underlying: org.jsoup.nodes.Node): Option[Node] = underlying match {
+      case elem: org.jsoup.nodes.Element => Some(ElementNode(JsoupElement(elem)))
+      case textNode: org.jsoup.nodes.TextNode => Some(TextNode(textNode.text))
+      case _ => None
+    }
   }
 
   case class JsoupDocument(underlying: org.jsoup.nodes.Document) extends Document {
