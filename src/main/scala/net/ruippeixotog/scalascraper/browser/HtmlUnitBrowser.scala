@@ -111,7 +111,7 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME) exten
 
   private[this] def newRequest(url: URL, method: HttpMethod = HttpMethod.GET, charset: Option[String] = None) = {
     val req = new WebRequest(url, method)
-    charset.foreach(req.setCharset(_))
+    charset.foreach(req.setCharset)
     defaultRequestSettings(req)
     req
   }
@@ -182,7 +182,7 @@ object HtmlUnitBrowser {
   }
 
   case class HtmlUnitDocument(window: WebWindow) extends Document {
-    private[this] var _underlying: SgmlPage = null
+    private[this] var _underlying: SgmlPage = _
 
     def underlying: SgmlPage = {
       if (_underlying == null || window.getEnclosedPage.getUrl != _underlying.getUrl) {

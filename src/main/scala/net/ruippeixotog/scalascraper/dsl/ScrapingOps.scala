@@ -11,7 +11,7 @@ import scalaz.syntax.ToFunctorOps
 
 trait ScrapingOps extends syntax.ToIdOps with ToFunctorOps with std.AllInstances with IdInstances {
 
-  implicit class ElementsScrapingOps[+F[_]: Functor, A <% ElementQuery](val self: F[A]) {
+  implicit class ElementsScrapingOps[+F[_]: Functor, A](val self: F[A])(implicit conv: A => ElementQuery) {
 
     def extract[B](extractor: HtmlExtractor[B]) = self.map(extractor.extract(_))
 
