@@ -14,22 +14,22 @@ class ValidatedSpec extends Specification {
       val succ2: Validated[Exception, String] = VSuccess("yey")
       val fail2: Validated[Exception, String] = VFailure(new Exception("error"))
 
-      succ1 match {
+      succ1 must beLike {
         case VSuccess(res) => res mustEqual 3
         case VFailure(_) => ko
       }
 
-      fail1 match {
+      fail1 must beLike {
         case VSuccess(_) => ko
         case VFailure(msg) => msg mustEqual "error"
       }
 
-      succ2 match {
+      succ2 must beLike {
         case VSuccess(res) => res mustEqual "yey"
         case VFailure(_) => ko
       }
 
-      fail2 match {
+      fail2 must beLike {
         case VSuccess(_) => ko
         case VFailure(ex) => ex.getMessage mustEqual "error"
       }
