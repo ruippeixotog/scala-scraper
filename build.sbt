@@ -15,11 +15,11 @@ libraryDependencies ++= Seq(
   "com.typesafe"                % "config"               % "1.3.1",
   "net.sourceforge.htmlunit"    % "htmlunit"             % "2.23",
   "org.jsoup"                   % "jsoup"                % "1.10.1",
-  "org.scalaz"                 %% "scalaz-core"          % "7.2.7",
-  "org.http4s"                 %% "http4s-blaze-server"  % "0.14.11a"             % "test",
-  "org.http4s"                 %% "http4s-dsl"           % "0.14.11a"             % "test",
+  "org.scalaz"                 %% "scalaz-core"          % "7.2.8",
+  "org.http4s"                 %% "http4s-blaze-server"  % "0.15.0a"              % "test",
+  "org.http4s"                 %% "http4s-dsl"           % "0.15.0a"              % "test",
   "org.slf4j"                   % "slf4j-nop"            % "1.7.21"               % "test",
-  "org.specs2"                 %% "specs2-core"          % "3.8.5.1"              % "test")
+  "org.specs2"                 %% "specs2-core"          % "3.8.6"                % "test")
 
 scalariformPreferences := scalariformPreferences.value
   .setPreference(DanglingCloseParenthesis, Prevent)
@@ -33,9 +33,11 @@ scalacOptions ++= Seq(
   "-language:implicitConversions",
   "-language:higherKinds")
 
-publishTo <<= version { v =>
+fork in Test := true
+
+publishTo := {
   val nexus = "https://oss.sonatype.org/"
-  if (v.trim.endsWith("SNAPSHOT"))
+  if (isSnapshot.value)
     Some("snapshots" at nexus + "content/repositories/snapshots")
   else
     Some("releases"  at nexus + "service/local/staging/deploy/maven2")
