@@ -1,7 +1,7 @@
-### 1.2.0 (unreleased)
+### 1.2.0 (Dec 6, 2016)
 
 - New features
-  - Add support for Scala 2.12;
+  - Support for Scala 2.12;
   - New method `closeAll` in `HtmlUnitBrowser`, for closing opened windows;
   - New model `Node` representing a DOM node - in this library, either a `ElementNode` or a `TextNode`;
   - New methods `childNodes` and `siblingNodes` in `Element`.
