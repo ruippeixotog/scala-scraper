@@ -4,8 +4,7 @@ import java.io.{ File, InputStream }
 import java.net.URL
 import java.util.UUID
 
-import scala.collection.convert.WrapAsJava._
-import scala.collection.convert.WrapAsScala._
+import scala.collection.JavaConverters._
 
 import org.apache.commons.io.IOUtils
 import org.apache.http.HttpStatus
@@ -56,7 +55,7 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME) exten
 
   def post(url: String, form: Map[String, String]): Document = {
     val req = newRequest(new URL(url), HttpMethod.POST)
-    req.setRequestParameters(form.map { case (k, v) => new NameValuePair(k, v) }.toSeq)
+    req.setRequestParameters(form.map { case (k, v) => new NameValuePair(k, v) }.toBuffer.asJava)
     exec(req)
   }
 
@@ -83,7 +82,7 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME) exten
   }
 
   def cookies(url: String) =
-    client.getCookies(new URL(url)).map { c => c.getName -> c.getValue }.toMap
+    client.getCookies(new URL(url)).asScala.map { c => c.getName -> c.getValue }.toMap
 
   def clearCookies() = client.getCookieManager.clearCookies()
 
@@ -106,7 +105,7 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME) exten
     val bytes = IOUtils.toByteArray(inputStream)
     inputStream.close()
     val compiledHeaders = List(new NameValuePair("Content-Type", "text/html; charset=" + charset))
-    new WebResponseData(bytes, HttpStatus.SC_OK, "OK", compiledHeaders)
+    new WebResponseData(bytes, HttpStatus.SC_OK, "OK", compiledHeaders.asJava)
   }
 
   private[this] def newRequest(url: URL, method: HttpMethod = HttpMethod.GET, charset: Option[String] = None) = {
@@ -127,14 +126,14 @@ object HtmlUnitBrowser {
   case class HtmlUnitElement(underlying: DomElement) extends Element {
     def tagName = underlying.getTagName
     def parent = Option(underlying.getParentNode).collect { case elem: DomElement => HtmlUnitElement(elem) }
-    def children = underlying.getChildElements.map(HtmlUnitElement)
+    def children = underlying.getChildElements.asScala.map(HtmlUnitElement)
     def siblings = {
       val previousSiblings = Stream.iterate(underlying)(_.getPreviousElementSibling).tail.takeWhile(_ != null)
       val nextSiblings = Stream.iterate(underlying)(_.getNextElementSibling).tail.takeWhile(_ != null)
       (previousSiblings.reverse ++ nextSiblings).map(HtmlUnitElement)
     }
 
-    def childNodes = underlying.getChildNodes.flatMap(HtmlUnitNode.apply)
+    def childNodes = underlying.getChildNodes.asScala.flatMap(HtmlUnitNode.apply)
 
     def siblingNodes = {
       val previousSiblings = Stream.iterate[DomNode](underlying)(_.getPreviousSibling).tail.takeWhile(_ != null)
@@ -142,7 +141,7 @@ object HtmlUnitBrowser {
       (previousSiblings.reverse ++ nextSiblings).flatMap(HtmlUnitNode.apply)
     }
 
-    def attrs = underlying.getAttributesMap.mapValues(_.getValue).toMap
+    def attrs = underlying.getAttributesMap.asScala.mapValues(_.getValue).toMap
 
     def hasAttr(name: String) = underlying.hasAttribute(name) &&
       (underlying.getAttribute(name) ne DomElement.ATTRIBUTE_NOT_DEFINED)
@@ -154,7 +153,7 @@ object HtmlUnitBrowser {
 
     def text = underlying.getTextContent.trim
 
-    def innerHtml = underlying.getChildNodes.iterator.map {
+    def innerHtml = underlying.getChildNodes.iterator.asScala.map {
       case node: DomElement => HtmlUnitElement(node).outerHtml
       case node: DomText => node.getWholeText
       case node => node.asXml.trim
@@ -168,7 +167,7 @@ object HtmlUnitBrowser {
     }
 
     private[this] def selectUnderlying(cssQuery: String): Iterator[Element] =
-      underlying.querySelectorAll(cssQuery).iterator.collect { case elem: DomElement => HtmlUnitElement(elem) }
+      underlying.querySelectorAll(cssQuery).iterator.asScala.collect { case elem: DomElement => HtmlUnitElement(elem) }
 
     def select(cssQuery: String) = ElementQuery(cssQuery, this, selectUnderlying)
   }

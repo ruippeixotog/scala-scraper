@@ -1,10 +1,11 @@
 package net.ruippeixotog.scalascraper.dsl
 
+import scala.collection.JavaConverters._
+
 import com.typesafe.config.{ Config, ConfigFactory }
+
 import net.ruippeixotog.scalascraper.scraper._
 import net.ruippeixotog.scalascraper.util._
-
-import scala.collection.convert.WrapAsScala._
 
 trait ConfigLoadingHelpers extends ConfigReaders {
 
@@ -25,10 +26,10 @@ trait ConfigLoadingHelpers extends ConfigReaders {
     configs.map(validatorAt[R])
 
   @inline final def validatorsAt[R: ConfigReader](config: Config, path: String): Seq[HtmlValidator[R]] =
-    validatorsAt[R](config.getConfigList(path))
+    validatorsAt[R](config.getConfigList(path).asScala)
 
   @inline final def validatorsAt[R: ConfigReader](path: String): Seq[HtmlValidator[R]] =
-    validatorsAt[R](ConfigFactory.load.getConfigList(path))
+    validatorsAt[R](ConfigFactory.load.getConfigList(path).asScala)
 
   def extractorAt[A](config: Config): SimpleExtractor[String, A] =
     HtmlExtractor.fromConfig[A](config)

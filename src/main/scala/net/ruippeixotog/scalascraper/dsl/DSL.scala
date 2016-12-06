@@ -3,9 +3,7 @@ package net.ruippeixotog.scalascraper.dsl
 import net.ruippeixotog.scalascraper.model.ElementQuery
 import net.ruippeixotog.scalascraper.scraper._
 
-import scala.collection.convert.WrapAsScala
-
-object DSL extends ImplicitConversions with ScrapingOps with ConfigLoadingHelpers with WrapAsScala {
+object DSL extends ImplicitConversions with ScrapingOps with ConfigLoadingHelpers {
 
   def extractor(cssQuery: String): HtmlExtractor[Iterable[String]] = SimpleExtractor(cssQuery)
 

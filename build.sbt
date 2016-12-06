@@ -4,7 +4,8 @@ name := "scala-scraper"
 organization := "net.ruippeixotog"
 version := "1.1.1-SNAPSHOT"
 
-scalaVersion := "2.11.8"
+scalaVersion := "2.12.1"
+crossScalaVersions := Seq("2.11.8", "2.12.1")
 
 resolvers ++= Seq(
   Resolver.sonatypeRepo("snapshots"),

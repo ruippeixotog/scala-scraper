@@ -4,7 +4,7 @@ import com.typesafe.config.Config
 import net.ruippeixotog.scalascraper.model.{ Element, ElementQuery }
 import org.joda.time.DateTime
 import org.joda.time.format._
-import scala.collection.convert.WrapAsScala._
+import scala.collection.JavaConverters._
 import scala.util.matching.Regex
 import scalaz.Monad
 
@@ -44,7 +44,7 @@ object HtmlExtractor extends HtmlExtractorInstances {
       if (conf.hasPath("date-format"))
         asDate(conf.getString("date-format"))
       else if (conf.hasPath("date-formats"))
-        asDate(conf.getStringList("date-formats"): _*)
+        asDate(conf.getStringList("date-formats").asScala: _*)
       else if (conf.hasPath("regex-format"))
         regexMatch(conf.getString("regex-format"))
       else
