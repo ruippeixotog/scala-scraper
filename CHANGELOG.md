@@ -1,3 +1,8 @@
+### 1.2.1 (unreleased)
+
+- Bug fixes
+  - Fix type parameter usage in three-arg `>?>` DSL operator.
+
 ### 1.2.0 (Dec 6, 2016)
 
 - New features
@@ -12,7 +17,6 @@
   - New methods `clearCookies`, `parseInputStream` and `parseResource` in `Browser`;
   - New methods `hasAttr` and `siblings` in `Element`;
   - Support for SOCKS proxies.
-
 - Bug fixes
   - Correct handling of missing name and value attributes in the `formData` extractor.
 
