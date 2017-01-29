@@ -35,7 +35,7 @@ trait ScrapingOps extends syntax.ToIdOps with ToFunctorOps with std.AllInstances
     def >?>[B, C](extractor1: HtmlExtractor[B], extractor2: HtmlExtractor[C]) =
       self.map { doc => (Try(extractor1.extract(doc)).toOption, Try(extractor2.extract(doc)).toOption) }
 
-    def >?>[B, C, D](extractor1: HtmlExtractor[B], extractor2: HtmlExtractor[C], extractor3: HtmlExtractor[C]) =
+    def >?>[B, C, D](extractor1: HtmlExtractor[B], extractor2: HtmlExtractor[C], extractor3: HtmlExtractor[D]) =
       self.map { doc =>
         val e1 = Try(extractor1.extract(doc)).toOption
         val e2 = Try(extractor2.extract(doc)).toOption
