@@ -65,7 +65,7 @@ class DSLExtractingSpec extends Specification with BrowserHelper {
 
       "support immediate parsing of numbers after extraction" in {
         doc >> extractor("#rating", stext, asDouble) mustEqual 4.5
-        doc >> extractor("#mytable td", texts, seq(asInt)) mustEqual Seq(3, 15, 15, 1)
+        doc >> extractor("#mytable td", texts, seq(asInt)).map(_.toSeq) mustEqual Seq(3, 15, 15, 1)
       }
 
       "allow immediate parsing of dates after extraction" in {
@@ -77,19 +77,19 @@ class DSLExtractingSpec extends Specification with BrowserHelper {
         doc >> extractor("#content h3", allText, regexMatch("Section (\\d*) h3".r)) mustEqual "Section 1 h3"
         doc >> extractor("#content h3", allText, regexMatch("Section (\\d*) h3").captured) mustEqual "1"
 
-        doc >> extractor("#content h3", allText, regexMatches("Section (\\d*) h3")) mustEqual
+        doc >> extractor("#content h3", allText, regexMatches("Section (\\d*) h3")).map(_.toSeq) mustEqual
           Seq("Section 1 h3", "Section 2 h3", "Section 3 h3")
 
-        doc >> extractor("#content h3", allText, regexMatches("Section (\\d*) h3".r)) mustEqual
+        doc >> extractor("#content h3", allText, regexMatches("Section (\\d*) h3".r)).map(_.toSeq) mustEqual
           Seq("Section 1 h3", "Section 2 h3", "Section 3 h3")
 
-        doc >> extractor("#content h3", allText, regexMatches("Section (\\d*) h3").captured) mustEqual
+        doc >> extractor("#content h3", allText, regexMatches("Section (\\d*) h3").captured).map(_.toSeq) mustEqual
           Seq("1", "2", "3")
 
-        doc >> extractor("#content h3", allText, regexMatch("Section (\\d*) (h.)").allCaptured) mustEqual
-          List("1", "h3")
+        doc >> extractor("#content h3", allText, regexMatch("Section (\\d*) (h.)").allCaptured).map(_.toSeq) mustEqual
+          Seq("1", "h3")
 
-        doc >> extractor("#content h3", allText, regexMatches("Section (\\d*) (h.)").allCaptured) mustEqual
+        doc >> extractor("#content h3", allText, regexMatches("Section (\\d*) (h.)").allCaptured).map(_.toSeq) mustEqual
           Seq(List("1", "h3"), List("2", "h3"), List("3", "h3"))
       }
 

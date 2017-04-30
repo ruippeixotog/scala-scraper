@@ -2,6 +2,7 @@ package net.ruippeixotog.scalascraper.browser
 
 import java.io.{ File, InputStream }
 import java.net.URL
+import java.nio.charset.Charset
 import java.util.UUID
 
 import scala.collection.JavaConverters._
@@ -11,6 +12,7 @@ import org.apache.http.HttpStatus
 import com.gargoylesoftware.htmlunit._
 import com.gargoylesoftware.htmlunit.html._
 import com.gargoylesoftware.htmlunit.util.{ NameValuePair, StringUtils }
+
 import net.ruippeixotog.scalascraper.browser.HtmlUnitBrowser._
 import net.ruippeixotog.scalascraper.model._
 import net.ruippeixotog.scalascraper.util.ProxyUtils
@@ -61,7 +63,7 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME) exten
 
   def parseFile(file: File, charset: String): Document = {
     val req = newRequest(new URL(s"file://${file.getAbsolutePath}"), HttpMethod.GET)
-    req.setCharset(charset)
+    req.setCharset(Charset.forName(charset))
     exec(req)
   }
 
@@ -110,7 +112,7 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME) exten
 
   private[this] def newRequest(url: URL, method: HttpMethod = HttpMethod.GET, charset: Option[String] = None) = {
     val req = new WebRequest(url, method)
-    charset.foreach(req.setCharset)
+    charset.map(Charset.forName).foreach(req.setCharset)
     defaultRequestSettings(req)
     req
   }
