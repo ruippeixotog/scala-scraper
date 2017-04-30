@@ -13,7 +13,7 @@ sealed trait Node
   * A `Node` representing a DOM element.
   * @param element the DOM element
   */
-case class ElementNode(element: Element) extends Node
+case class ElementNode[E <: Element](element: E) extends Node
 
 /**
   * A `Node` representing a DOM text node.

@@ -10,6 +10,11 @@ package net.ruippeixotog.scalascraper.model
 trait Element {
 
   /**
+    * The concrete type of this `Element`. Should be defined in each concrete implementation as its own type.
+    */
+  type ThisType <: Element
+
+  /**
     * The tag name of this element.
     */
   def tagName: String
@@ -17,12 +22,12 @@ trait Element {
   /**
     * The element of this element.
     */
-  def parent: Option[Element]
+  def parent: Option[ThisType]
 
   /**
     * The list of children of this element.
     */
-  def children: Iterable[Element]
+  def children: Iterable[ThisType]
 
   /**
     * The list of child nodes of this element.
@@ -32,7 +37,7 @@ trait Element {
   /**
     * The list of siblings of this element.
     */
-  def siblings: Iterable[Element]
+  def siblings: Iterable[ThisType]
 
   /**
     * The list of sibling nodes of this element.
@@ -80,5 +85,10 @@ trait Element {
     * @param query the CSS selector used to select elements to be returned
     * @return an `ElementQuery` instance representing the sequence of resulting elements
     */
-  def select(query: String): ElementQuery
+  def select(query: String): ElementQuery[ThisType]
+}
+
+object Element {
+  type Strict[E <: Element] = Element { type ThisType = E }
+  type Upper[E <: Element] = Element { type ThisType <: E }
 }

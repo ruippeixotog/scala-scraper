@@ -6,18 +6,18 @@ import net.ruippeixotog.scalascraper.util.ConfigReader
 
 import scala.util.Try
 
-trait HtmlValidator[+R] {
-  def matches(doc: ElementQuery): Boolean
+trait HtmlValidator[-E <: Element, +R] {
+  def matches(doc: ElementQuery[E]): Boolean
   def result: Option[R]
 }
 
 object HtmlValidator {
 
-  def fromConfig[R](conf: Config)(implicit reader: ConfigReader[R]): HtmlValidator[R] = {
+  def fromConfig[R](conf: Config)(implicit reader: ConfigReader[R]): HtmlValidator[Element, R] = {
     if (conf.hasPath("exists")) {
-      val extractor = SimpleExtractor[ElementQuery, ElementQuery](
+      val extractor = SimpleExtractor(
         conf.getString("select.query"),
-        ContentExtractors.elements, ContentParsers.asIs)
+        ContentExtractors.elements, ContentParsers.asIs[ElementQuery[Element]])
 
       val matcher = conf.getBoolean("exists") == (_: Iterable[Element]).nonEmpty
       val result = Try(reader.read(conf, "status")).toOption
@@ -32,33 +32,33 @@ object HtmlValidator {
     }
   }
 
-  val matchAll = new HtmlValidator[Nothing] {
-    def matches(doc: ElementQuery) = true
+  val matchAll = new HtmlValidator[Element, Nothing] {
+    def matches(doc: ElementQuery[Element]) = true
     def result = None
   }
 
-  val matchNothing = new HtmlValidator[Nothing] {
-    def matches(doc: ElementQuery) = false
+  val matchNothing = new HtmlValidator[Element, Nothing] {
+    def matches(doc: ElementQuery[Element]) = false
     def result = None
   }
 
-  def matchAll[R](res: R) = new HtmlValidator[R] {
-    def matches(doc: ElementQuery) = true
+  def matchAll[R](res: R) = new HtmlValidator[Element, R] {
+    def matches(doc: ElementQuery[Element]) = true
     def result = Some(res)
   }
 
-  def matchNothing[R](res: R) = new HtmlValidator[R] {
-    def matches(doc: ElementQuery) = false
+  def matchNothing[R](res: R) = new HtmlValidator[Element, R] {
+    def matches(doc: ElementQuery[Element]) = false
     def result = Some(res)
   }
 }
 
-case class SimpleValidator[A, +R](
-    htmlExtractor: HtmlExtractor[A],
+case class SimpleValidator[-E <: Element, A, +R](
+    htmlExtractor: HtmlExtractor[E, A],
     matcher: A => Boolean,
-    result: Option[R] = None) extends HtmlValidator[R] {
+    result: Option[R] = None) extends HtmlValidator[E, R] {
 
-  def matches(doc: ElementQuery) = Try(htmlExtractor.extract(doc)).map(matcher).getOrElse(false)
+  def matches(doc: ElementQuery[E]) = Try(htmlExtractor.extract(doc)).map(matcher).getOrElse(false)
 
   def withResult[R2](res: R2) = SimpleValidator(htmlExtractor, matcher, Some(res))
   def withoutResult = SimpleValidator(htmlExtractor, matcher, None)
@@ -66,9 +66,9 @@ case class SimpleValidator[A, +R](
 
 object SimpleValidator {
 
-  def apply[A, R](htmlExtractor: HtmlExtractor[A])(matcher: A => Boolean): SimpleValidator[A, R] =
-    SimpleValidator[A, R](htmlExtractor, matcher)
+  def apply[E <: Element, A, R](htmlExtractor: HtmlExtractor[E, A])(matcher: A => Boolean): SimpleValidator[E, A, R] =
+    SimpleValidator[E, A, R](htmlExtractor, matcher)
 
-  def apply[A, R](htmlExtractor: HtmlExtractor[A], result: R)(matcher: A => Boolean): SimpleValidator[A, R] =
-    SimpleValidator[A, R](htmlExtractor, matcher, Some(result))
+  def apply[E <: Element, A, R](htmlExtractor: HtmlExtractor[E, A], result: R)(matcher: A => Boolean): SimpleValidator[E, A, R] =
+    SimpleValidator[E, A, R](htmlExtractor, matcher, Some(result))
 }

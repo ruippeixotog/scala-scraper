@@ -34,6 +34,7 @@ import net.ruippeixotog.scalascraper.util.ProxyUtils
   * @param browserType the browser type and version to simulate
   */
 class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME) extends Browser {
+  type DocumentType = HtmlUnitDocument
 
   private[this] lazy val client = {
     val c = ProxyUtils.getProxy match {
@@ -46,35 +47,35 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME) exten
 
   def userAgent = browserType.getUserAgent
 
-  def exec(req: WebRequest): Document = {
+  def exec(req: WebRequest): HtmlUnitDocument = {
     val window = newWindow()
     client.getPage(window, req)
     HtmlUnitDocument(window)
   }
 
-  def get(url: String): Document =
+  def get(url: String): HtmlUnitDocument =
     exec(newRequest(new URL(url)))
 
-  def post(url: String, form: Map[String, String]): Document = {
+  def post(url: String, form: Map[String, String]): HtmlUnitDocument = {
     val req = newRequest(new URL(url), HttpMethod.POST)
     req.setRequestParameters(form.map { case (k, v) => new NameValuePair(k, v) }.toBuffer.asJava)
     exec(req)
   }
 
-  def parseFile(file: File, charset: String): Document = {
+  def parseFile(file: File, charset: String): HtmlUnitDocument = {
     val req = newRequest(new URL(s"file://${file.getAbsolutePath}"), HttpMethod.GET)
     req.setCharset(Charset.forName(charset))
     exec(req)
   }
 
-  def parseString(html: String): Document = {
+  def parseString(html: String): HtmlUnitDocument = {
     val response = new StringWebResponse(html, WebClient.URL_ABOUT_BLANK)
     val window = newWindow()
     HTMLParser.parseHtml(response, window)
     HtmlUnitDocument(window)
   }
 
-  def parseInputStream(inputStream: InputStream, charset: String): Document = {
+  def parseInputStream(inputStream: InputStream, charset: String): HtmlUnitDocument = {
     val response = new WebResponse(
       newWebResponseData(inputStream, charset),
       newRequest(WebClient.URL_ABOUT_BLANK, charset = Some(charset)), 0)
@@ -123,9 +124,12 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME) exten
 }
 
 object HtmlUnitBrowser {
-  def apply(): HtmlUnitBrowser = new HtmlUnitBrowser()
+  def apply(): Browser = new HtmlUnitBrowser()
+  def typed(): HtmlUnitBrowser = new HtmlUnitBrowser()
 
   case class HtmlUnitElement(underlying: DomElement) extends Element {
+    type ThisType = HtmlUnitElement
+
     def tagName = underlying.getTagName
     def parent = Option(underlying.getParentNode).collect { case elem: DomElement => HtmlUnitElement(elem) }
     def children = underlying.getChildElements.asScala.map(HtmlUnitElement)
@@ -168,7 +172,7 @@ object HtmlUnitBrowser {
       s"<$tagName$attrsStr>$innerHtml</$tagName>"
     }
 
-    private[this] def selectUnderlying(cssQuery: String): Iterator[Element] =
+    private[this] def selectUnderlying(cssQuery: String): Iterator[HtmlUnitElement] =
       underlying.querySelectorAll(cssQuery).iterator.asScala.collect { case elem: DomElement => HtmlUnitElement(elem) }
 
     def select(cssQuery: String) = ElementQuery(cssQuery, this, selectUnderlying)
@@ -183,6 +187,8 @@ object HtmlUnitBrowser {
   }
 
   case class HtmlUnitDocument(window: WebWindow) extends Document {
+    type ElementType = HtmlUnitElement
+
     private[this] var _underlying: SgmlPage = _
 
     def underlying: SgmlPage = {

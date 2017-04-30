@@ -6,15 +6,15 @@ import net.ruippeixotog.scalascraper.util._
 
 trait ImplicitConversions {
 
-  implicit def cssQueryAsExtractor(cssQuery: String): HtmlExtractor[Iterable[String]] =
+  implicit def cssQueryAsExtractor(cssQuery: String): HtmlExtractor[Element, Iterable[String]] =
     SimpleExtractor(cssQuery)
 
-  implicit def contentExtractorAsExtractor[C](contentExtractor: ElementQuery => C): String => HtmlExtractor[C] = {
+  implicit def contentExtractorAsExtractor[E <: Element, C](contentExtractor: ElementQuery[E] => C): String => HtmlExtractor[E, C] = {
     cssQuery: String => SimpleExtractor(cssQuery, contentExtractor)
   }
 
-  implicit def elementAsElementQuery(elem: Element) = ElementQuery(elem)
-  implicit def documentAsElementQuery(doc: Document) = ElementQuery(doc.root)
+  implicit def elementAsElementQuery[E <: Element.Upper[E]](elem: E) = ElementQuery(elem)
+  implicit def documentAsElementQuery[D <: Document](doc: D) = ElementQuery(doc.root)
 
   implicit def projectValidatedSuccess[R, A](either: Validated[R, A]) = either.right
 }

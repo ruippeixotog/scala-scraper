@@ -27,21 +27,23 @@ import net.ruippeixotog.scalascraper.model._
   * @param userAgent the user agent with which requests should be made
   */
 class JsoupBrowser(val userAgent: String = "jsoup/1.8") extends Browser {
+  type DocumentType = JsoupDocument
+
   private[this] val cookieMap = mutable.Map.empty[String, String]
 
-  def get(url: String): Document =
+  def get(url: String): JsoupDocument =
     executePipeline(Jsoup.connect(url).method(GET))
 
-  def post(url: String, form: Map[String, String]): Document =
+  def post(url: String, form: Map[String, String]): JsoupDocument =
     executePipeline(Jsoup.connect(url).method(POST).data(form.asJava))
 
-  def parseFile(file: File, charset: String): Document =
+  def parseFile(file: File, charset: String): JsoupDocument =
     JsoupDocument(Jsoup.parse(file, charset))
 
-  def parseString(html: String): Document =
+  def parseString(html: String): JsoupDocument =
     JsoupDocument(Jsoup.parse(html))
 
-  def parseInputStream(inputStream: InputStream, charset: String): Document = {
+  def parseInputStream(inputStream: InputStream, charset: String): JsoupDocument = {
     val document = JsoupDocument(Jsoup.parse(inputStream, charset, ""))
     inputStream.close()
     document
@@ -64,13 +66,13 @@ class JsoupBrowser(val userAgent: String = "jsoup/1.8") extends Browser {
   protected[this] def executeRequest(conn: Connection): Response =
     conn.execute()
 
-  protected[this] def processResponse(res: Connection.Response): Document = {
+  protected[this] def processResponse(res: Connection.Response): JsoupDocument = {
     lazy val doc = res.parse
     cookieMap ++= res.cookies.asScala
     if (res.hasHeader("Location")) get(res.header("Location")) else JsoupDocument(doc)
   }
 
-  private[this] val executePipeline: Connection => Document =
+  private[this] val executePipeline: Connection => JsoupDocument =
     (defaultRequestSettings _)
       .andThen(requestSettings)
       .andThen(executeRequest)
@@ -78,9 +80,12 @@ class JsoupBrowser(val userAgent: String = "jsoup/1.8") extends Browser {
 }
 
 object JsoupBrowser {
-  def apply(): JsoupBrowser = new JsoupBrowser()
+  def apply(): Browser = new JsoupBrowser()
+  def typed(): JsoupBrowser = new JsoupBrowser()
 
   case class JsoupElement(underlying: org.jsoup.nodes.Element) extends Element {
+    type ThisType = JsoupElement
+
     def tagName = underlying.tagName
     def parent = Option(underlying.parent).map(JsoupElement)
     def children = underlying.children.asScala.map(JsoupElement)
@@ -103,7 +108,7 @@ object JsoupBrowser {
     def innerHtml = underlying.html
     def outerHtml = underlying.outerHtml
 
-    private[this] def selectUnderlying(cssQuery: String): Iterator[Element] =
+    private[this] def selectUnderlying(cssQuery: String): Iterator[JsoupElement] =
       underlying.select(cssQuery).iterator.asScala.map(JsoupElement)
 
     def select(cssQuery: String) = ElementQuery(cssQuery, this, selectUnderlying)
@@ -118,6 +123,8 @@ object JsoupBrowser {
   }
 
   case class JsoupDocument(underlying: org.jsoup.nodes.Document) extends Document {
+    type ElementType = JsoupElement
+
     def location = underlying.location()
     def root = JsoupElement(underlying.getElementsByTag("html").first)
 

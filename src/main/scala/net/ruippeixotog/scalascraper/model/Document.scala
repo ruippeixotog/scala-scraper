@@ -16,6 +16,11 @@ package net.ruippeixotog.scalascraper.model
 trait Document {
 
   /**
+    * The type of the elements contained in this document.
+    */
+  type ElementType <: Element.Strict[ElementType]
+
+  /**
     * The location of this document.
     */
   def location: String
@@ -23,7 +28,7 @@ trait Document {
   /**
     * The root element of this document.
     */
-  def root: Element
+  def root: ElementType
 
   /**
     * The title of this document.
@@ -33,15 +38,19 @@ trait Document {
   /**
     * The `head` element of this document.
     */
-  def head: Element = root.select("head").head
+  def head: ElementType = root.select("head").head
 
   /**
     * The `body` element of this document.
     */
-  def body: Element = root.select("body").head
+  def body: ElementType = root.select("body").head
 
   /**
     * The HTML representation of this document as a string.
     */
   def toHtml: String
+}
+
+object Document {
+  type Typed[E <: Element.Strict[E]] = Document { type ElementType = E }
 }

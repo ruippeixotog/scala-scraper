@@ -1,16 +1,16 @@
 package net.ruippeixotog.scalascraper.dsl
 
-import net.ruippeixotog.scalascraper.model.ElementQuery
+import net.ruippeixotog.scalascraper.model.{ Element, ElementQuery }
 import net.ruippeixotog.scalascraper.scraper._
 
 object DSL extends ImplicitConversions with ScrapingOps with ConfigLoadingHelpers {
 
-  def extractor(cssQuery: String): HtmlExtractor[Iterable[String]] = SimpleExtractor(cssQuery)
+  def extractor(cssQuery: String): HtmlExtractor[Element, Iterable[String]] = SimpleExtractor(cssQuery)
 
-  def extractor[C](cssQuery: String, contentExtractor: ElementQuery => C): HtmlExtractor[C] =
+  def extractor[E <: Element, C](cssQuery: String, contentExtractor: ElementQuery[E] => C): HtmlExtractor[E, C] =
     SimpleExtractor(cssQuery, contentExtractor)
 
-  def extractor[C, A](cssQuery: String, contentExtractor: ElementQuery => C, contentParser: C => A): HtmlExtractor[A] =
+  def extractor[E <: Element, C, A](cssQuery: String, contentExtractor: ElementQuery[E] => C, contentParser: C => A): HtmlExtractor[E, A] =
     SimpleExtractor(cssQuery, contentExtractor, contentParser)
 
   val validator = SimpleValidator

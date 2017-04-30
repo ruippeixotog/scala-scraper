@@ -31,7 +31,8 @@ scalacOptions ++= Seq(
   "-unchecked",
   "-feature",
   "-language:implicitConversions",
-  "-language:higherKinds")
+  "-language:higherKinds",
+  "-Ypartial-unification")
 
 fork in Test := true
 

@@ -4,7 +4,7 @@ package net.ruippeixotog.scalascraper.model
   * The result of a query to an [[Element]]. It works as a collection of `Element` instances and provides a way to
   * further query the elements.
   */
-trait ElementQuery extends Iterable[Element] {
+trait ElementQuery[+E <: Element] extends Iterable[E] {
 
   /**
     * Executes an additional query over the elements of this query using a CSS selector.
@@ -15,20 +15,20 @@ trait ElementQuery extends Iterable[Element] {
     * @param query the CSS selector used to select elements to be returned
     * @return an `ElementQuery` instance representing the result of the composed query
     */
-  def select(query: String): ElementQuery
+  def select(query: String): ElementQuery[E]
 }
 
-private[model] class RootElementQuery(
-    private val target: Element,
-    exec: String => Iterator[Element]) extends ElementQuery {
+private[model] class RootElementQuery[E <: Element](
+    private val target: E,
+    exec: String => Iterator[E]) extends ElementQuery[E] {
 
   def iterator = Iterator(target)
 
-  def select(query: String): ElementQuery =
+  def select(query: String): ElementQuery[E] =
     new LazyElementQuery(query.split(","), target, exec)
 
   override def equals(obj: Any) = obj match {
-    case q: ElementQuery => iterator.sameElements(q.iterator)
+    case q: ElementQuery[_] => iterator.sameElements(q.iterator)
     case _ => false
   }
 
@@ -37,20 +37,20 @@ private[model] class RootElementQuery(
   override def toString() = s"RootElementQuery($target)"
 }
 
-private[model] class LazyElementQuery(
+private[model] class LazyElementQuery[E <: Element](
     private val queries: Seq[String],
-    private val target: Element,
-    exec: String => Iterator[Element]) extends ElementQuery {
+    private val target: E,
+    exec: String => Iterator[E]) extends ElementQuery[E] {
 
   def iterator = exec(queries.mkString(","))
 
-  def select(query: String): ElementQuery = {
+  def select(query: String): ElementQuery[E] = {
     val newQueries = for { q1 <- queries; q2 <- query.split(",") } yield s"$q1 $q2"
     new LazyElementQuery(newQueries, target, exec)
   }
 
   override def equals(obj: Any) = obj match {
-    case q: ElementQuery => iterator.sameElements(q.iterator)
+    case q: ElementQuery[_] => iterator.sameElements(q.iterator)
     case _ => false
   }
 
@@ -61,12 +61,12 @@ private[model] class LazyElementQuery(
 
 object ElementQuery {
 
-  def apply(target: Element): ElementQuery =
+  def apply[E <: Element.Upper[E]](target: E): ElementQuery[E] =
     new RootElementQuery(target, target.select(_).iterator)
 
-  def apply(cssQuery: String, target: Element): ElementQuery =
+  def apply[E <: Element.Upper[E]](cssQuery: String, target: E): ElementQuery[E] =
     new LazyElementQuery(cssQuery.split(",").toList, target, target.select(_).iterator)
 
-  def apply(cssQuery: String, target: Element, exec: String => Iterator[Element]): ElementQuery =
+  def apply[E <: Element.Upper[E]](cssQuery: String, target: E, exec: String => Iterator[E]): ElementQuery[E] =
     new LazyElementQuery(cssQuery.split(",").toList, target, exec)
 }

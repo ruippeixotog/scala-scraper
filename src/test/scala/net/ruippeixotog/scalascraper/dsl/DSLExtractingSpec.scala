@@ -1,9 +1,10 @@
 package net.ruippeixotog.scalascraper.dsl
 
 import com.github.nscala_time.time.Imports._
+
 import net.ruippeixotog.scalascraper.browser._
 import net.ruippeixotog.scalascraper.dsl.DSL._
-import net.ruippeixotog.scalascraper.model.ElementQuery
+import net.ruippeixotog.scalascraper.model.{ Element, ElementQuery }
 import net.ruippeixotog.scalascraper.scraper.ContentExtractors.{ text => stext, _ }
 import net.ruippeixotog.scalascraper.scraper.ContentParsers._
 import net.ruippeixotog.scalascraper.scraper.HtmlExtractor
@@ -96,8 +97,8 @@ class DSLExtractingSpec extends Specification with BrowserHelper {
       "allow extracting and parsing custom content" in {
         case class MyPage(title: String, date: LocalDate, section: String)
 
-        val myExtractor = new HtmlExtractor[MyPage] {
-          def extract(doc: ElementQuery) = MyPage(
+        val myExtractor = new HtmlExtractor[Element, MyPage] {
+          def extract(doc: ElementQuery[Element]) = MyPage(
             doc >> stext("title"),
             (doc >> extractor("#date", stext, asDate("yyyy-MM-dd"))).toLocalDate,
             doc >> stext("#menu .active"))

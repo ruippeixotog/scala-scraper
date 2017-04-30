@@ -2,7 +2,7 @@ package net.ruippeixotog.scalascraper.dsl
 
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 import net.ruippeixotog.scalascraper.dsl.DSL._
-import net.ruippeixotog.scalascraper.model.Document
+import net.ruippeixotog.scalascraper.model.{ Document, Element, ElementQuery }
 import net.ruippeixotog.scalascraper.scraper.ContentExtractors.{ text => stext, _ }
 import net.ruippeixotog.scalascraper.scraper.HtmlExtractor
 import net.ruippeixotog.scalascraper.util.Validated.{ VFailure, VSuccess }
@@ -69,7 +69,7 @@ class DSLSpec extends Specification {
       val ext3 = elementList("#menu span") >?> stext("a") map { _.size }
       val ext4 = elementList("#menu span") >?> stext("a") map { _.flatten.size }
 
-      def useExtractor[A](ext: HtmlExtractor[A]) = doc >> ext
+      def useExtractor[A](ext: HtmlExtractor[Element, A]) = doc >> ext
 
       useExtractor(ext1) mustEqual Some("Section 2")
       useExtractor(ext2) mustEqual Seq(Some("Home"), Some("Section 1"), None, Some("Section 3"))
@@ -81,7 +81,7 @@ class DSLSpec extends Specification {
       val ext1 = element("#menu") ~/~ validator("span")(_.nonEmpty) >?> stext(".active")
       val ext2 = element("#menu") ~/~ validator(".active")(_.isEmpty) >> "span"
 
-      def useExtractor[A](ext: HtmlExtractor[A]) = doc >> ext
+      def useExtractor[A](ext: HtmlExtractor[Element, A]) = doc >> ext
 
       useExtractor(ext1) mustEqual VSuccess(Some("Section 2"))
       useExtractor(ext2) mustEqual VFailure(())
