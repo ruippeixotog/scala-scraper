@@ -14,7 +14,7 @@ trait HtmlExtractor[-E <: Element, +A] {
 
 trait HtmlExtractorInstances {
 
-  implicit def extractorInstance[E <: Element] = new Monad[({ type t[A] = HtmlExtractor[E, A] })#t] {
+  implicit def extractorMonad[E <: Element] = new Monad[({ type t[A] = HtmlExtractor[E, A] })#t] {
     def point[A](a: => A) = new HtmlExtractor[E, A] {
       def extract(doc: ElementQuery[E]) = a
     }
