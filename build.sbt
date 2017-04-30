@@ -1,64 +1,70 @@
 import scalariform.formatter.preferences._
 
-name := "scala-scraper"
-organization := "net.ruippeixotog"
+organization in ThisBuild := "net.ruippeixotog"
 
-scalaVersion := "2.12.2"
-crossScalaVersions := Seq("2.11.11", "2.12.2")
+scalaVersion in ThisBuild := "2.12.2"
+crossScalaVersions in ThisBuild := Seq("2.11.11", "2.12.2")
 
-resolvers ++= Seq(
-  Resolver.sonatypeRepo("snapshots"),
-  "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases")
+lazy val core = project.in(file("core"))
+  .settings(commonSettings: _*)
+  .settings(
+    name := "scala-scraper",
 
-libraryDependencies ++= Seq(
-  "com.github.nscala-time"     %% "nscala-time"          % "2.16.0",
-  "com.typesafe"                % "config"               % "1.3.1",
-  "net.sourceforge.htmlunit"    % "htmlunit"             % "2.26",
-  "org.jsoup"                   % "jsoup"                % "1.10.2",
-  "org.scalaz"                 %% "scalaz-core"          % "7.2.12",
-  "org.http4s"                 %% "http4s-blaze-server"  % "0.15.11a"             % "test",
-  "org.http4s"                 %% "http4s-dsl"           % "0.15.11a"             % "test",
-  "org.slf4j"                   % "slf4j-nop"            % "1.7.25"               % "test",
-  "org.specs2"                 %% "specs2-core"          % "3.8.9"                % "test")
+    libraryDependencies ++= Seq(
+      "com.github.nscala-time"     %% "nscala-time"          % "2.16.0",
+      "com.typesafe"                % "config"               % "1.3.1",
+      "net.sourceforge.htmlunit"    % "htmlunit"             % "2.26",
+      "org.jsoup"                   % "jsoup"                % "1.10.2",
+      "org.scalaz"                 %% "scalaz-core"          % "7.2.12",
+      "org.http4s"                 %% "http4s-blaze-server"  % "0.15.11a"             % "test",
+      "org.http4s"                 %% "http4s-dsl"           % "0.15.11a"             % "test",
+      "org.slf4j"                   % "slf4j-nop"            % "1.7.25"               % "test",
+      "org.specs2"                 %% "specs2-core"          % "3.8.9"                % "test"))
 
-scalariformPreferences := scalariformPreferences.value
-  .setPreference(DanglingCloseParenthesis, Prevent)
-  .setPreference(DoubleIndentClassDeclaration, true)
-  .setPreference(PlaceScaladocAsterisksBeneathSecondAsterisk, true)
+lazy val commonSettings = Seq(
+  resolvers ++= Seq(
+    Resolver.sonatypeRepo("snapshots"),
+    "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases"),
 
-scalacOptions ++= Seq(
-  "-deprecation",
-  "-unchecked",
-  "-feature",
-  "-language:implicitConversions",
-  "-language:higherKinds",
-  "-Ypartial-unification")
+  scalariformPreferences := scalariformPreferences.value
+    .setPreference(DanglingCloseParenthesis, Prevent)
+    .setPreference(DoubleIndentClassDeclaration, true)
+    .setPreference(PlaceScaladocAsterisksBeneathSecondAsterisk, true),
 
-fork in Test := true
+  scalacOptions ++= Seq(
+    "-deprecation",
+    "-unchecked",
+    "-feature",
+    "-language:implicitConversions",
+    "-language:higherKinds",
+    "-Ypartial-unification"),
 
-publishTo := {
-  val nexus = "https://oss.sonatype.org/"
-  if (isSnapshot.value)
-    Some("snapshots" at nexus + "content/repositories/snapshots")
-  else
-    Some("releases"  at nexus + "service/local/staging/deploy/maven2")
-}
+  fork in Test := true,
 
-publishMavenStyle := true
-publishArtifact in Test := false
-pomIncludeRepository := { _ => false }
+  publishTo := {
+    val nexus = "https://oss.sonatype.org/"
+    if (isSnapshot.value)
+      Some("snapshots" at nexus + "content/repositories/snapshots")
+    else
+      Some("releases"  at nexus + "service/local/staging/deploy/maven2")
+  },
 
-licenses := Seq("MIT License" -> url("http://www.opensource.org/licenses/mit-license.php"))
-homepage := Some(url("https://github.com/ruippeixotog/scala-scraper"))
-pomExtra :=
-  <scm>
-    <url>https://github.com/ruippeixotog/scala-scraper</url>
-    <connection>scm:git:https://github.com/ruippeixotog/scala-scraper.git</connection>
-  </scm>
-  <developers>
-    <developer>
-      <id>ruippeixotog</id>
-      <name>Rui Gonçalves</name>
-      <url>http://www.ruippeixotog.net</url>
-    </developer>
-  </developers>
+  publishMavenStyle := true,
+  publishArtifact in Test := false,
+  pomIncludeRepository := { _ => false },
+
+  licenses := Seq("MIT License" -> url("http://www.opensource.org/licenses/mit-license.php")),
+  homepage := Some(url("https://github.com/ruippeixotog/scala-scraper")),
+  pomExtra := {
+    <scm>
+      <url>https://github.com/ruippeixotog/scala-scraper</url>
+      <connection>scm:git:https://github.com/ruippeixotog/scala-scraper.git</connection>
+    </scm>
+    <developers>
+      <developer>
+        <id>ruippeixotog</id>
+        <name>Rui Gonçalves</name>
+        <url>http://www.ruippeixotog.net</url>
+      </developer>
+    </developers>
+  })

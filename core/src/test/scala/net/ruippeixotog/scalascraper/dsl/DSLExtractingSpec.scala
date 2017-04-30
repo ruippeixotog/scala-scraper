@@ -101,7 +101,8 @@ class DSLExtractingSpec extends Specification with BrowserHelper {
           def extract(doc: ElementQuery[Element]) = MyPage(
             doc >> stext("title"),
             (doc >> extractor("#date", stext, asDate("yyyy-MM-dd"))).toLocalDate,
-            doc >> stext("#menu .active"))
+            doc >> stext("#menu .active")
+          )
         }
 
         doc >> myExtractor mustEqual MyPage("Test page", "2014-10-26".toLocalDate, "Section 2")

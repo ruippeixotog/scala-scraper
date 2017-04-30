@@ -154,7 +154,8 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
         getText(browser.parseResource("/encoding-utf-8.html")) mustEqual testPhrase
         getText(browser.parseResource(
           "/encoding-utf-8.html",
-          "ISO-8859-1")) must not(beEqualTo(testPhrase))
+          "ISO-8859-1"
+        )) must not(beEqualTo(testPhrase))
 
         getText(browser.parseResource("/encoding-iso-8859-1.html")) must not(beEqualTo(testPhrase))
         getText(browser.parseResource("/encoding-iso-8859-1.html", "ISO-8859-1")) mustEqual testPhrase
@@ -287,11 +288,13 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
 
           textNode.children mustEqual Seq(b, i)
           textNode.childNodes mustEqual Seq(
-            TextNode("this is "), ElementNode(b), TextNode(" text with "), ElementNode(i), TextNode(" styles"))
+            TextNode("this is "), ElementNode(b), TextNode(" text with "), ElementNode(i), TextNode(" styles")
+          )
 
           b.siblings mustEqual Seq(i)
           b.siblingNodes mustEqual Seq(
-            TextNode("this is "), TextNode(" text with "), ElementNode(i), TextNode(" styles"))
+            TextNode("this is "), TextNode(" text with "), ElementNode(i), TextNode(" styles")
+          )
         }
       }
     }

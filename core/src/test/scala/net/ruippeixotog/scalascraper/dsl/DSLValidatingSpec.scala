@@ -41,7 +41,8 @@ class DSLValidatingSpec extends Specification with BrowserHelper {
           } withResult "Not in text page",
           validator(stext("#menu .active")) {
             _ == "Section 2"
-          } withResult "Shouldn't be in Section 2")
+          } withResult "Shouldn't be in Section 2"
+        )
 
         doc ~/~ (succ, errors) mustEqual VFailure("Shouldn't be in Section 2")
         doc ~/~ (succ, errors, "Unknown") mustEqual VFailure("Shouldn't be in Section 2")
