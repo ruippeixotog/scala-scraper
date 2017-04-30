@@ -1,3 +1,13 @@
+### 2.0.0 (unreleased)
+
+- Breaking changes
+  - `HtmlExtractor`, `HtmlValidator` and `ElementQuery` now have an additional type parameter for the type of `Element`
+    they work on. Filling it with `Element` (which is a superclass of all elements) should be enough for them to work
+    with all 1.x code;
+  - Methods for loading extractors and validators from a config were extracted to a seaparate module. In order to use
+    them users must add `scala-scraper-config` to their SBT dependencies and import
+    `net.ruippeixotog.scalascraper.config.dsl.DSL._`.
+
 ### 1.2.1 (Apr 30, 2017)
 
 - Bug fixes
