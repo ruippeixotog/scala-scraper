@@ -1,15 +1,26 @@
 package net.ruippeixotog.scalascraper.scraper
 
-import scala.util.matching.Regex
-
-import org.joda.time.DateTime
-import org.joda.time.format._
 import scalaz.Monad
 
 import net.ruippeixotog.scalascraper.model.{ Element, ElementQuery }
 
 trait HtmlExtractor[-E <: Element, +A] {
   def extract(doc: ElementQuery[E]): A
+}
+
+object HtmlExtractor extends HtmlExtractorInstances {
+
+  def apply(cssQuery: String): HtmlExtractor[Element, Iterable[String]] =
+    SimpleExtractor(cssQuery, ContentExtractors.texts, ContentParsers.asIs[Iterable[String]])
+
+  def apply[E <: Element, C](cssQuery: String, contentExtractor: ElementQuery[E] => C): HtmlExtractor[E, C] =
+    SimpleExtractor(cssQuery, contentExtractor, ContentParsers.asIs[C])
+
+  def apply[E <: Element, C, A](
+    cssQuery: String, contentExtractor: ElementQuery[E] => C, contentParser: C => A): HtmlExtractor[E, A] = {
+
+    SimpleExtractor(cssQuery, contentExtractor, contentParser)
+  }
 }
 
 trait HtmlExtractorInstances {
@@ -29,8 +40,7 @@ trait HtmlExtractorInstances {
   }
 }
 
-object HtmlExtractor extends HtmlExtractorInstances
-
+@deprecated("SimpleExtractor is deprecated. Use HtmlExtractor.apply methods instead", "2.0.0")
 case class SimpleExtractor[-E <: Element, C, +A](
     cssQuery: String,
     contentExtractor: ElementQuery[E] => C,
@@ -48,6 +58,7 @@ case class SimpleExtractor[-E <: Element, C, +A](
   def parseWith[A2](contentExtractor: C => A2) = copy(contentParser = contentParser)
 }
 
+@deprecated("SimpleExtractor is deprecated. Use HtmlExtractor.apply methods instead", "2.0.0")
 object SimpleExtractor {
 
   def apply(cssQuery: String): SimpleExtractor[Element, Iterable[String], Iterable[String]] =

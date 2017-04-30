@@ -33,13 +33,13 @@ trait ConfigLoaders {
   @inline final def validatorsAt[R: ConfigReader](path: String): Seq[HtmlValidator[Element, R]] =
     validatorsAt[R](ConfigFactory.load.getConfigList(path).asScala)
 
-  def extractorAt[A](config: Config): SimpleExtractor[Element, String, A] =
+  def extractorAt[A](config: Config): HtmlExtractor[Element, A] =
     ConfigHtmlExtractor[A](config)
 
-  @inline final def extractorAt[A](config: Config, path: String): SimpleExtractor[Element, String, A] =
+  @inline final def extractorAt[A](config: Config, path: String): HtmlExtractor[Element, A] =
     extractorAt[A](config.getConfig(path))
 
-  @inline final def extractorAt[A](path: String): SimpleExtractor[Element, String, A] =
+  @inline final def extractorAt[A](path: String): HtmlExtractor[Element, A] =
     extractorAt[A](ConfigFactory.load.getConfig(path))
 }
 

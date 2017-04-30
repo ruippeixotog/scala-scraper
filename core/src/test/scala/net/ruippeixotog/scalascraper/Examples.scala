@@ -2,22 +2,22 @@ package net.ruippeixotog.scalascraper
 
 import java.io.PrintStream
 
+import scala.collection.immutable.SortedMap
+
 import net.ruippeixotog.scalascraper.ExampleMatchers._
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 import net.ruippeixotog.scalascraper.dsl.DSL.Extract._
 import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.model.Element
+import net.ruippeixotog.scalascraper.scraper.HtmlValidator
 import net.ruippeixotog.scalascraper.util.ProxyUtils
 import net.ruippeixotog.scalascraper.util.Validated._
-import scala.collection.immutable.SortedMap
-
-import net.ruippeixotog.scalascraper.scraper.SimpleValidator
 
 object ExampleMatchers {
-  val succ = SimpleValidator(text("head > title"), 1)(_.matches(".*Observador.*"))
+  val succ = HtmlValidator(text("head > title"), 1)(_.matches(".*Observador.*"))
   val errs = Seq(
-    SimpleValidator(attr("content")("meta[name=viewport]"), 2)(_.matches(".*initial-scale=2\\.0.*")),
-    SimpleValidator(elements("meta[name=viewport]"), 3)(_.nonEmpty))
+    HtmlValidator(attr("content")("meta[name=viewport]"), 2)(_.matches(".*initial-scale=2\\.0.*")),
+    HtmlValidator(elements("meta[name=viewport]"), 3)(_.nonEmpty))
 }
 
 object ProxyApp extends App {

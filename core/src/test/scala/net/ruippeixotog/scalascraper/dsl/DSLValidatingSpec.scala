@@ -33,15 +33,9 @@ class DSLValidatingSpec extends Specification with BrowserHelper {
       "allow returning one of multiple possible error statuses in a validation" in {
         val succ = validator(stext("#menu .active"))(_ == "Section 3")
         val errors = List(
-          validator(attr("charset")("meta")) {
-            _ != "utf-8"
-          } withResult "Encoding isn't UTF-8",
-          validator(stext("title")) {
-            _ != "Test page"
-          } withResult "Not in text page",
-          validator(stext("#menu .active")) {
-            _ == "Section 2"
-          } withResult "Shouldn't be in Section 2")
+          validator(attr("charset")("meta"), "Encoding isn't UTF-8")(_ != "utf-8"),
+          validator(stext("title"), "Not in text page")(_ != "Test page"),
+          validator(stext("#menu .active"), "Shouldn't be in Section 2")(_ == "Section 2"))
 
         doc ~/~ (succ, errors) mustEqual VFailure("Shouldn't be in Section 2")
         doc ~/~ (succ, errors, "Unknown") mustEqual VFailure("Shouldn't be in Section 2")

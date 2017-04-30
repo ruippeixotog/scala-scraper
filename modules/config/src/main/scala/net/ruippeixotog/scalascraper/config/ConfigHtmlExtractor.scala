@@ -4,13 +4,14 @@ import scala.collection.JavaConverters._
 
 import com.typesafe.config.Config
 
+import net.ruippeixotog.scalascraper.model.Element
 import net.ruippeixotog.scalascraper.scraper.ContentExtractors.{ allText, attr }
 import net.ruippeixotog.scalascraper.scraper.ContentParsers.{ asDate, asIs, regexMatch }
-import net.ruippeixotog.scalascraper.scraper.SimpleExtractor
+import net.ruippeixotog.scalascraper.scraper.HtmlExtractor
 
 object ConfigHtmlExtractor {
 
-  def apply[A](conf: Config) = {
+  def apply[A](conf: Config): HtmlExtractor[Element, A] = {
     val cssQuery = conf.getString("query")
 
     val contentExtractor =
@@ -26,6 +27,6 @@ object ConfigHtmlExtractor {
       else
         asIs[String]
 
-    SimpleExtractor(cssQuery, contentExtractor, contentParser.andThen(_.asInstanceOf[A]))
+    HtmlExtractor(cssQuery, contentExtractor, contentParser.andThen(_.asInstanceOf[A]))
   }
 }

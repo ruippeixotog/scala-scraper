@@ -11,6 +11,12 @@ trait HtmlValidator[-E <: Element, +R] {
 
 object HtmlValidator {
 
+  def apply[E <: Element, A, R](htmlExtractor: HtmlExtractor[E, A])(matcher: A => Boolean): HtmlValidator[E, R] =
+    SimpleValidator[E, A, R](htmlExtractor, matcher)
+
+  def apply[E <: Element, A, R](htmlExtractor: HtmlExtractor[E, A], result: R)(matcher: A => Boolean): HtmlValidator[E, R] =
+    SimpleValidator[E, A, R](htmlExtractor, matcher, Some(result))
+
   val matchAll = new HtmlValidator[Element, Nothing] {
     def matches(doc: ElementQuery[Element]) = true
     def result = None
@@ -32,6 +38,7 @@ object HtmlValidator {
   }
 }
 
+@deprecated("SimpleValidator is deprecated. Use HtmlValidator.apply methods instead", "2.0.0")
 case class SimpleValidator[-E <: Element, A, +R](
     htmlExtractor: HtmlExtractor[E, A],
     matcher: A => Boolean,
@@ -43,6 +50,7 @@ case class SimpleValidator[-E <: Element, A, +R](
   def withoutResult = SimpleValidator(htmlExtractor, matcher, None)
 }
 
+@deprecated("SimpleValidator is deprecated. Use HtmlValidator.apply methods instead", "2.0.0")
 object SimpleValidator {
 
   def apply[E <: Element, A, R](htmlExtractor: HtmlExtractor[E, A])(matcher: A => Boolean): SimpleValidator[E, A, R] =
