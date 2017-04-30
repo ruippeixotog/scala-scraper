@@ -2,7 +2,6 @@ import scalariform.formatter.preferences._
 
 name := "scala-scraper"
 organization := "net.ruippeixotog"
-version := "1.2.1-SNAPSHOT"
 
 scalaVersion := "2.12.2"
 crossScalaVersions := Seq("2.11.11", "2.12.2")
