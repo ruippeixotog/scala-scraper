@@ -1,11 +1,13 @@
-package net.ruippeixotog.scalascraper.dsl
+package net.ruippeixotog.scalascraper.config.dsl
 
 import com.github.nscala_time.time.Imports._
 import com.typesafe.config.ConfigFactory
+import org.specs2.mutable.Specification
+
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 import net.ruippeixotog.scalascraper.dsl.DSL._
+import net.ruippeixotog.scalascraper.config.dsl.DSL._
 import net.ruippeixotog.scalascraper.util.Validated.{ VFailure, VSuccess }
-import org.specs2.mutable.Specification
 
 class ConfigLoadingHelpersSpec extends Specification {
 

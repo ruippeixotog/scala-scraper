@@ -1,8 +1,6 @@
 package net.ruippeixotog.scalascraper.scraper
 
-import com.typesafe.config.Config
 import net.ruippeixotog.scalascraper.model.{ ElementQuery, Element }
-import net.ruippeixotog.scalascraper.util.ConfigReader
 
 import scala.util.Try
 
@@ -12,25 +10,6 @@ trait HtmlValidator[-E <: Element, +R] {
 }
 
 object HtmlValidator {
-
-  def fromConfig[R](conf: Config)(implicit reader: ConfigReader[R]): HtmlValidator[Element, R] = {
-    if (conf.hasPath("exists")) {
-      val extractor = SimpleExtractor(
-        conf.getString("select.query"),
-        ContentExtractors.elements, ContentParsers.asIs[ElementQuery[Element]])
-
-      val matcher = conf.getBoolean("exists") == (_: Iterable[Element]).nonEmpty
-      val result = Try(reader.read(conf, "status")).toOption
-      SimpleValidator(extractor, matcher, result)
-
-    } else {
-      val extractor = HtmlExtractor.fromConfig[String](conf.getConfig("select"))
-      val matchIfTrue = if (conf.hasPath("invert")) !conf.getBoolean("invert") else true
-      val matcher = conf.getString("match").r.pattern.matcher(_: String).matches() == matchIfTrue
-      val result = Try(reader.read(conf, "status")).toOption
-      SimpleValidator(extractor, matcher, result)
-    }
-  }
 
   val matchAll = new HtmlValidator[Element, Nothing] {
     def matches(doc: ElementQuery[Element]) = true

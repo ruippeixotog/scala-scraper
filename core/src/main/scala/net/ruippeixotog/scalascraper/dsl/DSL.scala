@@ -3,7 +3,7 @@ package net.ruippeixotog.scalascraper.dsl
 import net.ruippeixotog.scalascraper.model.{ Element, ElementQuery }
 import net.ruippeixotog.scalascraper.scraper._
 
-object DSL extends ImplicitConversions with ScrapingOps with ConfigLoadingHelpers {
+object DSL extends ImplicitConversions with ScrapingOps {
 
   def extractor(cssQuery: String): HtmlExtractor[Element, Iterable[String]] = SimpleExtractor(cssQuery)
 

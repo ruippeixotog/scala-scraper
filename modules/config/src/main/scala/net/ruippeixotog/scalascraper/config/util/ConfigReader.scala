@@ -1,4 +1,4 @@
-package net.ruippeixotog.scalascraper.util
+package net.ruippeixotog.scalascraper.config.util
 
 import com.github.nscala_time.time.Imports._
 import com.typesafe.config.Config
@@ -11,9 +11,7 @@ object ConfigReader {
   def apply[A](readFunc: (Config, String) => A) = new ConfigReader[A] {
     def read(conf: Config, path: String) = readFunc(conf, path)
   }
-}
 
-trait ConfigReaders {
   implicit def boolConfReader: ConfigReader[Boolean] = ConfigReader(_.getBoolean(_))
   implicit def stringConfReader: ConfigReader[String] = ConfigReader(_.getString(_))
   implicit def intConfReader: ConfigReader[Int] = ConfigReader(_.getInt(_))
@@ -21,5 +19,3 @@ trait ConfigReaders {
   implicit def localDateConfReader: ConfigReader[LocalDate] = ConfigReader(_.getString(_).toLocalDate)
   implicit def dateTimeConfReader: ConfigReader[DateTime] = ConfigReader(_.getString(_).toDateTime)
 }
-
-object ConfigReaders extends ConfigReaders

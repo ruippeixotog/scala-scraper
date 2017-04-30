@@ -12,13 +12,22 @@ lazy val core = project.in(file("core"))
 
     libraryDependencies ++= Seq(
       "com.github.nscala-time"     %% "nscala-time"          % "2.16.0",
-      "com.typesafe"                % "config"               % "1.3.1",
       "net.sourceforge.htmlunit"    % "htmlunit"             % "2.26",
       "org.jsoup"                   % "jsoup"                % "1.10.2",
       "org.scalaz"                 %% "scalaz-core"          % "7.2.12",
       "org.http4s"                 %% "http4s-blaze-server"  % "0.15.11a"             % "test",
       "org.http4s"                 %% "http4s-dsl"           % "0.15.11a"             % "test",
       "org.slf4j"                   % "slf4j-nop"            % "1.7.25"               % "test",
+      "org.specs2"                 %% "specs2-core"          % "3.8.9"                % "test"))
+
+lazy val config = project.in(file("modules/config"))
+  .dependsOn(core)
+  .settings(commonSettings: _*)
+  .settings(
+    name := "scala-scraper-config",
+
+    libraryDependencies ++= Seq(
+      "com.typesafe"                % "config"               % "1.3.1",
       "org.specs2"                 %% "specs2-core"          % "3.8.9"                % "test"))
 
 lazy val commonSettings = Seq(

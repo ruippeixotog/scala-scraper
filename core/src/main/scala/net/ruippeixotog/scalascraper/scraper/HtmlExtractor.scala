@@ -1,16 +1,12 @@
 package net.ruippeixotog.scalascraper.scraper
 
-import com.typesafe.config.Config
+import scala.util.matching.Regex
 
-import net.ruippeixotog.scalascraper.model.{ Element, ElementQuery }
 import org.joda.time.DateTime
 import org.joda.time.format._
-import scala.collection.JavaConverters._
-import scala.util.matching.Regex
 import scalaz.Monad
 
-import ContentExtractors._
-import ContentParsers._
+import net.ruippeixotog.scalascraper.model.{ Element, ElementQuery }
 
 trait HtmlExtractor[-E <: Element, +A] {
   def extract(doc: ElementQuery[E]): A
@@ -33,27 +29,7 @@ trait HtmlExtractorInstances {
   }
 }
 
-object HtmlExtractor extends HtmlExtractorInstances {
-
-  def fromConfig[A](conf: Config) = {
-    val cssQuery = conf.getString("query")
-
-    val contentExtractor =
-      if (conf.hasPath("attr")) attr(conf.getString("attr")) else allText
-
-    val contentParser =
-      if (conf.hasPath("date-format"))
-        asDate(conf.getString("date-format"))
-      else if (conf.hasPath("date-formats"))
-        asDate(conf.getStringList("date-formats").asScala: _*)
-      else if (conf.hasPath("regex-format"))
-        regexMatch(conf.getString("regex-format"))
-      else
-        asIs[String]
-
-    SimpleExtractor(cssQuery, contentExtractor, contentParser.andThen(_.asInstanceOf[A]))
-  }
-}
+object HtmlExtractor extends HtmlExtractorInstances
 
 case class SimpleExtractor[-E <: Element, C, +A](
     cssQuery: String,

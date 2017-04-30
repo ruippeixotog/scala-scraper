@@ -2,7 +2,6 @@ package net.ruippeixotog.scalascraper
 
 import java.io.PrintStream
 
-import com.typesafe.config.ConfigFactory
 import net.ruippeixotog.scalascraper.ExampleMatchers._
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 import net.ruippeixotog.scalascraper.dsl.DSL.Extract._
@@ -10,12 +9,15 @@ import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.model.Element
 import net.ruippeixotog.scalascraper.util.ProxyUtils
 import net.ruippeixotog.scalascraper.util.Validated._
-
 import scala.collection.immutable.SortedMap
 
+import net.ruippeixotog.scalascraper.scraper.SimpleValidator
+
 object ExampleMatchers {
-  val succ = validatorAt("success-matcher")
-  val errs = validatorsAt[Int]("error-matchers")
+  val succ = SimpleValidator(text("head > title"), 1)(_.matches(".*Observador.*"))
+  val errs = Seq(
+    SimpleValidator(attr("content")("meta[name=viewport]"), 2)(_.matches(".*initial-scale=2\\.0.*")),
+    SimpleValidator(elements("meta[name=viewport]"), 3)(_.nonEmpty))
 }
 
 object ProxyApp extends App {
@@ -41,7 +43,7 @@ object NewsApp extends App {
   println("=== OBSERVADOR ===")
 
   doc >> extractor(".logo img", attr("src")) |> println
-  doc >> extractorAt[String]("example-extractor") |> println
+  doc >> extractor("meta[name=description]", attr("content")) |> println
 
   println("==================")
   println()
@@ -68,8 +70,6 @@ object HeadlineBetterApp extends App {
 }
 
 object HeadlineVerboseApp extends App {
-  val conf = ConfigFactory.load
-
   val browser = JsoupBrowser()
 
   for {

@@ -1,21 +1,22 @@
-package net.ruippeixotog.scalascraper.dsl
+package net.ruippeixotog.scalascraper.config.dsl
 
 import scala.collection.JavaConverters._
 
 import com.typesafe.config.{ Config, ConfigFactory }
 
+import net.ruippeixotog.scalascraper.config.util.ConfigReader
+import net.ruippeixotog.scalascraper.config.{ ConfigHtmlExtractor, ConfigHtmlValidator }
 import net.ruippeixotog.scalascraper.model.Element
 import net.ruippeixotog.scalascraper.scraper._
-import net.ruippeixotog.scalascraper.util._
 
-trait ConfigLoadingHelpers extends ConfigReaders {
+trait ConfigLoaders {
 
   implicit def errorReader: ConfigReader[Nothing] = ConfigReader { (_, _) =>
     throw new Exception("A type must be provided for reading the result of a validator from config")
   }
 
   def validatorAt[R: ConfigReader](config: Config): HtmlValidator[Element, R] =
-    HtmlValidator.fromConfig[R](config)
+    ConfigHtmlValidator[R](config)
 
   @inline final def validatorAt[R: ConfigReader](config: Config, path: String): HtmlValidator[Element, R] =
     validatorAt[R](config.getConfig(path))
@@ -33,7 +34,7 @@ trait ConfigLoadingHelpers extends ConfigReaders {
     validatorsAt[R](ConfigFactory.load.getConfigList(path).asScala)
 
   def extractorAt[A](config: Config): SimpleExtractor[Element, String, A] =
-    HtmlExtractor.fromConfig[A](config)
+    ConfigHtmlExtractor[A](config)
 
   @inline final def extractorAt[A](config: Config, path: String): SimpleExtractor[Element, String, A] =
     extractorAt[A](config.getConfig(path))
@@ -42,4 +43,4 @@ trait ConfigLoadingHelpers extends ConfigReaders {
     extractorAt[A](ConfigFactory.load.getConfig(path))
 }
 
-object ConfigLoadingHelpers extends ConfigLoadingHelpers
+object ConfigLoaders extends ConfigLoaders
