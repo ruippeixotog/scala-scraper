@@ -23,13 +23,13 @@ import net.ruippeixotog.scalascraper.util.ProxyUtils
   * parsing and modelling its HTML content. It supports several compatibility modes, allowing it to emulate browsers
   * such as Internet Explorer.
   *
-  * Both the [[Document]] and the [[Element]] instances obtained from `HtmlUnitBrowser` can be mutated in the
-  * background. JavaScript code can at any time change attributes and the content of elements, reflected both in queries
-  * to `Document` and on previously stored references to `Element`s. The `Document` instance will always represent the
-  * current page in the browser's "window". This means the `Document`'s `location` value can change, together with its
-  * root element, in the event of client-side page refreshes or redirections. However, `Element` instances belong to a
-  * fixed DOM tree and they stop being meaningful as soon as they are removed from the DOM or a client-side page reload
-  * occurs.
+  * Both the [[net.ruippeixotog.scalascraper.model.Document]] and the [[net.ruippeixotog.scalascraper.model.Element]]
+  * instances obtained from `HtmlUnitBrowser` can be mutated in the background. JavaScript code can at any time change
+  * attributes and the content of elements, reflected both in queries to `Document` and on previously stored references
+  * to `Element`s. The `Document` instance will always represent the current page in the browser's "window". This means
+  * the `Document`'s `location` value can change, together with its root element, in the event of client-side page
+  * refreshes or redirections. However, `Element` instances belong to a fixed DOM tree and they stop being meaningful as
+  * soon as they are removed from the DOM or a client-side page reload occurs.
   *
   * @param browserType the browser type and version to simulate
   */
