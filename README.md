@@ -9,7 +9,7 @@ Take a look at [Examples.scala](https://github.com/ruippeixotog/scala-scraper/bl
 To use Scala Scraper in an existing SBT project with Scala 2.11 or 2.12, add the following dependency to your `build.sbt`:
 
 ```scala
-libraryDependencies += "net.ruippeixotog" %% "scala-scraper" % "1.2.0"
+libraryDependencies += "net.ruippeixotog" %% "scala-scraper" % "1.2.1"
 ```
 
 If you are using an older version of this library, see this document for the version you're using: [0.1](https://github.com/ruippeixotog/scala-scraper/blob/v0.1/README.md), [0.1.1](https://github.com/ruippeixotog/scala-scraper/blob/v0.1.1/README.md), [0.1.2](https://github.com/ruippeixotog/scala-scraper/blob/v0.1.2/README.md).
