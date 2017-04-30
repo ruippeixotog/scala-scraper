@@ -304,4 +304,4 @@ _NOTE: this feature is in a beta stage. Please expect API changes in future rele
 
 ## Copyright
 
-Copyright (c) 2014-2016 Rui Gonçalves. See LICENSE for details.
+Copyright (c) 2014-2017 Rui Gonçalves. See LICENSE for details.

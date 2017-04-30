@@ -1,4 +1,4 @@
-### 1.2.1 (unreleased)
+### 1.2.1 (Apr 30, 2017)
 
 - Bug fixes
   - Fix type parameter usage in three-arg `>?>` DSL operator.
