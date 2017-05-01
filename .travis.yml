@@ -5,12 +5,10 @@ scala:
 jdk:
   - oraclejdk8
 script:
-  - sbt ++$TRAVIS_SCALA_VERSION clean coverage test
+  - sbt ++$TRAVIS_SCALA_VERSION clean coverage test tut
+  - git diff --exit-code      # check if there are no changes after `tut` runs
 after_success:
-  - sbt ++$TRAVIS_SCALA_VERSION coverageReport coveralls
-  - if [ "$TRAVIS_BRANCH" == "master" ]; then
-      sbt ++$TRAVIS_SCALA_VERSION publish;
-      fi
+  - sbt ++$TRAVIS_SCALA_VERSION coverageReport coverageAggregate coveralls
 cache:
   directories:
     - $HOME/.ivy2/cache

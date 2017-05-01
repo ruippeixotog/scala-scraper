@@ -18,7 +18,9 @@ lazy val core = project.in(file("core"))
       "org.http4s"                 %% "http4s-blaze-server"  % "0.15.11a"             % "test",
       "org.http4s"                 %% "http4s-dsl"           % "0.15.11a"             % "test",
       "org.slf4j"                   % "slf4j-nop"            % "1.7.25"               % "test",
-      "org.specs2"                 %% "specs2-core"          % "3.8.9"                % "test"))
+      "org.specs2"                 %% "specs2-core"          % "3.8.9"                % "test"),
+
+    tutTargetDirectory := file("."))
 
 lazy val config = project.in(file("modules/config"))
   .dependsOn(core)
@@ -30,7 +32,7 @@ lazy val config = project.in(file("modules/config"))
       "com.typesafe"                % "config"               % "1.3.1",
       "org.specs2"                 %% "specs2-core"          % "3.8.9"                % "test"))
 
-lazy val commonSettings = Seq(
+lazy val commonSettings = tutSettings ++ Seq(
   resolvers ++= Seq(
     Resolver.sonatypeRepo("snapshots"),
     "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases"),
@@ -49,6 +51,8 @@ lazy val commonSettings = Seq(
     "-Ypartial-unification"),
 
   fork in Test := true,
+
+  tutTargetDirectory := baseDirectory.value,
 
   publishTo := {
     val nexus = "https://oss.sonatype.org/"
