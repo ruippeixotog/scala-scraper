@@ -2,7 +2,6 @@ package net.ruippeixotog.scalascraper.dsl
 
 import net.ruippeixotog.scalascraper.model._
 import net.ruippeixotog.scalascraper.scraper.HtmlExtractor
-import net.ruippeixotog.scalascraper.util._
 
 trait ImplicitConversions {
 

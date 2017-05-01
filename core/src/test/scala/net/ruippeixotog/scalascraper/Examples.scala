@@ -10,6 +10,7 @@ import net.ruippeixotog.scalascraper.dsl.DSL.Extract._
 import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.model.Element
 import net.ruippeixotog.scalascraper.scraper.HtmlValidator
+import net.ruippeixotog.scalascraper.util.EitherRightBias._
 import net.ruippeixotog.scalascraper.util.ProxyUtils
 
 object ExampleMatchers {

@@ -7,7 +7,11 @@
   - Methods for loading extractors and validators from a config were extracted to a separate module. In order to use
     them users must add `scala-scraper-config` to their SBT dependencies and import
     `net.ruippeixotog.scalascraper.config.dsl.DSL._`;
-    
+  - The implicit conversion of `Validated/Either` to a `RightProjection` in order to expose `foreach`, `map` and
+    `flatMap` in for comprehensions was moved to a separate object that is not imported together with the DSL. Either
+    upgrade to Scala 2.12 (in which `Either` is already right-biased) or import the new
+    `net.ruippeixotog.scalascraper.util.EitherRightBias` support object;
+
 - Deprecations
   - `SimpleExtractor` and `SimpleValidator` are now deprecated. The classes remain available for the time being, but DSL
     methods that returned those classes now return only `HtmlExtractor` and `HtmlValidator` instances;
