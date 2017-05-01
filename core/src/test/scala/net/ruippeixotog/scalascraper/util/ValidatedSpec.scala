@@ -3,6 +3,7 @@ package net.ruippeixotog.scalascraper.util
 import net.ruippeixotog.scalascraper.util.Validated._
 import org.specs2.mutable.Specification
 
+@deprecated("Validated was replaced by Either as the result type of validations", "2.0.0")
 class ValidatedSpec extends Specification {
 
   "A Validated" should {

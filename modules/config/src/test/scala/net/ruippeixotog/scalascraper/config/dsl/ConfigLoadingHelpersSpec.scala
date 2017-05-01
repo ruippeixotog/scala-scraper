@@ -7,7 +7,6 @@ import org.specs2.mutable.Specification
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.config.dsl.DSL._
-import net.ruippeixotog.scalascraper.util.Validated.{ VFailure, VSuccess }
 
 class ConfigLoadingHelpersSpec extends Specification {
 
@@ -29,27 +28,27 @@ class ConfigLoadingHelpersSpec extends Specification {
     "be able to create validators from configuration files" in {
       val conf = ConfigFactory.load.getConfig("test-validators")
 
-      doc ~/~ validatorAt(conf, "simple") mustEqual VSuccess(doc)
-      docEmpty ~/~ validatorAt(conf, "simple") mustEqual VFailure(())
+      doc ~/~ validatorAt(conf, "simple") must beRight(doc)
+      docEmpty ~/~ validatorAt(conf, "simple") must beLeft(())
 
-      doc ~/~ validatorAt(conf, "attr") mustEqual VFailure(())
-      docEmpty ~/~ validatorAt(conf, "attr") mustEqual VFailure(())
+      doc ~/~ validatorAt(conf, "attr") must beLeft(())
+      docEmpty ~/~ validatorAt(conf, "attr") must beLeft(())
 
-      doc ~/~ validatorAt(conf, "with-result") mustEqual VSuccess(doc)
-      doc errorIf validatorAt[Int](conf, "with-result") mustEqual VFailure(5)
-      doc errorIf validatorAt[String](conf, "with-result") mustEqual VFailure("5")
+      doc ~/~ validatorAt(conf, "with-result") must beRight(doc)
+      doc errorIf validatorAt[Int](conf, "with-result") must beLeft(5)
+      doc errorIf validatorAt[String](conf, "with-result") must beLeft("5")
       doc errorIf validatorAt[Boolean](conf, "with-result") must throwAn[Exception]
 
-      doc ~/~ validatorAt(conf, "exists") mustEqual VSuccess(doc)
-      docEmpty ~/~ validatorAt(conf, "exists") mustEqual VSuccess(docEmpty)
-      doc errorIf validatorAt[Double](conf, "exists") mustEqual VFailure(0.25)
+      doc ~/~ validatorAt(conf, "exists") must beRight(doc)
+      docEmpty ~/~ validatorAt(conf, "exists") must beRight(docEmpty)
+      doc errorIf validatorAt[Double](conf, "exists") must beLeft(0.25)
 
-      doc ~/~ validatorAt(conf, "exists2") mustEqual VFailure(())
-      docEmpty ~/~ validatorAt(conf, "exists2") mustEqual VSuccess(docEmpty)
-      doc errorIf validatorAt[Double](conf, "exists2") mustEqual VSuccess(doc)
+      doc ~/~ validatorAt(conf, "exists2") must beLeft(())
+      docEmpty ~/~ validatorAt(conf, "exists2") must beRight(docEmpty)
+      doc errorIf validatorAt[Double](conf, "exists2") must beRight(doc)
 
-      doc ~/~ validatorAt(conf, "inverted") mustEqual VSuccess(doc)
-      doc errorIf validatorAt[LocalDate](conf, "inverted") mustEqual VFailure("2013-03-03".toLocalDate)
+      doc ~/~ validatorAt(conf, "inverted") must beRight(doc)
+      doc errorIf validatorAt[LocalDate](conf, "inverted") must beLeft("2013-03-03".toLocalDate)
     }
   }
 }

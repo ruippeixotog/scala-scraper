@@ -11,7 +11,6 @@ import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.model.Element
 import net.ruippeixotog.scalascraper.scraper.HtmlValidator
 import net.ruippeixotog.scalascraper.util.ProxyUtils
-import net.ruippeixotog.scalascraper.util.Validated._
 
 object ExampleMatchers {
   val succ = HtmlValidator(text("head > title"), 1)(_.matches(".*Observador.*"))
@@ -55,8 +54,8 @@ object HeadlineApp extends App {
   val browser = JsoupBrowser()
 
   browser.get("http://observador.pt") ~/~ (succ, errs) >> "h1" match {
-    case VSuccess(headline) => println("HEADLINE: " + headline.head)
-    case VFailure(status) => println("Error: " + status)
+    case Right(headline) => println("HEADLINE: " + headline.head)
+    case Left(status) => println("Error: " + status)
   }
 }
 

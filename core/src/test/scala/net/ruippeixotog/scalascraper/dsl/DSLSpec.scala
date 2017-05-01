@@ -5,7 +5,6 @@ import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.model.{ Document, Element, ElementQuery }
 import net.ruippeixotog.scalascraper.scraper.ContentExtractors.{ text => stext, _ }
 import net.ruippeixotog.scalascraper.scraper.HtmlExtractor
-import net.ruippeixotog.scalascraper.util.Validated.{ VFailure, VSuccess }
 import org.specs2.mutable.Specification
 
 class DSLSpec extends Specification {
@@ -58,8 +57,8 @@ class DSLSpec extends Specification {
     }
 
     "support chaining extractors with validators" in {
-      doc >?> element("#menu") ~/~ validator("span")(_.nonEmpty) >> stext(".active") mustEqual Some(VSuccess("Section 2"))
-      doc >?> element("#menu") ~/~ validator(".active")(_.isEmpty) >> "span" mustEqual Some(VFailure(()))
+      doc >?> element("#menu") ~/~ validator("span")(_.nonEmpty) >> stext(".active") mustEqual Some(Right("Section 2"))
+      doc >?> element("#menu") ~/~ validator(".active")(_.isEmpty) >> "span" mustEqual Some(Left(()))
       doc >?> element("#menu2") ~/~ validator("span")(_.nonEmpty) >> stext(".active") mustEqual None
     }
 
@@ -83,8 +82,8 @@ class DSLSpec extends Specification {
 
       def useExtractor[A](ext: HtmlExtractor[Element, A]) = doc >> ext
 
-      useExtractor(ext1) mustEqual VSuccess(Some("Section 2"))
-      useExtractor(ext2) mustEqual VFailure(())
+      useExtractor(ext1) mustEqual Right(Some("Section 2"))
+      useExtractor(ext2) mustEqual Left(())
     }
 
     "support for comprehensions with Validated values" in {
@@ -95,14 +94,14 @@ class DSLSpec extends Specification {
         t = m >> stext(".active")
       } yield t
 
-      text mustEqual VSuccess("Section 2")
+      text mustEqual Right("Section 2")
 
       val text2 = for {
         m <- menu ~/~ validator(".active")(_.isEmpty)
         t = m >> stext(".active")
       } yield t
 
-      text2 mustEqual VFailure(())
+      text2 mustEqual Left(())
     }
   }
 }

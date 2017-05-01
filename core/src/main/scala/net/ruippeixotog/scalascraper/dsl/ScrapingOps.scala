@@ -1,8 +1,7 @@
 package net.ruippeixotog.scalascraper.dsl
 
-import net.ruippeixotog.scalascraper.model.{ Document, Element, ElementQuery }
+import net.ruippeixotog.scalascraper.model.Element
 import net.ruippeixotog.scalascraper.scraper.{ HtmlExtractor, HtmlValidator }
-import net.ruippeixotog.scalascraper.util.Validated.{ VFailure, VSuccess }
 import net.ruippeixotog.scalascraper.util._
 import scala.util.Try
 import scalaz._
@@ -43,30 +42,30 @@ trait ScrapingOps extends syntax.ToIdOps with ToFunctorOps with std.AllInstances
         (e1, e2, e3)
       }
 
-    def successIf[R](success: HtmlValidator[E, _]) = self.map { doc =>
-      if (success.matches(doc)) VSuccess(doc) else VFailure(())
-    }
+    def successIf[R](success: HtmlValidator[E, _]): F[Either[Unit, A]] =
+      self.map { doc => if (success.matches(doc)) Right(doc) else Left(()) }
 
-    def errorIf[R](error: HtmlValidator[E, R]) = self.map { doc =>
-      if (error.matches(doc)) VFailure[R, A](error.result.get) else VSuccess[R, A](doc)
-    }
+    def errorIf[R](error: HtmlValidator[E, R]): F[Either[R, A]] =
+      self.map { doc => if (error.matches(doc)) Left(error.result.get) else Right(doc) }
 
-    def errorIf[R](errors: Seq[HtmlValidator[E, R]]) = self.map { doc =>
-      errors.foldLeft(VSuccess[R, A](doc)) { (res, error) =>
-        if (res.isLeft || !error.matches(doc)) res else VFailure(error.result.get)
+    def errorIf[R](errors: Seq[HtmlValidator[E, R]]): F[Either[R, A]] = {
+      self.map { doc =>
+        errors.foldLeft[Either[R, A]](Right(doc)) { (res, error) =>
+          if (res.isLeft || !error.matches(doc)) res else Left(error.result.get)
+        }
       }
     }
 
     def validateWith[R](
       success: HtmlValidator[E, _],
       errors: Seq[HtmlValidator[E, R]],
-      default: => R = throw new ValidationException): F[Validated[R, A]] = {
+      default: => R = throw new ValidationException): F[Either[R, A]] = {
 
       self.map { doc =>
-        if (success.matches(doc)) VSuccess(doc)
-        else errors.foldLeft(VSuccess[R, A](doc)) { (res, error) =>
-          if (res.isLeft || !error.matches(doc)) res else VFailure(error.result.get)
-        }.fold(VFailure.apply, _ => VFailure(default))
+        if (success.matches(doc)) Right(doc)
+        else errors.foldLeft[Either[R, A]](Right(doc)) { (res, error) =>
+          if (res.isLeft || !error.matches(doc)) res else Left(error.result.get)
+        }.fold(Left.apply, _ => Left(default))
       }
     }
 

@@ -1,5 +1,6 @@
 package net.ruippeixotog.scalascraper.util
 
+@deprecated("Validated was replaced by Either as the result type of validations", "2.0.0")
 object Validated {
   @inline final def success[R, A](succ: A) = VSuccess[R, A](succ)
   @inline final def failure[R, A](succ: R) = VFailure[R, A](succ)

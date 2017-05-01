@@ -4,7 +4,6 @@ import net.ruippeixotog.scalascraper.browser._
 import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.scraper.ContentExtractors.{ text => stext, _ }
 import net.ruippeixotog.scalascraper.scraper.HtmlValidator._
-import net.ruippeixotog.scalascraper.util.Validated._
 import org.specs2.mutable.Specification
 
 class DSLValidatingSpec extends Specification with BrowserHelper {
@@ -15,8 +14,8 @@ class DSLValidatingSpec extends Specification with BrowserHelper {
       val doc = browser.parseResource("/test2.html")
 
       "allow validating content based on a validator" in {
-        doc ~/~ validator("#content section")(_.size == 3) mustEqual VSuccess(doc)
-        doc ~/~ validator("#content section")(_.size == 4) mustEqual VFailure(())
+        doc ~/~ validator("#content section")(_.size == 3) must beRight(doc)
+        doc ~/~ validator("#content section")(_.size == 4) must beLeft(())
       }
 
       "allow identifying and possibly returning an error status in a validation" in {
@@ -24,10 +23,10 @@ class DSLValidatingSpec extends Specification with BrowserHelper {
         val error1 = validator(stext("#menu .active"), "Shouldn't be in Section 2")(_ == "Section 2")
         val error2 = validator(stext("title"), "Not in text page")(_ != "Test page")
 
-        doc ~/~ (succ, error1) mustEqual VFailure("Shouldn't be in Section 2")
-        doc ~/~ (succ, error1, "Unknown") mustEqual VFailure("Shouldn't be in Section 2")
+        doc ~/~ (succ, error1) must beLeft("Shouldn't be in Section 2")
+        doc ~/~ (succ, error1, "Unknown") must beLeft("Shouldn't be in Section 2")
         doc ~/~ (succ, error2) must throwA[ValidationException]
-        doc ~/~ (succ, error2, "Unknown") mustEqual VFailure("Unknown")
+        doc ~/~ (succ, error2, "Unknown") must beLeft("Unknown")
       }
 
       "allow returning one of multiple possible error statuses in a validation" in {
@@ -37,38 +36,38 @@ class DSLValidatingSpec extends Specification with BrowserHelper {
           validator(stext("title"), "Not in text page")(_ != "Test page"),
           validator(stext("#menu .active"), "Shouldn't be in Section 2")(_ == "Section 2"))
 
-        doc ~/~ (succ, errors) mustEqual VFailure("Shouldn't be in Section 2")
-        doc ~/~ (succ, errors, "Unknown") mustEqual VFailure("Shouldn't be in Section 2")
-        doc ~/~ (succ, errors.dropRight(1), "Unknown") mustEqual VFailure("Unknown")
+        doc ~/~ (succ, errors) must beLeft("Shouldn't be in Section 2")
+        doc ~/~ (succ, errors, "Unknown") must beLeft("Shouldn't be in Section 2")
+        doc ~/~ (succ, errors.dropRight(1), "Unknown") must beLeft("Unknown")
 
-        doc errorIf errors mustEqual VFailure("Shouldn't be in Section 2")
+        doc errorIf errors must beLeft("Shouldn't be in Section 2")
       }
 
       "allow extracting content before and after validating it" in {
         val v = validator("#content section")(_.size == 3)
 
-        doc >> element("body") ~/~ v mustEqual VSuccess(doc.body)
-        doc >> element("#myform") ~/~ v mustEqual VFailure(())
-        doc ~/~ v >> element("body") mustEqual VSuccess(doc.body)
-        doc ~/~ v >> element("#myform") mustEqual VSuccess(doc.root.select("#myform").head)
+        doc >> element("body") ~/~ v must beRight(doc.body)
+        doc >> element("#myform") ~/~ v must beLeft(())
+        doc ~/~ v >> element("body") must beRight(doc.body)
+        doc ~/~ v >> element("#myform") must beRight(doc.root.select("#myform").head)
       }
 
       "provide match-all and match-nothing validators" in {
-        doc ~/~ matchAll mustEqual VSuccess(doc)
-        doc.select("head") ~/~ matchAll mustEqual VSuccess(doc.select("head"))
-        doc.select("legs") ~/~ matchAll mustEqual VSuccess(doc.select("legs"))
+        doc ~/~ matchAll must beRight(doc)
+        doc.select("head") ~/~ matchAll must beRight(doc.select("head"))
+        doc.select("legs") ~/~ matchAll must beRight(doc.select("legs"))
 
-        doc errorIf matchAll(42) mustEqual VFailure(42)
-        doc.select("head") errorIf matchAll("42") mustEqual VFailure("42")
-        doc.select("legs") errorIf matchAll(42.0) mustEqual VFailure(42.0)
+        doc errorIf matchAll(42) must beLeft(42)
+        doc.select("head") errorIf matchAll("42") must beLeft("42")
+        doc.select("legs") errorIf matchAll(42.0) must beLeft(42.0)
 
-        doc ~/~ matchNothing(42) mustEqual VFailure(())
-        doc.select("head") ~/~ matchNothing("42") mustEqual VFailure(())
-        doc.select("legs") ~/~ matchNothing(42.0) mustEqual VFailure(())
+        doc ~/~ matchNothing(42) must beLeft(())
+        doc.select("head") ~/~ matchNothing("42") must beLeft(())
+        doc.select("legs") ~/~ matchNothing(42.0) must beLeft(())
 
-        doc errorIf matchNothing mustEqual VSuccess(doc)
-        doc.select("head") errorIf matchNothing mustEqual VSuccess(doc.select("head"))
-        doc.select("legs") errorIf matchNothing mustEqual VSuccess(doc.select("legs"))
+        doc errorIf matchNothing must beRight(doc)
+        doc.select("head") errorIf matchNothing must beRight(doc.select("head"))
+        doc.select("legs") errorIf matchNothing must beRight(doc.select("legs"))
       }
     }
   }

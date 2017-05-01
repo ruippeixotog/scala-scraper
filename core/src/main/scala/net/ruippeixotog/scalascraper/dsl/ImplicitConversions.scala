@@ -15,8 +15,6 @@ trait ImplicitConversions {
 
   implicit def elementAsElementQuery[E <: Element.Upper[E]](elem: E) = ElementQuery(elem)
   implicit def documentAsElementQuery[D <: Document](doc: D) = ElementQuery(doc.root)
-
-  implicit def projectValidatedSuccess[R, A](either: Validated[R, A]) = either.right
 }
 
 object ImplicitConversions extends ImplicitConversions
