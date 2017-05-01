@@ -14,17 +14,19 @@ libraryDependencies += "net.ruippeixotog" %% "scala-scraper" % "1.2.1"
 
 If you are using an older version of this library, see this document for the version you're using: [0.1](https://github.com/ruippeixotog/scala-scraper/blob/v0.1/README.md), [0.1.1](https://github.com/ruippeixotog/scala-scraper/blob/v0.1.1/README.md), [0.1.2](https://github.com/ruippeixotog/scala-scraper/blob/v0.1.2/README.md).
 
-An implementation of the `Browser` trait, such as `JsoupBrowser`, can be used to fetch HTML from the web or to parse a local HTML file or a string.
+An implementation of the `Browser` trait, such as `JsoupBrowser`, can be used to fetch HTML from the web or to parse a local HTML file or a string:
 
 ```scala
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 
 val browser = JsoupBrowser()
-val doc = browser.get("http://example.com/")
-val doc2 = browser.parseFile("file.html")
+val doc = browser.parseFile("core/src/test/resources/test2.html")
+val doc2 = browser.get("http://example.com")
 ```
 
 The returned object is a `Document`, which already provides several methods for manipulating and querying HTML elements. For simple use cases, it can be enough. For others, this library improves the content extracting process by providing a powerful DSL.
+
+You can open the [test2.html](core/src/test/resources/test2.html) file loaded above to follow the examples throughout the README.
 
 First of all, the DSL methods and conversions must be imported:
 
@@ -37,28 +39,37 @@ import net.ruippeixotog.scalascraper.dsl.DSL.Parse._
 Content can then be extracted using the `>>` extraction operator and CSS queries:
 
 ```scala
-import net.ruippeixotog.scalascraper.model.Element
+import net.ruippeixotog.scalascraper.model._
+// import net.ruippeixotog.scalascraper.model._
 
-// Extract the text inside the first h1 element
-val title: String = doc >> text("h1")
+// Extract the text inside the element with id "header"
+doc >> text("#header")
+// res2: String = Test page h1
 
-// Extract the elements with class "item"
-val items: List[Element] = doc >> elementList(".item")
+// Extract the <span> elements inside #menu
+val items = doc >> elementList("#menu span")
+// items: List[net.ruippeixotog.scalascraper.model.Element] = List(JsoupElement(<span><a href="#home">Home</a></span>), JsoupElement(<span><a href="#section1">Section 1</a></span>), JsoupElement(<span class="active">Section 2</span>), JsoupElement(<span><a href="#section3">Section 3</a></span>))
 
-// From each item, extract the text of the h3 element inside
-val itemTitles: List[String] = items.map(_ >> text("h3"))
+// From each item, extract all the text inside their <a> elements
+items.map(_ >> allText("a"))
+// res5: List[String] = List(Home, Section 1, "", Section 3)
 
 // From the meta element with "viewport" as its attribute name, extract the
 // text in the content attribute
-val viewport: String = doc >> attr("content")("meta[name=viewport]")
+doc >> attr("content")("meta[name=viewport]")
+// res8: String = width=device-width, initial-scale=1
 ```
 
 If the element may or may not be in the page, the `>?>` tries to extract the content and returns it wrapped in an `Option`:
 
 ```scala
-// Extract the element with id "optional" if it exists, return `None` if it
+// Extract the element with id "footer" if it exists, return `None` if it
 // doesn't:
-val title: Option[Element] = doc >?> element("#optional")
+doc >?> element("#footer")
+// res11: Option[net.ruippeixotog.scalascraper.model.Element] =
+// Some(JsoupElement(<div id="footer">
+//  <span>No copyright 2014</span>
+// </div>))
 ```
 
 With only these two operators, some useful things can already be achieved:
@@ -95,14 +106,14 @@ Due to its speed and maturity, `JsoupBrowser` is the recommended browser to use 
 The `>>` and `>?>` operators shown above accept an `HtmlExtractor` as their right argument, which has a very simple interface:
 
 ```scala
-trait HtmlExtractor[+A] {
-  def extract(doc: Elements): A
+trait HtmlExtractor[-E <: Element, +A] {
+  def extract(doc: ElementQuery[E]): A
 }
 ```
 
 One can always create a custom extractor by implementing `HtmlExtractor`. However, the DSL provides several useful constructors for `HtmlExtractor` instances. In general, you can use the `extractor` factory method:
 
-```scala
+```
 doc >> extractor(<cssQuery>, <contentExtractor>, <contentParser>)
 ```
 
@@ -117,14 +128,17 @@ The DSL provides several `contentExtractor` and `contentParser` instances, which
 Some usage examples:
 
 ```scala
-// Extract the date from the "#date-taken" element
-doc >> extractor("#date-taken", text, asDate("yyyy-MM-dd"))
+// Extract the date from the "#date" element
+doc >> extractor("#date", text, asDate("yyyy-MM-dd"))
+// res17: org.joda.time.DateTime = 2014-10-26T00:00:00.000+01:00
 
-// Extract the text of all ".price" elements and parse each of them as a number
-doc >> extractor("section .price", texts, seq(asDouble))
+// Extract the text of all "#mytable td" elements and parse each of them as a number
+doc >> extractor("#mytable td", texts, seq(asDouble))
+// res19: TraversableOnce[Double] = non-empty iterator
 
-// Extract an element "#card" and do no parsing (the default parsing behavior)
-doc >> extractor("#card", element, asIs[Element])
+// Extract an element "h1" and do no parsing (the default parsing behavior)
+doc >> extractor("h1", element, asIs[Element])
+// res21: net.ruippeixotog.scalascraper.model.Element = JsoupElement(<h1>Test page h1</h1>)
 ```
 
 The DSL also provides implicit conversions to write more succinctly the most common extractor types:
@@ -135,14 +149,17 @@ The DSL also provides implicit conversions to write more succinctly the most com
 That way, one can write the expressions in the Quick Start section, as well as:
 
 ```scala
-// Extract the elements with class "article"
-doc >> elements(".article")
+// Extract the elements with class ".active"
+doc >> elementList(".active")
+// res23: List[net.ruippeixotog.scalascraper.model.Element] = List(JsoupElement(<span class="active">Section 2</span>))
 
 // Extract the text inside each p element
 doc >> texts("p")
+// res25: Iterable[String] = List(Some text for testing, More text for testing)
 
 // Exactly the same as the extractor above
 doc >> "p"
+// res27: Iterable[String] = List(Some text for testing, More text for testing)
 ```
 
 ## Content Validation
@@ -152,15 +169,15 @@ While scraping web pages, it is a common use case to validate if a page effectiv
 A `HtmlValidator` has the following signature:
 
 ```scala
-trait HtmlValidator[+R] {
-  def matches(doc: Elements): Boolean
+trait HtmlValidator[-E <: Element, +R] {
+  def matches(doc: ElementQuery[E]): Boolean
   def result: Option[R]
 }
 ```
 
 As with extractors, the DSL provides the `validator` constructor and the `~/~` operator for applying a validation to a document:
 
-```scala
+```
 doc ~/~ validator(<extractor>)(<matcher>)
 ```
 
@@ -169,50 +186,78 @@ Where the arguments are:
 * **extractor**: an extractor as defined in the previous section;
 * **matcher**: a function mapping the extracted content to a boolean indicating if the document is valid.
 
-The result of a validation is a `Validated[A, R]` instance, where `A` is the type of the document and `R` is the result type of the validation (which will be explained later). A `Validated` can be either a `VSuccess(a: A)` or a `VFailure(res: R)`.
+The result of a validation is an `Either[R, A]` instance, where `A` is the type of the document and `R` is the result type of the validation (which will be explained later).
 
 Some validation examples:
 
 ```scala
-import net.ruippeixotog.scalascraper.util.Validated._
+// Check if the title of the page is "Test page"
+doc ~/~ validator(text("title"))(_ == "Test page")
+// res29: Either[Unit,browser.DocumentType] =
+// Right(JsoupDocument(<!doctype html>
+// <html lang="en">
+//  <head>
+//   <meta charset="utf-8">
+//   <meta name="viewport" content="width=device-width, initial-scale=1">
+//   <title>Test page</title>
+//  </head>
+//  <body>
+//   <div id="wrapper">
+//    <div id="header">
+//     <h1>Test page h1</h1>
+//    </div>
+//    <div id="menu">
+//     <span><a href="#home">Home</a></span>
+//     <span><a href="#section1">Section 1</a></span>
+//     <span class="active">Section 2</span>
+//     <span><a href="#section3">Section 3</a></span>
+//    </div>
+//    <div id="content">
+//     <h2>Test page h2</h2>
+//     <span id="date">2014-10-26</span>
+//     <span id="rating">4.5</span>
+//     <span id="pages">2</span>
+//     <section>
+//      <h3>Section 1 h3</h3>
+//      <p>Some text for testing</p>
+//      <p>More text for testing</p>
+//   ...
 
-// Check if the title of the page is "My Page"
-doc ~/~ validator(text("title"))(_ == "My Page") match {
-  case VSuccess(_) => println("Correct!")
-  case VFailure(_) => println("Wrong title")
-}
-
-// Check if there are at least 3 items
-doc ~/~ validator(".item")(_.size >= 3)
+// Check if there are at least 3 ".active" elements
+doc ~/~ validator(".active")(_.size >= 3)
+// res31: Either[Unit,browser.DocumentType] = Left(())
 
 // Check if the text in ".desc" contains the word "blue"
-doc ~/~ validator(text(".desc"))(_.contains("blue"))
+doc ~/~ validator(allText("#mytable"))(_.contains("blue"))
+// res33: Either[Unit,browser.DocumentType] = Left(())
 ```
 
 When a document fails a validation, it may be useful to identify the problem by pattern-matching it against common scraping pitfalls, such as a login page that appears unexpectedly because of an expired cookie, dynamic content that disappeared or server-side errors. Validators can be also used to match "error" pages instead of expected pages:
 
 ```scala
 val succ = validator(text("title"))(_ == "My Page")
-val errors = Seq(
-  validator(text(".msg"))(_.contains("sign in")) withResult "Not logged in",
-  validator(".item")(_.size < 3) withResult "Too few items",
-  validator(text("h1"))(_.contains("500")) withResult "Internal Server Error")
+// succ: net.ruippeixotog.scalascraper.scraper.HtmlValidator[net.ruippeixotog.scalascraper.model.Element,Nothing] = SimpleValidator(net.ruippeixotog.scalascraper.scraper.HtmlExtractor$$anon$2@7b031beb,<function1>,None)
 
-doc ~/~ (succ, errors) match {
-  case VSuccess(_) => println("yey")
-  case VFailure(msg) => println(s"Error: $msg")
-}
+val errors = Seq(
+  validator(allText(".msg"), "Not logged in")(_.contains("sign in")),
+  validator(".item", "Too few items")(_.size < 3),
+  validator(text("h1"), "Internal Server Error")(_.contains("500")))
+// errors: Seq[net.ruippeixotog.scalascraper.scraper.HtmlValidator[net.ruippeixotog.scalascraper.model.Element,String]] = List(SimpleValidator(net.ruippeixotog.scalascraper.scraper.HtmlExtractor$$anon$2@2688b817,<function1>,Some(Not logged in)), SimpleValidator(net.ruippeixotog.scalascraper.scraper.HtmlExtractor$$anon$2@300ccd8a,<function1>,Some(Too few items)), SimpleValidator(net.ruippeixotog.scalascraper.scraper.HtmlExtractor$$anon$2@2e0a26af,<function1>,Some(Internal Server Error)))
+
+doc ~/~ (succ, errors)
+// res34: Either[String,browser.DocumentType] = Left(Too few items)
 ```
 
-For validators matching errors, `withResult` should be used most times. It returns a new validator holding a `result` value which will be returned wrapped in a `VFailure` if that particular error ever occurs.
+Validators matching errors were constructed above using an additional `result` parameter after the extractor. That value is returned wrapped in a `Left` if that particular error occurs during a validation.
 
 ## Other DSL Features
 
 As shown before in the Quick Start section, one can try if an extractor works in a page and obtain the extracted content wrapped in an `Option`:
 
 ```scala
-// Try to extract an element with id "title", return `None` if none exist
-doc >?> element("#title")
+// Try to extract an element with id "optional", return `None` if none exist
+doc >?> element("#optional")
+// res36: Option[net.ruippeixotog.scalascraper.model.Element] = None
 ```
 
 Note that when using `>?>` with content extractors that return sequences, such as `texts` and `elements`, `None` will never be returned (`Some(Seq())` will be returned instead).
@@ -220,47 +265,60 @@ Note that when using `>?>` with content extractors that return sequences, such a
 If you want to use multiple extractors in a single document or element, you can pass tuples or triples to `>>`:
 
 ```scala
-// Extract the text of the title element and all the form elements
-doc >> (text("title"), elements("form"))
+// Extract the text of the title element and all inputs of #myform
+doc >> (text("title"), elementList("#myform input"))
+// res38: (String, List[net.ruippeixotog.scalascraper.model.Element]) = (Test page,List(JsoupElement(<input type="text" name="name" value="John">), JsoupElement(<input type="text" name="address">), JsoupElement(<input type="submit" value="Submit">)))
 ```
 
-The extraction operators work on `List`, `Option`, `Either`, `Validated` and other instances for which a [Scalaz](https://github.com/scalaz/scalaz) `Functor` instance is provided. The extraction occurs by mapping over the functors:
+The extraction operators work on `List`, `Option`, `Either` and other instances for which a [Scalaz](https://github.com/scalaz/scalaz) `Functor` instance is provided. The extraction occurs by mapping over the functors:
 
 ```scala
 // Extract the titles of all documents in the list
-List(doc1, doc2) >> text("title")
+List(doc, doc) >> text("title")
+// res40: List[String] = List(Test page, Test page)
 
 // Extract the title if the document is a `Some`
 Option(doc) >> text("title")
+// res42: Option[String] = Some(Test page)
 ```
 
-You can apply other extractors and validators to the result of an extraction, which is particularly powerful combined with the last feature shown above:
+You can apply other extractors and validators to the result of an extraction, which is particularly powerful combined with the feature shown above:
 
 ```scala
-// From the "#menu" element, extract the text in the ".curr" element inside
-doc >> element("#menu") >> text(".curr")
+// From the "#menu" element, extract the text in the ".active" element inside
+doc >> element("#menu") >> text(".active")
+// res44: String = Section 2
 
 // Same as above, but in a scenario where "#menu" can be absent
-doc >?> element("#menu") >> text(".curr")
+doc >?> element("#menu") >> text(".active")
+// res46: Option[String] = Some(Section 2)
 
-// Same as above, but check if the "#menu" has any section before extracting
-// the text
-doc >?> element("#menu") ~/~ validator("section")(_.nonEmpty) >> text(".curr")
+// Same as above, but check if the "#menu" has any "span" element before
+// extracting the text
+doc >?> element("#menu") ~/~ validator("span")(_.nonEmpty) >> text(".active")
+// res49: Option[scala.util.Either[Unit,String]] = Some(Right(Section 2))
 
-// Extract the links inside all the ".article" elements
-doc >> elementList(".article") >> attr("href")("a")
+// Extract the links inside all the "#menu > span" elements
+doc >> elementList("#menu > span") >?> attr("href")("a")
+// res51: List[Option[String]] = List(Some(#home), Some(#section1), None, Some(#section3))
 ```
 
 This library also provides a `Functor` for `HtmlExtractor`, which makes it possible to map over extractors and create chained extractors that can be passed around and stored like objects:
 
 ```scala
-// An extractor for the links inside all the ".article" elements
-val linksExtractor = elementList(".article") >> attr("href")("a")
+// An extractor for the links inside all the "#menu > span" elements
+val linksExtractor = elementList("#menu > span") >?> attr("href")("a")
+// linksExtractor: net.ruippeixotog.scalascraper.scraper.HtmlExtractor[net.ruippeixotog.scalascraper.model.Element,List[Option[String]]] = net.ruippeixotog.scalascraper.scraper.HtmlExtractorInstances$$anon$1$$anon$5@17b55fb2
+
 doc >> linksExtractor
+// res53: List[Option[String]] = List(Some(#home), Some(#section1), None, Some(#section3))
 
 // An extractor for the number of links
-val linkCountExtractor = linksExtractor.map(_.length)
+val linkCountExtractor = linksExtractor.map(_.flatten.length)
+// linkCountExtractor: net.ruippeixotog.scalascraper.scraper.HtmlExtractor[net.ruippeixotog.scalascraper.model.Element,Int] = net.ruippeixotog.scalascraper.scraper.HtmlExtractorInstances$$anon$1$$anon$5@29e03f76
+
 doc >> linkCountExtractor
+// res55: Int = 3
 ```
 
 Just remember that you can only apply extraction operators `>>` and `>?>` to documents, elements or functors "containing" them, which means that the following is a compile-time error:
@@ -268,7 +326,10 @@ Just remember that you can only apply extraction operators `>>` and `>?>` to doc
 ```scala
 // The `texts` extractor extracts a list of strings and extractors cannot be
 // applied to strings
-doc >> texts(".article") >> attr("href")("a")
+doc >> texts("#menu > span") >> "a"
+// <console>:29: error: value >> is not a member of Iterable[String]
+//        doc >> texts("#menu > span") >> "a"
+//                                     ^
 ```
 
 Finally, if you prefer not using operators for the sake of code legibility, you can use full method names:
@@ -276,9 +337,11 @@ Finally, if you prefer not using operators for the sake of code legibility, you 
 ```scala
 // `extract` is the same as `>>`
 doc extract text("title")
+// res60: String = Test page
 
 // `tryExtract` is the same as `>?>`
 doc tryExtract element("#optional")
+// res62: Option[net.ruippeixotog.scalascraper.model.Element] = None
 ```
 
 ## Integration with Typesafe Config
@@ -292,8 +355,14 @@ _NOTE: this feature is in a beta stage. Please expect API changes in future rele
 If you are behind an HTTP proxy, you can configure `Browser` implementations to make connections through it by setting the Java system properties `http.proxyHost`, `https.proxyHost`, `http.proxyPort` and `https.proxyPort`. Scala Scraper provides a `ProxyUtils` object that facilitates that configuration:
 
 ```scala
+import net.ruippeixotog.scalascraper.util.ProxyUtils
+// import net.ruippeixotog.scalascraper.util.ProxyUtils
+
 ProxyUtils.setProxy("localhost", 3128)
+
 val browser = JsoupBrowser()
+// browser: net.ruippeixotog.scalascraper.browser.Browser = net.ruippeixotog.scalascraper.browser.JsoupBrowser@44804c15
+
 // HTTP requests and scraping operations...
 ProxyUtils.removeProxy()
 ```
