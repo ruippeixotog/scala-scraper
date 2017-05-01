@@ -10,16 +10,20 @@ trait HtmlExtractor[-E <: Element, +A] {
 
 object HtmlExtractor extends HtmlExtractorInstances {
 
-  def apply(cssQuery: String): HtmlExtractor[Element, Iterable[String]] =
-    SimpleExtractor(cssQuery, ContentExtractors.texts, ContentParsers.asIs[Iterable[String]])
+  def apply[E <: Element, A](f: ElementQuery[E] => A): HtmlExtractor[E, A] = new HtmlExtractor[E, A] {
+    def extract(doc: ElementQuery[E]): A = f(doc)
+  }
 
-  def apply[E <: Element, C](cssQuery: String, contentExtractor: ElementQuery[E] => C): HtmlExtractor[E, C] =
-    SimpleExtractor(cssQuery, contentExtractor, ContentParsers.asIs[C])
+  def apply(cssQuery: String): HtmlExtractor[Element, Iterable[String]] =
+    HtmlExtractor { doc => ContentExtractors.texts(doc.select(cssQuery)) }
+
+  def apply[E <: Element, A](cssQuery: String, contentExtractor: ElementQuery[E] => A): HtmlExtractor[E, A] =
+    HtmlExtractor { doc => contentExtractor(doc.select(cssQuery)) }
 
   def apply[E <: Element, C, A](
     cssQuery: String, contentExtractor: ElementQuery[E] => C, contentParser: C => A): HtmlExtractor[E, A] = {
 
-    SimpleExtractor(cssQuery, contentExtractor, contentParser)
+    HtmlExtractor { doc => contentParser(contentExtractor(doc.select(cssQuery))) }
   }
 }
 
