@@ -231,20 +231,22 @@ doc ~/~ validator(allText("#mytable"))(_.contains("blue"))
 // res33: Either[Unit,browser.DocumentType] = Left(())
 ```
 
-When a document fails a validation, it may be useful to identify the problem by pattern-matching it against common scraping pitfalls, such as a login page that appears unexpectedly because of an expired cookie, dynamic content that disappeared or server-side errors. Validators can be also used to match "error" pages instead of expected pages:
+When a document fails a validation, it may be useful to identify the problem by pattern-matching it against common scraping pitfalls, such as a login page that appears unexpectedly because of an expired cookie, dynamic content that disappeared or server-side errors. If we define validators for both the success case and error cases:
 
 ```scala
 val succ = validator(text("title"))(_ == "My Page")
-// succ: net.ruippeixotog.scalascraper.scraper.HtmlValidator[net.ruippeixotog.scalascraper.model.Element,Nothing] = SimpleValidator(net.ruippeixotog.scalascraper.scraper.HtmlExtractor$$anon$2@32ee17d5,<function1>,None)
 
 val errors = Seq(
   validator(allText(".msg"), "Not logged in")(_.contains("sign in")),
   validator(".item", "Too few items")(_.size < 3),
   validator(text("h1"), "Internal Server Error")(_.contains("500")))
-// errors: Seq[net.ruippeixotog.scalascraper.scraper.HtmlValidator[net.ruippeixotog.scalascraper.model.Element,String]] = List(SimpleValidator(net.ruippeixotog.scalascraper.scraper.HtmlExtractor$$anon$2@6cb67159,<function1>,Some(Not logged in)), SimpleValidator(net.ruippeixotog.scalascraper.scraper.HtmlExtractor$$anon$2@5fca62ff,<function1>,Some(Too few items)), SimpleValidator(net.ruippeixotog.scalascraper.scraper.HtmlExtractor$$anon$2@741f8159,<function1>,Some(Internal Server Error)))
+```
 
+They can be used in combination to create more informative validations:
+
+```scala
 doc ~/~ (succ, errors)
-// res34: Either[String,browser.DocumentType] = Left(Too few items)
+// res35: Either[String,browser.DocumentType] = Left(Too few items)
 ```
 
 Validators matching errors were constructed above using an additional `result` parameter after the extractor. That value is returned wrapped in a `Left` if that particular error occurs during a validation.
@@ -256,7 +258,7 @@ As shown before in the Quick Start section, one can try if an extractor works in
 ```scala
 // Try to extract an element with id "optional", return `None` if none exist
 doc >?> element("#optional")
-// res36: Option[net.ruippeixotog.scalascraper.model.Element] = None
+// res37: Option[net.ruippeixotog.scalascraper.model.Element] = None
 ```
 
 Note that when using `>?>` with content extractors that return sequences, such as `texts` and `elements`, `None` will never be returned (`Some(Seq())` will be returned instead).
@@ -266,7 +268,7 @@ If you want to use multiple extractors in a single document or element, you can 
 ```scala
 // Extract the text of the title element and all inputs of #myform
 doc >> (text("title"), elementList("#myform input"))
-// res38: (String, List[net.ruippeixotog.scalascraper.model.Element]) = (Test page,List(JsoupElement(<input type="text" name="name" value="John">), JsoupElement(<input type="text" name="address">), JsoupElement(<input type="submit" value="Submit">)))
+// res39: (String, List[net.ruippeixotog.scalascraper.model.Element]) = (Test page,List(JsoupElement(<input type="text" name="name" value="John">), JsoupElement(<input type="text" name="address">), JsoupElement(<input type="submit" value="Submit">)))
 ```
 
 The extraction operators work on `List`, `Option`, `Either` and other instances for which a [Scalaz](https://github.com/scalaz/scalaz) `Functor` instance is provided. The extraction occurs by mapping over the functors:
@@ -274,11 +276,11 @@ The extraction operators work on `List`, `Option`, `Either` and other instances 
 ```scala
 // Extract the titles of all documents in the list
 List(doc, doc) >> text("title")
-// res40: List[String] = List(Test page, Test page)
+// res41: List[String] = List(Test page, Test page)
 
 // Extract the title if the document is a `Some`
 Option(doc) >> text("title")
-// res42: Option[String] = Some(Test page)
+// res43: Option[String] = Some(Test page)
 ```
 
 You can apply other extractors and validators to the result of an extraction, which is particularly powerful combined with the feature shown above:
@@ -286,38 +288,44 @@ You can apply other extractors and validators to the result of an extraction, wh
 ```scala
 // From the "#menu" element, extract the text in the ".active" element inside
 doc >> element("#menu") >> text(".active")
-// res44: String = Section 2
+// res45: String = Section 2
 
 // Same as above, but in a scenario where "#menu" can be absent
 doc >?> element("#menu") >> text(".active")
-// res46: Option[String] = Some(Section 2)
+// res47: Option[String] = Some(Section 2)
 
 // Same as above, but check if the "#menu" has any "span" element before
 // extracting the text
 doc >?> element("#menu") ~/~ validator("span")(_.nonEmpty) >> text(".active")
-// res49: Option[scala.util.Either[Unit,String]] = Some(Right(Section 2))
+// res50: Option[scala.util.Either[Unit,String]] = Some(Right(Section 2))
 
 // Extract the links inside all the "#menu > span" elements
 doc >> elementList("#menu > span") >?> attr("href")("a")
-// res51: List[Option[String]] = List(Some(#home), Some(#section1), None, Some(#section3))
+// res52: List[Option[String]] = List(Some(#home), Some(#section1), None, Some(#section3))
 ```
 
-This library also provides a `Functor` for `HtmlExtractor`, which makes it possible to map over extractors and create chained extractors that can be passed around and stored like objects:
+This library also provides a `Functor` for `HtmlExtractor`, which makes it possible to map over extractors and create chained extractors that can be passed around and stored like objects. For example, new extractors can be defined like this:
 
 ```scala
-// An extractor for the links inside all the "#menu > span" elements
-val linksExtractor = elementList("#menu > span") >?> attr("href")("a")
-// linksExtractor: net.ruippeixotog.scalascraper.scraper.HtmlExtractor[net.ruippeixotog.scalascraper.model.Element,List[Option[String]]] = net.ruippeixotog.scalascraper.scraper.HtmlExtractorInstances$$anon$1$$anon$5@66b9d95a
+import net.ruippeixotog.scalascraper.scraper.HtmlExtractor
 
-doc >> linksExtractor
-// res53: List[Option[String]] = List(Some(#home), Some(#section1), None, Some(#section3))
+// An extractor for the links inside all the "#menu > span" elements
+val linksExtractor: HtmlExtractor[Element, List[Option[String]]] =
+  elementList("#menu > span") >?> attr("href")("a")
 
 // An extractor for the number of links
-val linkCountExtractor = linksExtractor.map(_.flatten.length)
-// linkCountExtractor: net.ruippeixotog.scalascraper.scraper.HtmlExtractor[net.ruippeixotog.scalascraper.model.Element,Int] = net.ruippeixotog.scalascraper.scraper.HtmlExtractorInstances$$anon$1$$anon$5@408888e0
+val linkCountExtractor: HtmlExtractor[Element, Int] =
+  linksExtractor.map(_.flatten.length)
+```
+
+And they can be used just as extractors created using other means provided by the DSL:
+
+```scala
+doc >> linksExtractor
+// res57: List[Option[String]] = List(Some(#home), Some(#section1), None, Some(#section3))
 
 doc >> linkCountExtractor
-// res55: Int = 3
+// res58: Int = 3
 ```
 
 Just remember that you can only apply extraction operators `>>` and `>?>` to documents, elements or functors "containing" them, which means that the following is a compile-time error:
@@ -326,7 +334,7 @@ Just remember that you can only apply extraction operators `>>` and `>?>` to doc
 // The `texts` extractor extracts a list of strings and extractors cannot be
 // applied to strings
 doc >> texts("#menu > span") >> "a"
-// <console>:29: error: value >> is not a member of Iterable[String]
+// <console>:30: error: value >> is not a member of Iterable[String]
 //        doc >> texts("#menu > span") >> "a"
 //                                     ^
 ```
@@ -336,11 +344,11 @@ Finally, if you prefer not using operators for the sake of code legibility, you 
 ```scala
 // `extract` is the same as `>>`
 doc extract text("title")
-// res60: String = Test page
+// res63: String = Test page
 
 // `tryExtract` is the same as `>?>`
 doc tryExtract element("#optional")
-// res62: Option[net.ruippeixotog.scalascraper.model.Element] = None
+// res65: Option[net.ruippeixotog.scalascraper.model.Element] = None
 ```
 
 ## Integration with Typesafe Config
@@ -353,13 +361,9 @@ If you are behind an HTTP proxy, you can configure `Browser` implementations to 
 
 ```scala
 import net.ruippeixotog.scalascraper.util.ProxyUtils
-// import net.ruippeixotog.scalascraper.util.ProxyUtils
 
 ProxyUtils.setProxy("localhost", 3128)
-
 val browser = JsoupBrowser()
-// browser: net.ruippeixotog.scalascraper.browser.Browser = net.ruippeixotog.scalascraper.browser.JsoupBrowser@24044169
-
 // HTTP requests and scraping operations...
 ProxyUtils.removeProxy()
 ```

@@ -186,16 +186,20 @@ doc ~/~ validator(".active")(_.size >= 3)
 doc ~/~ validator(allText("#mytable"))(_.contains("blue"))
 ```
 
-When a document fails a validation, it may be useful to identify the problem by pattern-matching it against common scraping pitfalls, such as a login page that appears unexpectedly because of an expired cookie, dynamic content that disappeared or server-side errors. Validators can be also used to match "error" pages instead of expected pages:
+When a document fails a validation, it may be useful to identify the problem by pattern-matching it against common scraping pitfalls, such as a login page that appears unexpectedly because of an expired cookie, dynamic content that disappeared or server-side errors. If we define validators for both the success case and error cases:
 
-```tut:book
+```tut:book:silent
 val succ = validator(text("title"))(_ == "My Page")
 
 val errors = Seq(
   validator(allText(".msg"), "Not logged in")(_.contains("sign in")),
   validator(".item", "Too few items")(_.size < 3),
   validator(text("h1"), "Internal Server Error")(_.contains("500")))
+```
 
+They can be used in combination to create more informative validations:
+
+```tut:book
 doc ~/~ (succ, errors)
 ```
 
@@ -246,16 +250,24 @@ doc >?> element("#menu") ~/~ validator("span")(_.nonEmpty) >> text(".active")
 doc >> elementList("#menu > span") >?> attr("href")("a")
 ```
 
-This library also provides a `Functor` for `HtmlExtractor`, which makes it possible to map over extractors and create chained extractors that can be passed around and stored like objects:
+This library also provides a `Functor` for `HtmlExtractor`, which makes it possible to map over extractors and create chained extractors that can be passed around and stored like objects. For example, new extractors can be defined like this:
 
-```tut:book
+```tut:book:silent
+import net.ruippeixotog.scalascraper.scraper.HtmlExtractor
+
 // An extractor for the links inside all the "#menu > span" elements
-val linksExtractor = elementList("#menu > span") >?> attr("href")("a")
-
-doc >> linksExtractor
+val linksExtractor: HtmlExtractor[Element, List[Option[String]]] =
+  elementList("#menu > span") >?> attr("href")("a")
 
 // An extractor for the number of links
-val linkCountExtractor = linksExtractor.map(_.flatten.length)
+val linkCountExtractor: HtmlExtractor[Element, Int] =
+  linksExtractor.map(_.flatten.length)
+```
+
+And they can be used just as extractors created using other means provided by the DSL:
+
+```tut:book
+doc >> linksExtractor
 
 doc >> linkCountExtractor
 ```
@@ -286,7 +298,7 @@ The [Scala Scraper Config module](modules/config/README.md) can be used to load 
 
 If you are behind an HTTP proxy, you can configure `Browser` implementations to make connections through it by setting the Java system properties `http.proxyHost`, `https.proxyHost`, `http.proxyPort` and `https.proxyPort`. Scala Scraper provides a `ProxyUtils` object that facilitates that configuration:
 
-```tut:book
+```tut:book:silent
 import net.ruippeixotog.scalascraper.util.ProxyUtils
 
 ProxyUtils.setProxy("localhost", 3128)
