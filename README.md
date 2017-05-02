@@ -236,13 +236,13 @@ When a document fails a validation, it may be useful to identify the problem by 
 
 ```scala
 val succ = validator(text("title"))(_ == "My Page")
-// succ: net.ruippeixotog.scalascraper.scraper.HtmlValidator[net.ruippeixotog.scalascraper.model.Element,Nothing] = SimpleValidator(net.ruippeixotog.scalascraper.scraper.HtmlExtractor$$anon$2@7b031beb,<function1>,None)
+// succ: net.ruippeixotog.scalascraper.scraper.HtmlValidator[net.ruippeixotog.scalascraper.model.Element,Nothing] = SimpleValidator(net.ruippeixotog.scalascraper.scraper.HtmlExtractor$$anon$2@32ee17d5,<function1>,None)
 
 val errors = Seq(
   validator(allText(".msg"), "Not logged in")(_.contains("sign in")),
   validator(".item", "Too few items")(_.size < 3),
   validator(text("h1"), "Internal Server Error")(_.contains("500")))
-// errors: Seq[net.ruippeixotog.scalascraper.scraper.HtmlValidator[net.ruippeixotog.scalascraper.model.Element,String]] = List(SimpleValidator(net.ruippeixotog.scalascraper.scraper.HtmlExtractor$$anon$2@2688b817,<function1>,Some(Not logged in)), SimpleValidator(net.ruippeixotog.scalascraper.scraper.HtmlExtractor$$anon$2@300ccd8a,<function1>,Some(Too few items)), SimpleValidator(net.ruippeixotog.scalascraper.scraper.HtmlExtractor$$anon$2@2e0a26af,<function1>,Some(Internal Server Error)))
+// errors: Seq[net.ruippeixotog.scalascraper.scraper.HtmlValidator[net.ruippeixotog.scalascraper.model.Element,String]] = List(SimpleValidator(net.ruippeixotog.scalascraper.scraper.HtmlExtractor$$anon$2@6cb67159,<function1>,Some(Not logged in)), SimpleValidator(net.ruippeixotog.scalascraper.scraper.HtmlExtractor$$anon$2@5fca62ff,<function1>,Some(Too few items)), SimpleValidator(net.ruippeixotog.scalascraper.scraper.HtmlExtractor$$anon$2@741f8159,<function1>,Some(Internal Server Error)))
 
 doc ~/~ (succ, errors)
 // res34: Either[String,browser.DocumentType] = Left(Too few items)
@@ -308,14 +308,14 @@ This library also provides a `Functor` for `HtmlExtractor`, which makes it possi
 ```scala
 // An extractor for the links inside all the "#menu > span" elements
 val linksExtractor = elementList("#menu > span") >?> attr("href")("a")
-// linksExtractor: net.ruippeixotog.scalascraper.scraper.HtmlExtractor[net.ruippeixotog.scalascraper.model.Element,List[Option[String]]] = net.ruippeixotog.scalascraper.scraper.HtmlExtractorInstances$$anon$1$$anon$5@17b55fb2
+// linksExtractor: net.ruippeixotog.scalascraper.scraper.HtmlExtractor[net.ruippeixotog.scalascraper.model.Element,List[Option[String]]] = net.ruippeixotog.scalascraper.scraper.HtmlExtractorInstances$$anon$1$$anon$5@66b9d95a
 
 doc >> linksExtractor
 // res53: List[Option[String]] = List(Some(#home), Some(#section1), None, Some(#section3))
 
 // An extractor for the number of links
 val linkCountExtractor = linksExtractor.map(_.flatten.length)
-// linkCountExtractor: net.ruippeixotog.scalascraper.scraper.HtmlExtractor[net.ruippeixotog.scalascraper.model.Element,Int] = net.ruippeixotog.scalascraper.scraper.HtmlExtractorInstances$$anon$1$$anon$5@29e03f76
+// linkCountExtractor: net.ruippeixotog.scalascraper.scraper.HtmlExtractor[net.ruippeixotog.scalascraper.model.Element,Int] = net.ruippeixotog.scalascraper.scraper.HtmlExtractorInstances$$anon$1$$anon$5@408888e0
 
 doc >> linkCountExtractor
 // res55: Int = 3
@@ -359,7 +359,7 @@ import net.ruippeixotog.scalascraper.util.ProxyUtils
 ProxyUtils.setProxy("localhost", 3128)
 
 val browser = JsoupBrowser()
-// browser: net.ruippeixotog.scalascraper.browser.Browser = net.ruippeixotog.scalascraper.browser.JsoupBrowser@44804c15
+// browser: net.ruippeixotog.scalascraper.browser.Browser = net.ruippeixotog.scalascraper.browser.JsoupBrowser@24044169
 
 // HTTP requests and scraping operations...
 ProxyUtils.removeProxy()
