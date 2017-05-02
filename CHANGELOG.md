@@ -16,6 +16,7 @@
   - `SimpleExtractor` and `SimpleValidator` are now deprecated. The classes remain available for the time being, but DSL
     methods that returned those classes now return only `HtmlExtractor` and `HtmlValidator` instances;
   - The `Validated` type alias is now deprecated. Users should now use `Either`, `Right` and `Left` directly;
+  - The `asDate` content parser was deprecated in favor of `asLocalDate` and `asDateTime`;
 
 - New features
   - The concrete type of the models in scala-scraper is now passed down from the `Browser` to `Element` instances

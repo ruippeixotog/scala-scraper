@@ -120,7 +120,7 @@ Some usage examples:
 
 ```tut:book
 // Extract the date from the "#date" element
-doc >> extractor("#date", text, asDate("yyyy-MM-dd"))
+doc >> extractor("#date", text, asLocalDate("yyyy-MM-dd"))
 
 // Extract the text of all "#mytable td" elements and parse each of them as a number
 doc >> extractor("#mytable td", texts, seq(asDouble))

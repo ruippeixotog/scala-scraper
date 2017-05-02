@@ -70,7 +70,28 @@ class DSLExtractingSpec extends Specification with BrowserHelper {
       }
 
       "allow immediate parsing of dates after extraction" in {
-        (doc >> extractor("#date", stext, asDate("yyyy-MM-dd"))).toLocalDate mustEqual "2014-10-26".toLocalDate
+        doc >> extractor("#date", stext, asLocalDate("yyyy-MM-dd")) mustEqual "2014-10-26".toLocalDate
+        doc >> extractor("#date", stext, asLocalDate("yyyy-MMM-dd")) must throwAn[Exception]
+        doc >> extractor("#date", stext, asLocalDate("yyyy-MMM-dd", "yyyy-MM-dd")) mustEqual "2014-10-26".toLocalDate
+
+        doc >> extractor("#datefull", stext, asDateTime("yyyy-MM-dd'T'HH:mm:ssZ")) mustEqual "2014-10-26T12:30:05Z".toDateTime
+        doc >> extractor("#datefull", stext, asDateTime("yyyy-MMM-dd'T'HH:mm:ssZ")) must throwAn[Exception]
+        doc >> extractor("#datefull", stext, asDateTime("yyyy-MMM-dd'T'HH:mm:ssZ", "yyyy-MM-dd'T'HH:mm:ssZ")) mustEqual
+          "2014-10-26T12:30:05Z".toDateTime
+
+        val customTz = DateTimeZone.forOffsetHours(4)
+
+        // without any indication of time zone, datetimes are parsed using the local time zone
+        doc >> extractor("#date", stext, asDateTime("yyyy-MM-dd")) mustEqual "2014-10-26".toDateTime
+
+        // when a time zone for `asDateTime` is provided, it is assumed as the default time zone when no information is
+        // avialable in the string to be parsed
+        doc >> extractor("#date", stext, asDateTime("yyyy-MM-dd").withZone(customTz)) mustEqual
+          "2014-10-26T00:00:00+04:00".toDateTime.withZone(customTz)
+
+        // when there is time zone in the string to be parsed, the datetime is just changed to the provided time zone
+        doc >> extractor("#datefull", stext, asDateTime("yyyy-MM-dd'T'HH:mm:ssZ").withZone(customTz)) mustEqual
+          "2014-10-26T12:30:05Z".toDateTime.withZone(customTz)
       }
 
       "allow immediate parsing with a regex after extraction" in {
@@ -100,7 +121,7 @@ class DSLExtractingSpec extends Specification with BrowserHelper {
         val myExtractor = new HtmlExtractor[Element, MyPage] {
           def extract(doc: ElementQuery[Element]) = MyPage(
             doc >> stext("title"),
-            (doc >> extractor("#date", stext, asDate("yyyy-MM-dd"))).toLocalDate,
+            doc >> extractor("#date", stext, asLocalDate("yyyy-MM-dd")),
             doc >> stext("#menu .active"))
         }
 

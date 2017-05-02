@@ -129,8 +129,8 @@ Some usage examples:
 
 ```scala
 // Extract the date from the "#date" element
-doc >> extractor("#date", text, asDate("yyyy-MM-dd"))
-// res17: org.joda.time.DateTime = 2014-10-26T00:00:00.000+01:00
+doc >> extractor("#date", text, asLocalDate("yyyy-MM-dd"))
+// res17: org.joda.time.LocalDate = 2014-10-26
 
 // Extract the text of all "#mytable td" elements and parse each of them as a number
 doc >> extractor("#mytable td", texts, seq(asDouble))
@@ -215,13 +215,12 @@ doc ~/~ validator(text("title"))(_ == "Test page")
 //    <div id="content">
 //     <h2>Test page h2</h2>
 //     <span id="date">2014-10-26</span>
+//     <span id="datefull">2014-10-26T12:30:05Z</span>
 //     <span id="rating">4.5</span>
 //     <span id="pages">2</span>
 //     <section>
 //      <h3>Section 1 h3</h3>
-//      <p>Some text for testing</p>
-//      <p>More text for testing</p>
-//   ...
+//      <p>Some text ...
 
 // Check if there are at least 3 ".active" elements
 doc ~/~ validator(".active")(_.size >= 3)

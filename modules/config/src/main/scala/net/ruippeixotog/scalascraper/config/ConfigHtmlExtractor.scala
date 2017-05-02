@@ -6,7 +6,7 @@ import com.typesafe.config.Config
 
 import net.ruippeixotog.scalascraper.model.Element
 import net.ruippeixotog.scalascraper.scraper.ContentExtractors.{ allText, attr }
-import net.ruippeixotog.scalascraper.scraper.ContentParsers.{ asDate, asIs, regexMatch }
+import net.ruippeixotog.scalascraper.scraper.ContentParsers.{ asDateTime, asIs, regexMatch }
 import net.ruippeixotog.scalascraper.scraper.HtmlExtractor
 
 object ConfigHtmlExtractor {
@@ -19,9 +19,9 @@ object ConfigHtmlExtractor {
 
     val contentParser =
       if (conf.hasPath("date-format"))
-        asDate(conf.getString("date-format"))
+        asDateTime(conf.getString("date-format"))
       else if (conf.hasPath("date-formats"))
-        asDate(conf.getStringList("date-formats").asScala: _*)
+        asDateTime(conf.getStringList("date-formats").asScala: _*)
       else if (conf.hasPath("regex-format"))
         regexMatch(conf.getString("regex-format"))
       else
