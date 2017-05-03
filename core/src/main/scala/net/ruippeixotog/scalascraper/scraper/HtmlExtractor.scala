@@ -4,8 +4,11 @@ import scalaz.Monad
 
 import net.ruippeixotog.scalascraper.model.{ Element, ElementQuery }
 
-trait HtmlExtractor[-E <: Element, +A] {
+trait HtmlExtractor[-E <: Element, +A] extends (ElementQuery[E] => A) {
+
   def extract(doc: ElementQuery[E]): A
+
+  @inline final def apply(doc: ElementQuery[E]) = extract(doc)
 }
 
 object HtmlExtractor extends HtmlExtractorInstances {

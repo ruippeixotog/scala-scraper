@@ -219,8 +219,7 @@ doc ~/~ validator(text("title"))(_ == "Test page")
 //     <span id="rating">4.5</span>
 //     <span id="pages">2</span>
 //     <section>
-//      <h3>Section 1 h3</h3>
-//      <p>Some text ...
+//      <h3>Section 1 ...
 
 // Check if there are at least 3 ".active" elements
 doc ~/~ validator(".active")(_.size >= 3)

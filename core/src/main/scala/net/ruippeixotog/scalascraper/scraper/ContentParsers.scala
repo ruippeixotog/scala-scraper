@@ -2,8 +2,8 @@ package net.ruippeixotog.scalascraper.scraper
 
 import scala.util.matching.Regex
 
-import org.joda.time.{ DateTime, DateTimeZone, LocalDate }
-import org.joda.time.format.{ DateTimeFormat, DateTimeFormatter, DateTimeFormatterBuilder }
+import org.joda.time.format._
+import org.joda.time.{ DateTime, DateTimeZone }
 
 object ContentParsers {
   def asIs[C] = identity[C] _
