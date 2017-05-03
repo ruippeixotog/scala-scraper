@@ -54,20 +54,20 @@ class DSLValidatingSpec extends Specification with BrowserHelper {
 
       "provide match-all and match-nothing validators" in {
         doc ~/~ matchAll must beRight(doc)
-        doc.select("head") ~/~ matchAll must beRight(doc.select("head"))
-        doc.select("legs") ~/~ matchAll must beRight(doc.select("legs"))
+        doc.root.select("head") ~/~ matchAll must beRight(doc.root.select("head"))
+        doc.root.select("legs") ~/~ matchAll must beRight(doc.root.select("legs"))
 
         doc errorIf matchAll(42) must beLeft(42)
-        doc.select("head") errorIf matchAll("42") must beLeft("42")
-        doc.select("legs") errorIf matchAll(42.0) must beLeft(42.0)
+        doc.root.select("head") errorIf matchAll("42") must beLeft("42")
+        doc.root.select("legs") errorIf matchAll(42.0) must beLeft(42.0)
 
         doc ~/~ matchNothing(42) must beLeft(())
-        doc.select("head") ~/~ matchNothing("42") must beLeft(())
-        doc.select("legs") ~/~ matchNothing(42.0) must beLeft(())
+        doc.root.select("head") ~/~ matchNothing("42") must beLeft(())
+        doc.root.select("legs") ~/~ matchNothing(42.0) must beLeft(())
 
         doc errorIf matchNothing must beRight(doc)
-        doc.select("head") errorIf matchNothing must beRight(doc.select("head"))
-        doc.select("legs") errorIf matchNothing must beRight(doc.select("legs"))
+        doc.root.select("head") errorIf matchNothing must beRight(doc.root.select("head"))
+        doc.root.select("legs") errorIf matchNothing must beRight(doc.root.select("legs"))
       }
     }
   }
