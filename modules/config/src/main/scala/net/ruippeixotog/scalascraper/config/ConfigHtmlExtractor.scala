@@ -27,6 +27,6 @@ object ConfigHtmlExtractor {
       else
         asIs[String]
 
-    HtmlExtractor(cssQuery, contentExtractor, contentParser.andThen(_.asInstanceOf[A]))
+    contentExtractor.mapQuery(cssQuery).map(contentParser).map(_.asInstanceOf[A])
   }
 }

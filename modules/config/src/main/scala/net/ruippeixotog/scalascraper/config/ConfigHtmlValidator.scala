@@ -5,7 +5,7 @@ import scala.util.{ Failure, Success, Try }
 import com.typesafe.config.Config
 
 import net.ruippeixotog.scalascraper.config.util.ConfigReader
-import net.ruippeixotog.scalascraper.model.{ Element, ElementQuery }
+import net.ruippeixotog.scalascraper.model.Element
 import net.ruippeixotog.scalascraper.scraper._
 
 object ConfigHtmlValidator {
@@ -14,9 +14,7 @@ object ConfigHtmlValidator {
     val result = Try(reader.read(conf, "status"))
 
     if (conf.hasPath("exists")) {
-      val extractor = HtmlExtractor(
-        conf.getString("select.query"),
-        ContentExtractors.elements, ContentParsers.asIs[ElementQuery[Element]])
+      val extractor = ContentExtractors.elements.mapQuery(conf.getString("select.query"))
 
       val matcher = conf.getBoolean("exists") == (_: Iterable[Element]).nonEmpty
       result match {

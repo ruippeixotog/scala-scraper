@@ -9,6 +9,12 @@ trait HtmlExtractor[-E <: Element, +A] extends (ElementQuery[E] => A) {
   def extract(doc: ElementQuery[E]): A
 
   @inline final def apply(doc: ElementQuery[E]) = extract(doc)
+
+  def map[B](f: A => B): HtmlExtractor[E, B] =
+    HtmlExtractor { doc => f(extract(doc)) }
+
+  def mapQuery(cssQuery: String): HtmlExtractor[E, A] =
+    HtmlExtractor { doc => extract(doc.select(cssQuery)) }
 }
 
 object HtmlExtractor extends HtmlExtractorInstances {
@@ -17,17 +23,8 @@ object HtmlExtractor extends HtmlExtractorInstances {
     def extract(doc: ElementQuery[E]): A = f(doc)
   }
 
-  def apply(cssQuery: String): HtmlExtractor[Element, Iterable[String]] =
+  def forQuery(cssQuery: String): HtmlExtractor[Element, Iterable[String]] =
     HtmlExtractor { doc => ContentExtractors.texts(doc.select(cssQuery)) }
-
-  def apply[E <: Element, A](cssQuery: String, contentExtractor: ElementQuery[E] => A): HtmlExtractor[E, A] =
-    HtmlExtractor { doc => contentExtractor(doc.select(cssQuery)) }
-
-  def apply[E <: Element, C, A](
-    cssQuery: String, contentExtractor: ElementQuery[E] => C, contentParser: C => A): HtmlExtractor[E, A] = {
-
-    HtmlExtractor { doc => contentParser(contentExtractor(doc.select(cssQuery))) }
-  }
 }
 
 trait HtmlExtractorInstances {
@@ -41,14 +38,13 @@ trait HtmlExtractorInstances {
       def extract(doc: ElementQuery[E]) = f(fa.extract(doc)).extract(doc)
     }
 
-    override def map[A, B](fa: HtmlExtractor[E, A])(f: A => B) = new HtmlExtractor[E, B] {
-      def extract(doc: ElementQuery[E]) = f(fa.extract(doc))
-    }
+    override def map[A, B](fa: HtmlExtractor[E, A])(f: A => B) = fa.map(f)
   }
 }
 
-@deprecated("SimpleExtractor is deprecated. Use HtmlExtractor.apply methods instead", "2.0.0")
-case class SimpleExtractor[-E <: Element, C, +A](
+@deprecated("Use HtmlExtractor constructor methods followed by map and mapQuery", "2.0.0")
+case class SimpleExtractor[-E <: Element, C, +A] @deprecated(
+  "Use `contentExtractor.mapQuery(cssQuery).map(contentParser)` instead", "2.0.0") (
     cssQuery: String,
     contentExtractor: ElementQuery[E] => C,
     contentParser: C => A) extends HtmlExtractor[E, A] {
@@ -65,12 +61,13 @@ case class SimpleExtractor[-E <: Element, C, +A](
   def parseWith[A2](contentExtractor: C => A2) = copy(contentParser = contentParser)
 }
 
-@deprecated("SimpleExtractor is deprecated. Use HtmlExtractor.apply methods instead", "2.0.0")
 object SimpleExtractor {
 
+  @deprecated("Use `HtmlExtractor(cssQuery)` instead", "2.0.0")
   def apply(cssQuery: String): SimpleExtractor[Element, Iterable[String], Iterable[String]] =
     SimpleExtractor(cssQuery, ContentExtractors.texts, ContentParsers.asIs)
 
+  @deprecated("Use `contentExtractor.mapQuery(cssQuery)` instead", "2.0.0")
   def apply[E <: Element, C](cssQuery: String, contentExtractor: ElementQuery[E] => C): SimpleExtractor[E, C, C] =
     SimpleExtractor(cssQuery, contentExtractor, ContentParsers.asIs)
 }

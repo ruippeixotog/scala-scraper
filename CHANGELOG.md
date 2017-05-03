@@ -21,7 +21,9 @@
 - New features
   - The concrete type of the models in scala-scraper is now passed down from the `Browser` to `Element` instances
     extracted from documents. This allows users to use features unique of each browser (such as modifying or interacting
-    with elements) while still using the scala-scraper DSL to exteact and query them.
+    with elements) while still using the scala-scraper DSL to exteact and query them;
+  - `HtmlExtractor[E, A]` is now a proper instance of `ElementQuery[E] => A` and have `map` and `mapQuery` methods to
+    map the extraction results and the preceding query, respectively.
 
 ### 1.2.1 (Apr 30, 2017)
 

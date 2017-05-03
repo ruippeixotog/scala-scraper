@@ -6,10 +6,10 @@ import net.ruippeixotog.scalascraper.scraper.HtmlExtractor
 trait ImplicitConversions {
 
   implicit def cssQueryAsExtractor(cssQuery: String): HtmlExtractor[Element, Iterable[String]] =
-    HtmlExtractor(cssQuery)
+    HtmlExtractor.forQuery(cssQuery)
 
-  implicit def contentExtractorAsExtractor[E <: Element, C](contentExtractor: ElementQuery[E] => C): String => HtmlExtractor[E, C] = {
-    cssQuery: String => HtmlExtractor(cssQuery, contentExtractor)
+  implicit class RichHtmlExtractor[E <: Element, C](contentExtractor: HtmlExtractor[E, C]) {
+    def apply(cssQuery: String) = contentExtractor.mapQuery(cssQuery)
   }
 }
 
