@@ -42,12 +42,16 @@ class DSLExtractingSpec extends Specification with BrowserHelper {
 
         (doc >> elements(".active")).map(_.text) mustEqual Seq("Section 2")
         (doc >> elements("p")).map(_.text) mustEqual Seq("Some text for testing", "More text for testing")
+
+        (doc >> "#content > section").map(_.tagName) mustEqual Seq("section", "section", "section")
+        (doc >> "#content > section > h3").map(_.text) mustEqual Seq("Section 1 h3", "Section 2 h3", "Section 3 h3")
+        (doc >> "#menu .active").map(_.text) mustEqual Seq("Section 2")
       }
 
       "allow extracting the content of all elements matched by a CSS query" in {
-        (doc >> "#content > section").size mustEqual 3
-        doc >> "#content > section > h3" mustEqual Seq("Section 1 h3", "Section 2 h3", "Section 3 h3")
-        doc >> "#menu .active" mustEqual Seq("Section 2")
+        (doc >> texts("#content > section")).size mustEqual 3
+        doc >> texts("#content > section > h3") mustEqual Seq("Section 1 h3", "Section 2 h3", "Section 3 h3")
+        doc >> texts("#menu .active") mustEqual Seq("Section 2")
       }
 
       "allow extracting an attribute of the first element matched by a CSS query" in {

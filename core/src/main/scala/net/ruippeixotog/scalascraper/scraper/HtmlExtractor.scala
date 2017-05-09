@@ -23,8 +23,8 @@ object HtmlExtractor extends HtmlExtractorInstances {
     def extract(doc: ElementQuery[E]): A = f(doc)
   }
 
-  def forQuery(cssQuery: String): HtmlExtractor[Element, Iterable[String]] =
-    HtmlExtractor { doc => ContentExtractors.texts(doc.select(cssQuery)) }
+  def forQuery[E <: Element](cssQuery: String): HtmlExtractor[E, ElementQuery[E]] =
+    HtmlExtractor(_.select(cssQuery))
 }
 
 trait HtmlExtractorInstances {
