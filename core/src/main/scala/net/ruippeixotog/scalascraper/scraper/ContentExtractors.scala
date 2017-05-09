@@ -9,9 +9,20 @@ object ContentExtractors {
   val elements: HtmlExtractor[Element, ElementQuery[Element]] = identity[ElementQuery[Element]](_)
   val elementList: HtmlExtractor[Element, List[Element]] = _.toList
 
-  def elementOf[E <: Element.Upper[E]]: HtmlExtractor[E, E] = _.head
-  def elementsOf[E <: Element.Upper[E]]: HtmlExtractor[E, ElementQuery[E]] = identity[ElementQuery[E]](_)
-  def elementListOf[E <: Element.Upper[E]]: HtmlExtractor[E, List[E]] = _.toList
+  val pElement = new PolyHtmlExtractor {
+    type Out[E] = E
+    def apply[E <: Element]: HtmlExtractor[E, E] = _.head
+  }
+
+  val pElements = new PolyHtmlExtractor {
+    type Out[E <: Element] = ElementQuery[E]
+    def apply[E <: Element]: HtmlExtractor[E, ElementQuery[E]] = identity[ElementQuery[E]](_)
+  }
+
+  val pElementList = new PolyHtmlExtractor {
+    type Out[E] = List[E]
+    def apply[E <: Element]: HtmlExtractor[E, List[E]] = _.toList
+  }
 
   val text: HtmlExtractor[Element, String] = _.head.text
   val texts: HtmlExtractor[Element, Iterable[String]] = _.map(_.text)

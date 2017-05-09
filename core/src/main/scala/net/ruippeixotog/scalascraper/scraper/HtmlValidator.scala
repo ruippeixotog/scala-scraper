@@ -17,6 +17,12 @@ object HtmlValidator {
   def apply[E <: Element, A, R](htmlExtractor: HtmlExtractor[E, A], result: R)(matcher: A => Boolean): HtmlValidator[E, R] =
     SimpleValidator[E, A, R](htmlExtractor, matcher, Some(result))
 
+  def apply[R](polyExtractor: PolyHtmlExtractor)(matcher: polyExtractor.Out[Element] => Boolean): HtmlValidator[Element, R] =
+    SimpleValidator[Element, polyExtractor.Out[Element], R](polyExtractor[Element], matcher)
+
+  def apply[R](polyExtractor: PolyHtmlExtractor, result: R)(matcher: polyExtractor.Out[Element] => Boolean): HtmlValidator[Element, R] =
+    SimpleValidator[Element, polyExtractor.Out[Element], R](polyExtractor[Element], matcher, Some(result))
+
   val matchAll = new HtmlValidator[Element, Nothing] {
     def matches(doc: ElementQuery[Element]) = true
     def result = None
