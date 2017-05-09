@@ -132,7 +132,7 @@ doc >> extractor("h1", element, asIs[Element])
 The DSL also provides implicit conversions to write more succinctly the most common extractor types:
 
 * Writing `<contentExtractor>(<cssQuery>)` is taken as `extractor(<cssQuery>, <contentExtractor>, asIs)`;
-* Writing `<cssQuery>` is taken as `extractor(<cssQuery>, texts, asIs)`.
+* Writing `<cssQuery>` is taken as `extractor(<cssQuery>, elements, asIs)`.
 
 That way, one can write the expressions in the Quick Start section, as well as:
 
@@ -143,8 +143,8 @@ doc >> elementList(".active")
 // Extract the text inside each p element
 doc >> texts("p")
 
-// Exactly the same as the extractor above
-doc >> "p"
+// Exactly the "h3" elements (as a lazy iterable)
+doc >> "h3"
 ```
 
 ## Content Validation

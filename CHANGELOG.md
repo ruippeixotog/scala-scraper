@@ -1,9 +1,13 @@
 ### 2.0.0 (unreleased)
 
 - Breaking changes
+  - Extracting using a CSS query string as extractor will now extract elements instead of text. This allows easier
+    chaining of extractors and CSS selectors and fits more nicely the current extractor model. The old behavior can be
+    recovered by wrapping the CSS query string in the `texts` content extractor, e.g. `doc >> texts("myQuery")`;
   - `HtmlExtractor`, `HtmlValidator` and `ElementQuery` now have an additional type parameter for the type of `Element`
-    they work on. Filling it with `Element` (which is a superclass of all elements) should be enough for them to work
-    with all source code using scala-scraper 1.x;
+    they work on. If you have custom instances of one of those classes, filling the missing parameter with `Element`
+    (which is a superclass of all elements) should be enough for them to work with all source code using
+    scala-scraper 1.x;
   - Methods for loading extractors and validators from a config were extracted to a separate module. In order to use
     them users must add `scala-scraper-config` to their SBT dependencies and import
     `net.ruippeixotog.scalascraper.config.dsl.DSL._`;
@@ -23,7 +27,12 @@
     extracted from documents. This allows users to use features unique of each browser (such as modifying or interacting
     with elements) while still using the scala-scraper DSL to exteact and query them;
   - `HtmlExtractor[E, A]` is now a proper instance of `ElementQuery[E] => A` and have `map` and `mapQuery` methods to
-    map the extraction results and the preceding query, respectively.
+    map the extraction results and the preceding query, respectively;
+  - Content extractors, which were previously just functions, are now full-fledged `HtmlExtractor` instances and can be
+    used by themselves, e.g. `doc >> elements`, `doc >> elementList("myQuery") >> formData`;
+  - A new `PolyHtmlExtractor` class was created, allowing the implementation of extractors whose return type depends on
+    the type of the element or document being extracted;
+  - Overall code cleanup and simplification of some concepts.
 
 ### 1.2.1 (Apr 30, 2017)
 

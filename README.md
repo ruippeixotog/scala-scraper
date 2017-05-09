@@ -144,7 +144,7 @@ doc >> extractor("h1", element, asIs[Element])
 The DSL also provides implicit conversions to write more succinctly the most common extractor types:
 
 * Writing `<contentExtractor>(<cssQuery>)` is taken as `extractor(<cssQuery>, <contentExtractor>, asIs)`;
-* Writing `<cssQuery>` is taken as `extractor(<cssQuery>, texts, asIs)`.
+* Writing `<cssQuery>` is taken as `extractor(<cssQuery>, elements, asIs)`.
 
 That way, one can write the expressions in the Quick Start section, as well as:
 
@@ -157,9 +157,31 @@ doc >> elementList(".active")
 doc >> texts("p")
 // res25: Iterable[String] = List(Some text for testing, More text for testing)
 
-// Exactly the same as the extractor above
-doc >> "p"
-// res27: Iterable[String] = List(Some text for testing, More text for testing)
+// Exactly the "h3" elements (as a lazy iterable)
+doc >> "h3"
+// res27: net.ruippeixotog.scalascraper.model.ElementQuery[net.ruippeixotog.scalascraper.model.Element] =
+// LazyElementQuery(WrappedArray(h3), JsoupElement(<html lang="en">
+//  <head>
+//   <meta charset="utf-8">
+//   <meta name="viewport" content="width=device-width, initial-scale=1">
+//   <title>Test page</title>
+//  </head>
+//  <body>
+//   <div id="wrapper">
+//    <div id="header">
+//     <h1>Test page h1</h1>
+//    </div>
+//    <div id="menu">
+//     <span><a href="#home">Home</a></span>
+//     <span><a href="#section1">Section 1</a></span>
+//     <span class="active">Section 2</span>
+//     <span><a href="#section3">Section 3</a></span>
+//    </div>
+//    <div id="content">
+//     <h2>Test page h2</h2>
+//     <span id="date">2014-10-26</span>
+//     <span id="datefull">2014-10-26T12:30:05Z</span>
+//     <span id="rating">4....
 ```
 
 ## Content Validation
