@@ -5,7 +5,7 @@ import java.io.PrintStream
 import scala.collection.immutable.SortedMap
 
 import net.ruippeixotog.scalascraper.ExampleMatchers._
-import net.ruippeixotog.scalascraper.browser.JsoupBrowser
+import net.ruippeixotog.scalascraper.browser.{ HtmlUnitBrowser, JsoupBrowser }
 import net.ruippeixotog.scalascraper.dsl.DSL.Extract._
 import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.model.Element
@@ -97,4 +97,15 @@ object MusicGenreTreeApp extends App {
   val page = browser.get("http://rateyourmusic.com/rgenre/")
   val out = new PrintStream("genres.yaml")
   GenreNode(page >> element("#content")).renderYaml() |> out.println
+}
+
+object PageInteractionApp extends App {
+  val browser = HtmlUnitBrowser.typed()
+  val doc = browser.get("http://example.com")
+
+  val moreInfoLink = doc >> pElement("a")
+  moreInfoLink.underlying.click()
+
+  doc >> text("h1").map("== " + _ + "==") |> println
+  doc >> texts("p") foreach println
 }
