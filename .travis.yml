@@ -6,7 +6,11 @@ jdk:
   - oraclejdk8
 script:
   - sbt ++$TRAVIS_SCALA_VERSION clean coverage test tut
-  - git diff --exit-code      # check if there are no changes after `tut` runs
+
+  # check if there are no changes after `tut` runs
+  - if [[ $TRAVIS_SCALA_VERSION =~ '^2\.12.*' ]]; then
+      git diff --exit-code;
+      fi
 after_success:
   - sbt ++$TRAVIS_SCALA_VERSION coverageReport coverageAggregate coveralls
 cache:
