@@ -12,8 +12,8 @@ trait ImplicitConversions {
   implicit def cssQueryAsPolyExtractor(cssQuery: String): PolyHtmlExtractor.Aux[pElements.Out] =
     pElements.mapQuery(cssQuery)
 
-  implicit class RichHtmlExtractor[E <: Element, C](contentExtractor: HtmlExtractor[E, C]) {
-    def apply(cssQuery: String) = contentExtractor.mapQuery(cssQuery)
+  implicit class RichHtmlExtractor[E <: Element, C](extractor: HtmlExtractor[E, C]) {
+    def apply(cssQuery: String) = extractor.mapQuery(cssQuery)
   }
 }
 

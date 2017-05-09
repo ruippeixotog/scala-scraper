@@ -11,11 +11,11 @@ trait HtmlValidator[-E <: Element, +R] {
 
 object HtmlValidator {
 
-  def apply[E <: Element, A, R](htmlExtractor: HtmlExtractor[E, A])(matcher: A => Boolean): HtmlValidator[E, R] =
-    SimpleValidator[E, A, R](htmlExtractor, matcher)
+  def apply[E <: Element, A, R](extractor: HtmlExtractor[E, A])(matcher: A => Boolean): HtmlValidator[E, R] =
+    SimpleValidator[E, A, R](extractor, matcher)
 
-  def apply[E <: Element, A, R](htmlExtractor: HtmlExtractor[E, A], result: R)(matcher: A => Boolean): HtmlValidator[E, R] =
-    SimpleValidator[E, A, R](htmlExtractor, matcher, Some(result))
+  def apply[E <: Element, A, R](extractor: HtmlExtractor[E, A], result: R)(matcher: A => Boolean): HtmlValidator[E, R] =
+    SimpleValidator[E, A, R](extractor, matcher, Some(result))
 
   def apply[R](polyExtractor: PolyHtmlExtractor)(matcher: polyExtractor.Out[Element] => Boolean): HtmlValidator[Element, R] =
     SimpleValidator[Element, polyExtractor.Out[Element], R](polyExtractor[Element], matcher)
