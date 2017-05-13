@@ -21,6 +21,9 @@
     methods that returned those classes now return only `HtmlExtractor` and `HtmlValidator` instances;
   - The `Validated` type alias is now deprecated. Users should now use `Either`, `Right` and `Left` directly;
   - The `asDate` content parser was deprecated in favor of `asLocalDate` and `asDateTime`;
+  - The DSL validation operator `~/~` was renamed to `>/~` in order to have the same precedence as the extraction
+    operators `>>` and `>?>`;
+  - The `and` DSL operator is deprecated and will be removed in future versions;
 
 - New features
   - The concrete type of the models in scala-scraper is now passed down from the `Browser` to `Element` instances

@@ -59,9 +59,9 @@ class DSLSpec extends Specification {
     }
 
     "support chaining extractors with validators" in {
-      doc >?> element("#menu") ~/~ validator("span")(_.nonEmpty) >> stext(".active") mustEqual Some(Right("Section 2"))
-      doc >?> element("#menu") ~/~ validator(".active")(_.isEmpty) >> "span" mustEqual Some(Left(()))
-      doc >?> element("#menu2") ~/~ validator("span")(_.nonEmpty) >> stext(".active") mustEqual None
+      doc >?> element("#menu") >/~ validator("span")(_.nonEmpty) >> stext(".active") mustEqual Some(Right("Section 2"))
+      doc >?> element("#menu") >/~ validator(".active")(_.isEmpty) >> "span" mustEqual Some(Left(()))
+      doc >?> element("#menu2") >/~ validator("span")(_.nonEmpty) >> stext(".active") mustEqual None
     }
 
     "support creating chained extractors as objects for later use" in {
@@ -79,8 +79,8 @@ class DSLSpec extends Specification {
     }
 
     "support creating chained extractors with validations as objects for later use" in {
-      val ext1 = element("#menu") ~/~ validator("span")(_.nonEmpty) >?> stext(".active")
-      val ext2 = element("#menu") ~/~ validator(".active")(_.isEmpty) >> "span"
+      val ext1 = element("#menu") >/~ validator("span")(_.nonEmpty) >?> stext(".active")
+      val ext2 = element("#menu") >/~ validator(".active")(_.isEmpty) >> "span"
 
       def useExtractor[A](ext: HtmlExtractor[Element, A]) = doc >> ext
 
@@ -92,14 +92,14 @@ class DSLSpec extends Specification {
       val menu = doc >> element("#menu")
 
       val text = for {
-        m <- menu ~/~ validator("span")(_.nonEmpty)
+        m <- menu >/~ validator("span")(_.nonEmpty)
         t = m >> stext(".active")
       } yield t
 
       text mustEqual Right("Section 2")
 
       val text2 = for {
-        m <- menu ~/~ validator(".active")(_.isEmpty)
+        m <- menu >/~ validator(".active")(_.isEmpty)
         t = m >> stext(".active")
       } yield t
 

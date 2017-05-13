@@ -54,7 +54,7 @@ object NewsApp extends App {
 object HeadlineApp extends App {
   val browser = JsoupBrowser()
 
-  browser.get("http://observador.pt") ~/~ (succ, errs) >> "h1" match {
+  browser.get("http://observador.pt") >/~ (succ, errs) >> "h1" match {
     case Right(headline) => println("HEADLINE: " + headline.head)
     case Left(status) => println("Error: " + status)
   }
@@ -64,7 +64,7 @@ object HeadlineBetterApp extends App {
   val browser = JsoupBrowser()
 
   for {
-    headline <- browser.get("http://observador.pt") ~/~ (succ, errs) >> element("h1 a")
+    headline <- browser.get("http://observador.pt") >/~ (succ, errs) >> element("h1 a")
     headlineDesc = browser.get(headline.attr("href")) >> text(".lead")
   } println("== " + headline.text + " ==\n" + headlineDesc)
 }

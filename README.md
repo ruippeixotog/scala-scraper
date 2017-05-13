@@ -197,10 +197,10 @@ trait HtmlValidator[-E <: Element, +R] {
 }
 ```
 
-As with extractors, the DSL provides the `validator` constructor and the `~/~` operator for applying a validation to a document:
+As with extractors, the DSL provides the `validator` constructor and the `>/~` operator for applying a validation to a document:
 
 ```
-doc ~/~ validator(<extractor>)(<matcher>)
+doc >/~ validator(<extractor>)(<matcher>)
 ```
 
 Where the arguments are:
@@ -214,7 +214,7 @@ Some validation examples:
 
 ```scala
 // Check if the title of the page is "Test page"
-doc ~/~ validator(text("title"))(_ == "Test page")
+doc >/~ validator(text("title"))(_ == "Test page")
 // res29: Either[Unit,browser.DocumentType] =
 // Right(JsoupDocument(<!doctype html>
 // <html lang="en">
@@ -245,11 +245,11 @@ doc ~/~ validator(text("title"))(_ == "Test page")
 //      <p>Some text ...
 
 // Check if there are at least 3 ".active" elements
-doc ~/~ validator(".active")(_.size >= 3)
+doc >/~ validator(".active")(_.size >= 3)
 // res31: Either[Unit,browser.DocumentType] = Left(())
 
 // Check if the text in ".desc" contains the word "blue"
-doc ~/~ validator(allText("#mytable"))(_.contains("blue"))
+doc >/~ validator(allText("#mytable"))(_.contains("blue"))
 // res33: Either[Unit,browser.DocumentType] = Left(())
 ```
 
@@ -267,7 +267,7 @@ val errors = Seq(
 They can be used in combination to create more informative validations:
 
 ```scala
-doc ~/~ (succ, errors)
+doc >/~ (succ, errors)
 // res35: Either[String,browser.DocumentType] = Left(Too few items)
 ```
 
@@ -318,7 +318,7 @@ doc >?> element("#menu") >> text(".active")
 
 // Same as above, but check if the "#menu" has any "span" element before
 // extracting the text
-doc >?> element("#menu") ~/~ validator("span")(_.nonEmpty) >> text(".active")
+doc >?> element("#menu") >/~ validator("span")(_.nonEmpty) >> text(".active")
 // res50: Option[scala.util.Either[Unit,String]] = Some(Right(Section 2))
 
 // Extract the links inside all the "#menu > span" elements

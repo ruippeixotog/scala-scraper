@@ -69,20 +69,40 @@ trait ScrapingOps extends syntax.ToIdOps with ToFunctorOps with std.AllInstances
       }
     }
 
+    @inline final def >/~[R](success: HtmlValidator[E, _]) = successIf(success)
+
+    @inline final def >/~[R](success: HtmlValidator[E, _], error: HtmlValidator[E, R]) =
+      validateWith(success, error :: Nil)
+
+    @inline final def >/~[R](success: HtmlValidator[E, _], errors: Seq[HtmlValidator[E, R]]) =
+      validateWith(success, errors)
+
+    @inline final def >/~[R](success: HtmlValidator[E, _], error: HtmlValidator[E, R], default: R) =
+      validateWith(success, error :: Nil, default)
+
+    @inline final def >/~[R](success: HtmlValidator[E, _], errors: Seq[HtmlValidator[E, R]], default: R) =
+      validateWith(success, errors, default)
+
+    @deprecated("Use the >/~ operator instead", "2.0.0")
     @inline final def ~/~[R](success: HtmlValidator[E, _]) = successIf(success)
 
+    @deprecated("Use the >/~ operator instead", "2.0.0")
     @inline final def ~/~[R](success: HtmlValidator[E, _], error: HtmlValidator[E, R]) =
       validateWith(success, error :: Nil)
 
+    @deprecated("Use the >/~ operator instead", "2.0.0")
     @inline final def ~/~[R](success: HtmlValidator[E, _], errors: Seq[HtmlValidator[E, R]]) =
       validateWith(success, errors)
 
+    @deprecated("Use the >/~ operator instead", "2.0.0")
     @inline final def ~/~[R](success: HtmlValidator[E, _], error: HtmlValidator[E, R], default: R) =
       validateWith(success, error :: Nil, default)
 
+    @deprecated("Use the >/~ operator instead", "2.0.0")
     @inline final def ~/~[R](success: HtmlValidator[E, _], errors: Seq[HtmlValidator[E, R]], default: R) =
       validateWith(success, errors, default)
 
+    @deprecated("this operator does nothing and can be omitted", "2.0.0")
     @inline final def and = self
   }
 

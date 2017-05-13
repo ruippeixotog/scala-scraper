@@ -28,26 +28,26 @@ class ConfigLoadingHelpersSpec extends Specification {
     "be able to create validators from configuration files" in {
       val conf = ConfigFactory.load.getConfig("test-validators")
 
-      doc ~/~ validatorAt(conf, "simple") must beRight(doc)
-      docEmpty ~/~ validatorAt(conf, "simple") must beLeft(())
+      doc >/~ validatorAt(conf, "simple") must beRight(doc)
+      docEmpty >/~ validatorAt(conf, "simple") must beLeft(())
 
-      doc ~/~ validatorAt(conf, "attr") must beLeft(())
-      docEmpty ~/~ validatorAt(conf, "attr") must beLeft(())
+      doc >/~ validatorAt(conf, "attr") must beLeft(())
+      docEmpty >/~ validatorAt(conf, "attr") must beLeft(())
 
-      doc ~/~ validatorAt(conf, "with-result") must beRight(doc)
+      doc >/~ validatorAt(conf, "with-result") must beRight(doc)
       doc errorIf validatorAt[Int](conf, "with-result") must beLeft(5)
       doc errorIf validatorAt[String](conf, "with-result") must beLeft("5")
       doc errorIf validatorAt[Boolean](conf, "with-result") must throwAn[Exception]
 
-      doc ~/~ validatorAt(conf, "exists") must beRight(doc)
-      docEmpty ~/~ validatorAt(conf, "exists") must beRight(docEmpty)
+      doc >/~ validatorAt(conf, "exists") must beRight(doc)
+      docEmpty >/~ validatorAt(conf, "exists") must beRight(docEmpty)
       doc errorIf validatorAt[Double](conf, "exists") must beLeft(0.25)
 
-      doc ~/~ validatorAt(conf, "exists2") must beLeft(())
-      docEmpty ~/~ validatorAt(conf, "exists2") must beRight(docEmpty)
+      doc >/~ validatorAt(conf, "exists2") must beLeft(())
+      docEmpty >/~ validatorAt(conf, "exists2") must beRight(docEmpty)
       doc errorIf validatorAt[Double](conf, "exists2") must beRight(doc)
 
-      doc ~/~ validatorAt(conf, "inverted") must beRight(doc)
+      doc >/~ validatorAt(conf, "inverted") must beRight(doc)
       doc errorIf validatorAt[LocalDate](conf, "inverted") must beLeft("2013-03-03".toLocalDate)
     }
   }

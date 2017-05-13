@@ -160,10 +160,10 @@ trait HtmlValidator[-E <: Element, +R] {
 }
 ```
 
-As with extractors, the DSL provides the `validator` constructor and the `~/~` operator for applying a validation to a document:
+As with extractors, the DSL provides the `validator` constructor and the `>/~` operator for applying a validation to a document:
 
 ```
-doc ~/~ validator(<extractor>)(<matcher>)
+doc >/~ validator(<extractor>)(<matcher>)
 ```
 
 Where the arguments are:
@@ -177,13 +177,13 @@ Some validation examples:
 
 ```tut:book
 // Check if the title of the page is "Test page"
-doc ~/~ validator(text("title"))(_ == "Test page")
+doc >/~ validator(text("title"))(_ == "Test page")
 
 // Check if there are at least 3 ".active" elements
-doc ~/~ validator(".active")(_.size >= 3)
+doc >/~ validator(".active")(_.size >= 3)
 
 // Check if the text in ".desc" contains the word "blue"
-doc ~/~ validator(allText("#mytable"))(_.contains("blue"))
+doc >/~ validator(allText("#mytable"))(_.contains("blue"))
 ```
 
 When a document fails a validation, it may be useful to identify the problem by pattern-matching it against common scraping pitfalls, such as a login page that appears unexpectedly because of an expired cookie, dynamic content that disappeared or server-side errors. If we define validators for both the success case and error cases:
@@ -200,7 +200,7 @@ val errors = Seq(
 They can be used in combination to create more informative validations:
 
 ```tut:book
-doc ~/~ (succ, errors)
+doc >/~ (succ, errors)
 ```
 
 Validators matching errors were constructed above using an additional `result` parameter after the extractor. That value is returned wrapped in a `Left` if that particular error occurs during a validation.
@@ -244,7 +244,7 @@ doc >?> element("#menu") >> text(".active")
 
 // Same as above, but check if the "#menu" has any "span" element before
 // extracting the text
-doc >?> element("#menu") ~/~ validator("span")(_.nonEmpty) >> text(".active")
+doc >?> element("#menu") >/~ validator("span")(_.nonEmpty) >> text(".active")
 
 // Extract the links inside all the "#menu > span" elements
 doc >> elementList("#menu > span") >?> attr("href")("a")
