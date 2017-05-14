@@ -20,13 +20,13 @@ An implementation of the `Browser` trait, such as `JsoupBrowser`, can be used to
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 
 val browser = JsoupBrowser()
-val doc = browser.parseFile("core/src/test/resources/test2.html")
+val doc = browser.parseFile("core/src/test/resources/example.html")
 val doc2 = browser.get("http://example.com")
 ```
 
 The returned object is a `Document`, which already provides several methods for manipulating and querying HTML elements. For simple use cases, it can be enough. For others, this library improves the content extracting process by providing a powerful DSL.
 
-You can open the [test2.html](core/src/test/resources/test2.html) file loaded above to follow the examples throughout the README.
+You can open the [example.html](core/src/test/resources/example.html) file loaded above to follow the examples throughout the README.
 
 First of all, the DSL methods and conversions must be imported:
 
@@ -336,23 +336,34 @@ This library also provides a `Functor` for `HtmlExtractor`, making it possible t
 ```scala
 import net.ruippeixotog.scalascraper.scraper.HtmlExtractor
 
-// An extractor for the links inside all the "#menu > span" elements
-val linksExtractor: HtmlExtractor[Element, List[Option[String]]] =
-  elementList("#menu > span") >?> attr("href")("a")
+// An extractor for a list with the first link found in each "span" element
+val spanLinks: HtmlExtractor[Element, List[Option[String]]] =
+  elementList("span") >?> attr("href")("a")
 
-// An extractor for the number of links
-val linkCountExtractor: HtmlExtractor[Element, Int] =
-  linksExtractor.map(_.flatten.length)
+// An extractor for the number of "span" elements that actually have links
+val spanLinksCount: HtmlExtractor[Element, Int] =
+  spanLinks.map(_.flatten.length)
+```
+
+You can also "prepend" a query to any existing extractor by using its `mapQuery` method:
+
+```scala
+// An extractor for `spanLinks` that are inside "#menu"
+val menuLinks: HtmlExtractor[Element, List[Option[String]]] =
+  spanLinks.mapQuery("#menu")
 ```
 
 And they can be used just as extractors created using other means provided by the DSL:
 
 ```scala
-doc >> linksExtractor
-// res59: List[Option[String]] = List(Some(#home), Some(#section1), None, Some(#section3))
+doc >> spanLinks
+// res60: List[Option[String]] = List(Some(#home), Some(#section1), None, Some(#section3), None, None, None, None, None, Some(#), None)
 
-doc >> linkCountExtractor
-// res60: Int = 3
+doc >> spanLinksCount
+// res61: Int = 4
+
+doc >> menuLinks
+// res62: List[Option[String]] = List(Some(#home), Some(#section1), None, Some(#section3))
 ```
 
 Just remember that you can only apply extraction operators `>>` and `>?>` to documents, elements or functors "containing" them, which means that the following is a compile-time error:
@@ -371,15 +382,15 @@ Finally, if you prefer not using operators for the sake of code legibility, you 
 ```scala
 // `extract` is the same as `>>`
 doc extract text("title")
-// res65: String = Test page
+// res67: String = Test page
 
 // `tryExtract` is the same as `>?>`
 doc tryExtract element("#optional")
-// res67: Option[net.ruippeixotog.scalascraper.model.Element] = None
+// res69: Option[net.ruippeixotog.scalascraper.model.Element] = None
 
 // `validateWith` is the same as `>/~`
 doc validateWith (succ, errors)
-// res69: Either[String,browser.DocumentType] = Left(Too few items)
+// res71: Either[String,browser.DocumentType] = Left(Too few items)
 ```
 
 ## Using Browser-Specific Features
@@ -398,7 +409,7 @@ import net.ruippeixotog.scalascraper.browser.HtmlUnitBrowser._
 // with their concrete type
 val typedBrowser: HtmlUnitBrowser = HtmlUnitBrowser.typed()
 
-val typedDoc: HtmlUnitDocument = typedBrowser.parseFile("core/src/test/resources/test2.html")
+val typedDoc: HtmlUnitDocument = typedBrowser.parseFile("core/src/test/resources/example.html")
 ```
 
 Note that the `val` declarations are explicitly typed for explanation purposes only; the methods work just as well when types are inferred.
@@ -416,7 +427,7 @@ Note that extracting using CSS queries also keeps the concrete types of the elem
 ```scala
 // same thing as above
 typedDoc >> "#menu" >> "span:nth-child(2)" >> "a" >> pElement
-// res76: net.ruippeixotog.scalascraper.dsl.DSL.Extract.pElement.Out[net.ruippeixotog.scalascraper.browser.HtmlUnitBrowser.HtmlUnitElement] = HtmlUnitElement(HtmlAnchor[<a href="#section1">])
+// res78: net.ruippeixotog.scalascraper.dsl.DSL.Extract.pElement.Out[net.ruippeixotog.scalascraper.browser.HtmlUnitBrowser.HtmlUnitElement] = HtmlUnitElement(HtmlAnchor[<a href="#section1">])
 ```
 
 Concrete element types, like `HtmlUnitElement`, expose a public `underlying` field with the underlying element object used by the browser backend. In the case of HtmlUnit, that would be a [`DomElement`](http://htmlunit.sourceforge.net/apidocs/com/gargoylesoftware/htmlunit/html/DomElement.html), which exposes a whole new range of operations:
@@ -424,18 +435,18 @@ Concrete element types, like `HtmlUnitElement`, expose a public `underlying` fie
 ```scala
 // extract the current "href" this "a" element points to
 aElem >> attr("href")
-// res78: String = #section1
+// res80: String = #section1
 
 // use `underlying` to update the "href" attribute
 aElem.underlying.setAttribute("href", "#section1_2")
 
 // verify that "href" was updated
 aElem >> attr("href")
-// res82: String = #section1_2
+// res84: String = #section1_2
 
 // get the location of the document (without the host and the full path parts)
 typedDoc.location.split("/").last
-// res84: String = test2.html
+// res86: String = example.html
 
 def click(elem: HtmlUnitElement) {
   // the type param may be needed, as the original API uses Java wildcards
@@ -448,7 +459,7 @@ click(aElem)
 
 // check the new location
 typedDoc.location.split("/").last
-// res88: String = test2.html#section1_2
+// res90: String = example.html#section1_2
 ```
 
 Using the typed element API provides much more flexibility when more than querying elements is required. However, one should avoid using it unless strictly necessary, as:

@@ -20,13 +20,13 @@ An implementation of the `Browser` trait, such as `JsoupBrowser`, can be used to
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 
 val browser = JsoupBrowser()
-val doc = browser.parseFile("core/src/test/resources/test2.html")
+val doc = browser.parseFile("core/src/test/resources/example.html")
 val doc2 = browser.get("http://example.com")
 ```
 
 The returned object is a `Document`, which already provides several methods for manipulating and querying HTML elements. For simple use cases, it can be enough. For others, this library improves the content extracting process by providing a powerful DSL.
 
-You can open the [test2.html](core/src/test/resources/test2.html) file loaded above to follow the examples throughout the README.
+You can open the [example.html](core/src/test/resources/example.html) file loaded above to follow the examples throughout the README.
 
 First of all, the DSL methods and conversions must be imported:
 
@@ -259,21 +259,31 @@ This library also provides a `Functor` for `HtmlExtractor`, making it possible t
 ```tut:book:silent
 import net.ruippeixotog.scalascraper.scraper.HtmlExtractor
 
-// An extractor for the links inside all the "#menu > span" elements
-val linksExtractor: HtmlExtractor[Element, List[Option[String]]] =
-  elementList("#menu > span") >?> attr("href")("a")
+// An extractor for a list with the first link found in each "span" element
+val spanLinks: HtmlExtractor[Element, List[Option[String]]] =
+  elementList("span") >?> attr("href")("a")
 
-// An extractor for the number of links
-val linkCountExtractor: HtmlExtractor[Element, Int] =
-  linksExtractor.map(_.flatten.length)
+// An extractor for the number of "span" elements that actually have links
+val spanLinksCount: HtmlExtractor[Element, Int] =
+  spanLinks.map(_.flatten.length)
+```
+
+You can also "prepend" a query to any existing extractor by using its `mapQuery` method:
+
+```tut:book:silent
+// An extractor for `spanLinks` that are inside "#menu"
+val menuLinks: HtmlExtractor[Element, List[Option[String]]] =
+  spanLinks.mapQuery("#menu")
 ```
 
 And they can be used just as extractors created using other means provided by the DSL:
 
 ```tut:book
-doc >> linksExtractor
+doc >> spanLinks
 
-doc >> linkCountExtractor
+doc >> spanLinksCount
+
+doc >> menuLinks
 ```
 
 Just remember that you can only apply extraction operators `>>` and `>?>` to documents, elements or functors "containing" them, which means that the following is a compile-time error:
@@ -313,7 +323,7 @@ import net.ruippeixotog.scalascraper.browser.HtmlUnitBrowser._
 // with their concrete type
 val typedBrowser: HtmlUnitBrowser = HtmlUnitBrowser.typed()
 
-val typedDoc: HtmlUnitDocument = typedBrowser.parseFile("core/src/test/resources/test2.html")
+val typedDoc: HtmlUnitDocument = typedBrowser.parseFile("core/src/test/resources/example.html")
 ```
 
 Note that the `val` declarations are explicitly typed for explanation purposes only; the methods work just as well when types are inferred.
