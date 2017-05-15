@@ -11,6 +11,7 @@ import org.jsoup.{ Connection, Jsoup }
 
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser._
 import net.ruippeixotog.scalascraper.model._
+import net.ruippeixotog.scalascraper.util._
 
 /**
   * A [[Browser]] implementation based on [[http://jsoup.org jsoup]], a Java HTML parser library. `JsoupBrowser`
@@ -43,11 +44,8 @@ class JsoupBrowser(val userAgent: String = "jsoup/1.8") extends Browser {
   def parseString(html: String): JsoupDocument =
     JsoupDocument(Jsoup.parse(html))
 
-  def parseInputStream(inputStream: InputStream, charset: String): JsoupDocument = {
-    val document = JsoupDocument(Jsoup.parse(inputStream, charset, ""))
-    inputStream.close()
-    document
-  }
+  def parseInputStream(inputStream: InputStream, charset: String): JsoupDocument =
+    using(inputStream) { _ => JsoupDocument(Jsoup.parse(inputStream, charset, "")) }
 
   def cookies(url: String) = cookieMap.toMap
 
