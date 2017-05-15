@@ -3,8 +3,8 @@ package net.ruippeixotog.scalascraper.dsl
 import net.ruippeixotog.scalascraper.model._
 
 /**
-  * A type class indicating that an [[ElementQuery]] of some [[Element]] type can be created from an object of a given
-  * type.
+  * A type class indicating that an [[net.ruippeixotog.scalascraper.model.ElementQuery]] of some
+  * [[net.ruippeixotog.scalascraper.model.Element]] type can be created from an object of a given type.
   *
   * @tparam A the type of the object to be made into an `ElementQuery`
   */
