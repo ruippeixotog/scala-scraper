@@ -4,6 +4,20 @@ A library providing a DSL for loading and extracting content from HTML pages.
 
 Take a look at [Examples.scala](core/src/test/scala/net/ruippeixotog/scalascraper/Examples.scala) and at the [unit specs](core/src/test/scala/net/ruippeixotog/scalascraper) for usage examples or keep reading for more thorough documentation. Feel free to use [GitHub Issues](https://github.com/ruippeixotog/scala-scraper/issues) for submitting any bug or feature request and [Gitter](https://gitter.im/ruippeixotog/scala-scraper) to ask questions.
 
+This README contains the following sections:
+
+- [Quick Start](#quick-start)
+- [Core Model](#core-model)
+- [Browsers](#browsers)
+- [Content Extraction](#content-extraction)
+- [Content Validation](#content-validation)
+- [Other DSL Features](#other-dsl-features)
+- [Using Browser-Specific Features](#using-browser-specific-features)
+- [Working Behind an HTTP/HTTPS Proxy](#working-behind-an-httphttps-proxy)
+- [Integration with Typesafe Config](#integration-with-typesafe-config)
+- [New Features and Migration Guide](#new-features-and-migration-guide)
+- [Copyright](#copyright)
+
 ## Quick Start
 
 To use Scala Scraper in an existing SBT project with Scala 2.11 or 2.12, add the following dependency to your `build.sbt`:
@@ -468,10 +482,6 @@ Using the typed element API provides much more flexibility when more than queryi
 * The code becomes subject to changes in the API of the underlying library;
 * It's heavier on the Scala type system and it is not as mature, leading to possible unexpected compilation errors. If that happens, please file an issue!
 
-## Integration with Typesafe Config
-
-The [Scala Scraper Config module](modules/config/README.md) can be used to load extractors and validators from config files.
-
 ## Working Behind an HTTP/HTTPS Proxy
 
 _NOTE: this feature is in a beta stage. Please expect API changes in future releases._
@@ -488,6 +498,14 @@ ProxyUtils.removeProxy()
 ```
 
 `JsoupBrowser` uses internally `java.net.HttpURLConnection`. Configuring those JVM-wide system properties will affect not only `Browser` instances, but _all_ requests done using `HttpURLConnection` directly or indirectly. `HtmlUnitBrowser` was implementated so that it reads the same system properties for configuration, but once the browser is created they will be used on every request done by the instance, regardless of the properties' values at the time of the request.
+
+## Integration with Typesafe Config
+
+The [Scala Scraper Config module](modules/config/README.md) can be used to load extractors and validators from config files.
+
+## New Features and Migration Guide
+
+The [CHANGELOG](CHANGELOG.md) is kept updated with the bug fixes and new features of each version. When there are breaking changes, they are listed there together with suggestions for migrating old code.
 
 ## Copyright
 
