@@ -6,6 +6,7 @@ scalaVersion in ThisBuild := "2.12.2"
 crossScalaVersions in ThisBuild := Seq("2.11.11", "2.12.2")
 
 lazy val core = project.in(file("core"))
+  .enablePlugins(TutPlugin)
   .settings(commonSettings: _*)
   .settings(
     name := "scala-scraper",
@@ -24,6 +25,7 @@ lazy val core = project.in(file("core"))
 
 lazy val config = project.in(file("modules/config"))
   .dependsOn(core)
+  .enablePlugins(TutPlugin)
   .settings(commonSettings: _*)
   .settings(
     name := "scala-scraper-config",
@@ -32,7 +34,7 @@ lazy val config = project.in(file("modules/config"))
       "com.typesafe"                % "config"               % "1.3.1",
       "org.specs2"                 %% "specs2-core"          % "3.8.9"                % "test"))
 
-lazy val commonSettings = tutSettings ++ Seq(
+lazy val commonSettings = Seq(
   resolvers ++= Seq(
     Resolver.sonatypeRepo("snapshots"),
     "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases"),

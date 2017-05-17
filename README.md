@@ -386,7 +386,7 @@ Just remember that you can only apply extraction operators `>>` and `>?>` to doc
 // The `texts` extractor extracts a list of strings and extractors cannot be
 // applied to strings
 doc >> texts("#menu > span") >> "a"
-// <console>:30: error: value >> is not a member of Iterable[String]
+// <console>:31: error: value >> is not a member of Iterable[String]
 //        doc >> texts("#menu > span") >> "a"
 //                                     ^
 ```
