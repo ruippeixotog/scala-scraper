@@ -1,3 +1,4 @@
+import ReleaseTransformations._
 import scalariform.formatter.preferences._
 
 organization in ThisBuild := "net.ruippeixotog"
@@ -82,4 +83,10 @@ lazy val commonSettings = Seq(
         <url>http://www.ruippeixotog.net</url>
       </developer>
     </developers>
-  })
+  },
+  releasePublishArtifactsAction := PgpKeys.publishSigned.value)
+
+releaseCrossBuild := true
+releaseTagComment := s"Release ${(version in ThisBuild).value}"
+releaseCommitMessage := s"Set version to ${(version in ThisBuild).value}"
+releaseProcess ~= { steps => steps.filterNot(_ == pushChanges) }
