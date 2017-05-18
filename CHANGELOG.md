@@ -1,4 +1,4 @@
-### 2.0.0 (unreleased)
+### 2.0.0-RC1 (May 18, 2017)
 
 - Breaking changes
   - Extracting using a CSS query string as extractor will now extract elements instead of text. This allows easier
