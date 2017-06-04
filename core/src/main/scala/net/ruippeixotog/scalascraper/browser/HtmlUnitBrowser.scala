@@ -36,7 +36,7 @@ import net.ruippeixotog.scalascraper.util._
 class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME) extends Browser {
   type DocumentType = HtmlUnitDocument
 
-  private[this] lazy val client = {
+  lazy val underlying: WebClient = {
     val c = ProxyUtils.getProxy match {
       case Some((proxyHost, proxyPort)) => new WebClient(browserType, proxyHost, proxyPort)
       case None => new WebClient(browserType)
@@ -49,7 +49,7 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME) exten
 
   def exec(req: WebRequest): HtmlUnitDocument = {
     val window = newWindow()
-    client.getPage(window, req)
+    underlying.getPage(window, req)
     HtmlUnitDocument(window)
   }
 
@@ -87,14 +87,14 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME) exten
   }
 
   def cookies(url: String) =
-    client.getCookies(new URL(url)).asScala.map { c => c.getName -> c.getValue }.toMap
+    underlying.getCookies(new URL(url)).asScala.map { c => c.getName -> c.getValue }.toMap
 
-  def clearCookies() = client.getCookieManager.clearCookies()
+  def clearCookies() = underlying.getCookieManager.clearCookies()
 
   /**
     * Closes all windows opened in this browser.
     */
-  def closeAll() = client.close()
+  def closeAll() = underlying.close()
 
   protected[this] def defaultClientSettings(client: WebClient): Unit = {
     client.getOptions.setCssEnabled(false)
@@ -119,8 +119,8 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME) exten
     req
   }
 
-  private[this] def newWindow(): WebWindow = client.synchronized {
-    client.openTargetWindow(client.getCurrentWindow, null, UUID.randomUUID().toString)
+  private[this] def newWindow(): WebWindow = underlying.synchronized {
+    underlying.openTargetWindow(underlying.getCurrentWindow, null, UUID.randomUUID().toString)
   }
 }
 
