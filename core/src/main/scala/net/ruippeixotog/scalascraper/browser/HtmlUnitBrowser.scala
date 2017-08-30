@@ -33,7 +33,7 @@ import net.ruippeixotog.scalascraper.util._
   *
   * @param browserType the browser type and version to simulate
   */
-class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME) extends Browser {
+class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME, proxy: ProxyConfig = null) extends Browser {
   type DocumentType = HtmlUnitDocument
 
   lazy val underlying: WebClient = {
@@ -99,6 +99,9 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME) exten
   protected[this] def defaultClientSettings(client: WebClient): Unit = {
     client.getOptions.setCssEnabled(false)
     client.getOptions.setThrowExceptionOnScriptError(false)
+    if (proxy != null) {
+      client.getOptions.setProxyConfig(proxy)
+    }
   }
 
   protected[this] def defaultRequestSettings(req: WebRequest): Unit = {
@@ -126,14 +129,18 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME) exten
 
 object HtmlUnitBrowser {
   def apply(): Browser = new HtmlUnitBrowser()
+
   def typed(): HtmlUnitBrowser = new HtmlUnitBrowser()
 
   case class HtmlUnitElement(underlying: DomElement) extends Element {
     type ThisType = HtmlUnitElement
 
     def tagName = underlying.getTagName
+
     def parent = Option(underlying.getParentNode).collect { case elem: DomElement => HtmlUnitElement(elem) }
+
     def children = underlying.getChildElements.asScala.map(HtmlUnitElement)
+
     def siblings = {
       val previousSiblings = Stream.iterate(underlying)(_.getPreviousElementSibling).tail.takeWhile(_ != null)
       val nextSiblings = Stream.iterate(underlying)(_.getNextElementSibling).tail.takeWhile(_ != null)
@@ -205,6 +212,7 @@ object HtmlUnitBrowser {
     }
 
     def location = underlying.getUrl.toString
+
     def root = HtmlUnitElement(underlying.getDocumentElement)
 
     override def title = underlying match {
@@ -214,4 +222,5 @@ object HtmlUnitBrowser {
 
     def toHtml = root.outerHtml
   }
+
 }
