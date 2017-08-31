@@ -1,9 +1,16 @@
+sudo: false
+
 language: scala
 scala:
   - 2.11.11
   - 2.12.2
 jdk:
   - oraclejdk8
+addons:
+  apt:
+    packages:
+      - tor
+
 script:
   - sbt ++$TRAVIS_SCALA_VERSION clean coverage test tut
 
@@ -13,6 +20,7 @@ script:
       fi
 after_success:
   - sbt ++$TRAVIS_SCALA_VERSION coverageReport coverageAggregate coveralls
+
 cache:
   directories:
     - $HOME/.ivy2/cache
