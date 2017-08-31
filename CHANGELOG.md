@@ -1,3 +1,11 @@
+### 2.1.0 (unreleased)
+ 
+- Deprecations
+  - `ProxyUtils` was deprecated in favor of setting proxy servers per `Browser` instance (see below);
+- New features
+  - `JsoupBrowser` and `HtmlUnitBrowser` can now be created with proxy settings that are applied only to the created
+    instance, superseeding the usage of `ProxyUtils`.
+
 ### 2.0.0 (Jul 21, 2017)
 
 - Breaking changes
@@ -15,7 +23,6 @@
     `flatMap` in for comprehensions was moved to a separate object that is not imported together with the DSL. Either
     upgrade to Scala 2.12 (in which `Either` is already right-biased) or import the new
     `net.ruippeixotog.scalascraper.util.EitherRightBias` support object;
-
 - Deprecations
   - `SimpleExtractor` and `SimpleValidator` are now deprecated. The classes remain available for the time being, but DSL
     methods that returned those classes now return only `HtmlExtractor` and `HtmlValidator` instances;
@@ -24,7 +31,6 @@
   - The DSL validation operator `~/~` was renamed to `>/~` in order to have the same precedence as the extraction
     operators `>>` and `>?>`;
   - The `and` DSL operator is deprecated and will be removed in future versions;
-
 - New features
   - The concrete type of the models in scala-scraper is now passed down from the `Browser` to `Element` instances
     extracted from documents. This allows users to use features unique of each browser (such as modifying or interacting

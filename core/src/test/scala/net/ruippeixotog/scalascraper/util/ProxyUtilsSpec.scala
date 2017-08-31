@@ -5,6 +5,8 @@ import org.specs2.mutable.Specification
 import net.ruippeixotog.scalascraper.SocksTestHelper
 import net.ruippeixotog.scalascraper.browser._
 
+@deprecated("Proxies are now configured per Browser instance. See the constructors of JsoupBrowser and " +
+  "HtmlUnitBrowser for more information", "2.1.0")
 class ProxyUtilsSpec extends Specification with BrowserHelper with SocksTestHelper {
   sequential
 

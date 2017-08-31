@@ -1,5 +1,7 @@
 package net.ruippeixotog.scalascraper.util
 
+@deprecated("Proxies are now configured per Browser instance. See the constructors of JsoupBrowser and " +
+  "HtmlUnitBrowser for more information", "2.1.0")
 object ProxyUtils {
 
   private[this] val HTTP_PROXY_HOST: String = "http.proxyHost"
