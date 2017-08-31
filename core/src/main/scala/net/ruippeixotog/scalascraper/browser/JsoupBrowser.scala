@@ -27,16 +27,16 @@ import net.ruippeixotog.scalascraper.util._
   *
   * @param userAgent the user agent with which requests should be made
   */
-class JsoupBrowser(val userAgent: String = "jsoup/1.8") extends Browser {
+class JsoupBrowser(val userAgent: String = "jsoup/1.8", val proxy: java.net.Proxy = null) extends Browser {
   type DocumentType = JsoupDocument
 
   private[this] val cookieMap = mutable.Map.empty[String, String]
 
   def get(url: String): JsoupDocument =
-    executePipeline(Jsoup.connect(url).method(GET))
+    executePipeline(Jsoup.connect(url).method(GET).proxy(proxy))
 
   def post(url: String, form: Map[String, String]): JsoupDocument =
-    executePipeline(Jsoup.connect(url).method(POST).data(form.asJava))
+    executePipeline(Jsoup.connect(url).method(POST).proxy(proxy).data(form.asJava))
 
   def parseFile(file: File, charset: String): JsoupDocument =
     JsoupDocument(Jsoup.parse(file, charset))
@@ -87,17 +87,22 @@ class JsoupBrowser(val userAgent: String = "jsoup/1.8") extends Browser {
 
 object JsoupBrowser {
   def apply(): Browser = new JsoupBrowser()
+
   def typed(): JsoupBrowser = new JsoupBrowser()
 
   case class JsoupElement(underlying: org.jsoup.nodes.Element) extends Element {
     type ThisType = JsoupElement
 
     def tagName = underlying.tagName
+
     def parent = Option(underlying.parent).map(JsoupElement)
+
     def children = underlying.children.asScala.map(JsoupElement)
+
     def siblings = underlying.siblingElements.asScala.map(JsoupElement)
 
     def childNodes = underlying.childNodes.asScala.flatMap(JsoupNode.apply)
+
     def siblingNodes = underlying.siblingNodes.asScala.flatMap(JsoupNode.apply)
 
     def attrs = underlying.attributes.asScala.map { attr => attr.getKey -> attr.getValue }.toMap
@@ -112,6 +117,7 @@ object JsoupBrowser {
     def text = underlying.text
 
     def innerHtml = underlying.html
+
     def outerHtml = underlying.outerHtml
 
     private[this] def selectUnderlying(cssQuery: String): Iterator[JsoupElement] =
@@ -132,12 +138,16 @@ object JsoupBrowser {
     type ElementType = JsoupElement
 
     def location = underlying.location()
+
     def root = JsoupElement(underlying.getElementsByTag("html").first)
 
     override def title = underlying.title
+
     override def head = JsoupElement(underlying.head)
+
     override def body = JsoupElement(underlying.body)
 
     def toHtml = underlying.outerHtml
   }
+
 }
