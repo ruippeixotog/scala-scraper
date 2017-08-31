@@ -1,10 +1,14 @@
 package net.ruippeixotog.scalascraper.browser
 
+import java.net.{ InetSocketAddress, Proxy }
+
 import org.http4s.HttpService
 import org.http4s.dsl._
 import org.specs2.mutable.Specification
 
-class JsoupBrowserSpec extends Specification with TestServer {
+import net.ruippeixotog.scalascraper.SocksTestHelper
+
+class JsoupBrowserSpec extends Specification with TestServer with SocksTestHelper {
 
   lazy val testService = HttpService {
     case req @ GET -> Root / "agent" =>
@@ -20,6 +24,17 @@ class JsoupBrowserSpec extends Specification with TestServer {
 
       val doc = browser.get(testServerUri("agent"))
       doc.body.text mustEqual "test-agent"
+    }
+
+    "make requests through a SOCKS server if configured" in skipIfProxyUnavailable {
+      val proxyConfig = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress(socksProxyHost, socksProxyPort))
+
+      val browser = new JsoupBrowser()
+      val proxiedBrowser = new JsoupBrowser(proxy = proxyConfig)
+
+      val proxyIP = proxiedBrowser.get("http://ipv4.icanhazip.com").body.text
+      val myIP = browser.get("http://ipv4.icanhazip.com").body.text
+      proxyIP !=== myIP
     }
   }
 }

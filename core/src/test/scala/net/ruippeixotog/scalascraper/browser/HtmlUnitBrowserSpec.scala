@@ -2,12 +2,14 @@ package net.ruippeixotog.scalascraper.browser
 
 import java.io.File
 
-import com.gargoylesoftware.htmlunit.BrowserVersion
+import com.gargoylesoftware.htmlunit.{ BrowserVersion, ProxyConfig }
 import org.http4s.HttpService
 import org.http4s.dsl._
 import org.specs2.mutable.Specification
 
-class HtmlUnitBrowserSpec extends Specification with TestServer {
+import net.ruippeixotog.scalascraper.SocksTestHelper
+
+class HtmlUnitBrowserSpec extends Specification with TestServer with SocksTestHelper {
 
   lazy val testService = HttpService {
     case req @ GET -> Root / "agent" =>
@@ -84,6 +86,17 @@ class HtmlUnitBrowserSpec extends Specification with TestServer {
       doc.root.select("#t").head.text mustEqual "Before"
       browser.closeAll()
       doc.root.select("#t").head.text must not(beEqualTo("After").eventually)
+    }
+
+    "make requests through a SOCKS server if configured" in skipIfProxyUnavailable {
+      val proxyConfig = new ProxyConfig(socksProxyHost, socksProxyPort, true)
+
+      val browser = new HtmlUnitBrowser()
+      val proxiedBrowser = new HtmlUnitBrowser(proxy = proxyConfig)
+
+      val proxyIP = proxiedBrowser.get("http://ipv4.icanhazip.com").body.text
+      val myIP = browser.get("http://ipv4.icanhazip.com").body.text
+      proxyIP !=== myIP
     }
   }
 }
