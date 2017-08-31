@@ -1,6 +1,7 @@
 package net.ruippeixotog.scalascraper
 
 import java.io.PrintStream
+import java.net.{ InetSocketAddress, Proxy }
 
 import scala.collection.immutable.SortedMap
 
@@ -11,7 +12,6 @@ import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.model.Element
 import net.ruippeixotog.scalascraper.scraper.HtmlValidator
 import net.ruippeixotog.scalascraper.util.EitherRightBias._
-import net.ruippeixotog.scalascraper.util.ProxyUtils
 
 object ExampleMatchers {
   val succ = HtmlValidator(text("head > title"), 1)(_.matches(".*Observador.*"))
@@ -21,15 +21,12 @@ object ExampleMatchers {
 }
 
 object ProxyApp extends App {
-  ProxyUtils.setProxy("localhost", 3128)
-  val browser = JsoupBrowser()
+  val browser = new JsoupBrowser(proxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress("localhost", 3128)))
   val doc = browser.get("http://observador.pt")
 
   println("=== OBSERVADOR HTTP & HTTPS PROXY ===")
 
   Thread.sleep(2000)
-
-  ProxyUtils.removeProxy()
 
   // You should get a [java.net.SocketTimeoutException: connect timed out] if you are behind a proxy
   browser.get("http://observador.pt")
