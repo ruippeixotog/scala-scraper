@@ -1,0 +1,95 @@
+<html>
+<body>
+
+<!-- http://accessiblehtml.sourceforge.net/accessible_tables.html#contents_item_3.2 -->
+<table id="t1">
+  <caption>Example #1: Nested Stubs</caption>
+  <tr>
+    <th colspan="2" rowspan="2">Ruritanian<br> Population<br> Survey</th>
+    <th rowspan="2">All<br> Genders</th>
+    <th colspan="2">By Gender</th>
+  </tr>
+  <tr>
+    <th>Males</th>
+    <th>Females</th>
+  </tr>
+  <tr>
+    <th rowspan="2">All Regions</th>
+    <th>North</th>
+    <td>3333</td>
+    <td>1111</td>
+    <td>2222</td>
+  </tr>
+  <tr>
+    <th>South</th>
+    <td>3333</td>
+    <td>1111</td>
+    <td>2222</td>
+  </tr>
+</table>
+
+<table id="t2">
+  <tr>
+    <td>0,0</td>
+    <td>0,1</td>
+    <td>0,2</td>
+    <td>0,3</td>
+    <td>0,4</td>
+    <td>0,5</td>
+  </tr>
+  <tr>
+    <td>1,0</td>
+    <td rowspan="2" colspan="2">1,1</td>
+    <td>1,3</td>
+    <td rowspan="2">1,4</td>
+    <td>1,5</td>
+  </tr>
+  <tr>
+    <td>2,0</td>
+    <td>2,3</td>
+    <td>2,5</td>
+  </tr>
+  <tr>
+    <td>3,0</td>
+    <td>3,1</td>
+    <td>3,2</td>
+    <td colspan="3">3,3</td>
+  </tr>
+  <tr>
+    <td>4,0</td>
+    <td>4,1</td>
+    <td>4,2</td>
+    <td>4,3</td>
+    <td>4,4</td>
+    <td>4,5</td>
+  </tr>
+</table>
+
+<!-- https://www.w3schools.com/tags/tag_thead.asp -->
+<table id="t3">
+  <thead>
+    <tr>
+      <th>Month</th>
+      <th>Savings</th>
+    </tr>
+  </thead>
+  <tfoot>
+    <tr>
+      <td>Sum</td>
+      <td>$180</td>
+    </tr>
+  </tfoot>
+  <tbody>
+    <tr>
+      <td>January</td>
+      <td>$100</td>
+    </tr>
+    <tr>
+      <td>February</td>
+      <td>$80</td>
+    </tr>
+  </tbody>
+</table>
+
+</body>
+</html>

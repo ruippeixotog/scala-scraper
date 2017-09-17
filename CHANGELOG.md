@@ -4,7 +4,8 @@
   - `ProxyUtils` was deprecated in favor of setting proxy servers per `Browser` instance (see below);
 - New features
   - `JsoupBrowser` and `HtmlUnitBrowser` can now be created with proxy settings that are applied only to the created
-    instance, superseeding the usage of `ProxyUtils`.
+    instance, superseeding the usage of `ProxyUtils`;
+  - Added a new `table` context extractor allowing the extraction of cells from HTML tables.
 
 ### 2.0.0 (Jul 21, 2017)
 

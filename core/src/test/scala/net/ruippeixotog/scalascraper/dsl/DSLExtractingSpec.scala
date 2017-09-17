@@ -16,6 +16,7 @@ class DSLExtractingSpec extends Specification with BrowserHelper {
 
     usingBrowsers(JsoupBrowser(), HtmlUnitBrowser()) { browser =>
       val doc = browser.parseResource("/test2.html")
+      val tablesDoc = browser.parseResource("/tables.html")
 
       "allow extracting the first element matched by a CSS query" in {
         (doc >> element("#content > section > h3")).tagName mustEqual "h3"
@@ -66,6 +67,33 @@ class DSLExtractingSpec extends Specification with BrowserHelper {
       "allow extracting form data from a HTML form" in {
         doc >> formData("#myform") mustEqual Map("name" -> "John", "address" -> "")
         doc >> formDataAndAction("#myform") mustEqual (Map("name" -> "John", "address" -> ""), "submit.html")
+      }
+
+      "allow extracting tables from HTML tables with colspan and rowspan" in {
+        // format: OFF
+        (tablesDoc >> table("#t1")).map(_.map(_.text)) mustEqual Vector(
+          Vector("Ruritanian Population Survey", "Ruritanian Population Survey", "All Genders", "By Gender", "By Gender"),
+          Vector("Ruritanian Population Survey", "Ruritanian Population Survey", "All Genders", "Males",     "Females"),
+          Vector("All Regions",                  "North",                        "3333",        "1111",      "2222"),
+          Vector("All Regions",                  "South",                        "3333",        "1111",      "2222"))
+        // format: ON
+
+        (tablesDoc >> table("#t2")).map(_.map(_.text)) mustEqual Vector(
+          Vector("0,0", "0,1", "0,2", "0,3", "0,4", "0,5"),
+          Vector("1,0", "1,1", "1,1", "1,3", "1,4", "1,5"),
+          Vector("2,0", "1,1", "1,1", "2,3", "1,4", "2,5"),
+          Vector("3,0", "3,1", "3,2", "3,3", "3,3", "3,3"),
+          Vector("4,0", "4,1", "4,2", "4,3", "4,4", "4,5"))
+      }
+
+      "allow extracting tables from HTML tables with thead, tbody and tfoot" in {
+        // format: OFF
+        (tablesDoc >> table("#t3")).map(_.map(_.text)) mustEqual Vector(
+          Vector("Month",    "Savings"),
+          Vector("January",  "$100"),
+          Vector("February", "$80"),
+          Vector("Sum",      "$180"))
+        // format: ON
       }
 
       "support immediate parsing of numbers after extraction" in {

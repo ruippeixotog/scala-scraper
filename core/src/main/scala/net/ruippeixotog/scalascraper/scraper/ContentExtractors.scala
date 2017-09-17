@@ -1,5 +1,7 @@
 package net.ruippeixotog.scalascraper.scraper
 
+import scala.util.Try
+
 import net.ruippeixotog.scalascraper.model.{ Element, ElementQuery }
 
 /**
@@ -99,5 +101,51 @@ object ContentExtractors {
     */
   val formDataAndAction: HtmlExtractor[Element, (Map[String, String], String)] = { elems =>
     (formData(elems), attr("action")(elems))
+  }
+
+  /**
+    * An extractor for the cells of an HTML table.
+    *
+    * Cells spanning multiple rows or columns are repeated in each of the positions they occupy. As such, well-formed
+    * rectangular tables always result in a `Vector` of `Vector`s with identical sizes.
+    *
+    * Rows in `thead` elements are always presented first, while rows inside `tfoot` elements are always at the end.
+    */
+  val table: HtmlExtractor[Element, Vector[Vector[Element]]] = { elems =>
+    case class OpenCell(idx: Int, colspan: Int, remRowspan: Int, cell: Element)
+
+    def buildRow(idx: Int, cellElems: List[Element], openCells: List[OpenCell]): (List[Element], List[OpenCell]) = {
+      (cellElems, openCells) match {
+        case (Nil, Nil) => (Nil, Nil)
+
+        case (cs, oc :: ocTail) if cs.isEmpty || idx >= oc.idx =>
+          val (tailCells, tailNewOc) = buildRow(idx + oc.colspan, cs, ocTail)
+          val newOc = if (oc.remRowspan <= 1) Nil else List(oc.copy(remRowspan = oc.remRowspan))
+          (List.fill(oc.colspan)(oc.cell) ::: tailCells, newOc ::: tailNewOc)
+
+        case (c :: cTail, ocs) =>
+          val colspan = Try(c.attr("colspan").toInt).getOrElse(1)
+          val rowspan = Try(c.attr("rowspan").toInt).getOrElse(1)
+
+          val (tailCells, tailNewOc) = buildRow(idx + colspan, cTail, ocs)
+          val newOc = if (rowspan <= 1) Nil else List(OpenCell(idx, colspan, rowspan - 1, c))
+          (List.fill(colspan)(c) ::: tailCells, newOc ::: tailNewOc)
+      }
+    }
+
+    def buildTable(rows: List[Element], openCells: List[OpenCell]): List[List[Element]] = (rows, openCells) match {
+      case (Nil, Nil) => Nil
+
+      case (r :: rs, ocs) =>
+        val (rowCells, nextOcs) = buildRow(0, r.select("th,td").toList, ocs)
+        rowCells :: buildTable(rs, nextOcs)
+
+      case (Nil, ocs) =>
+        val (rowCells, nextOcs) = buildRow(0, Nil, ocs)
+        rowCells :: buildTable(Nil, nextOcs)
+    }
+
+    val rows = elems.select("thead > tr") ++ elems.select("tbody > tr") ++ elems.select("tfoot > tr")
+    buildTable(rows.toList, Nil).map(_.toVector).toVector
   }
 }
