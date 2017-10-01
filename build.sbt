@@ -42,7 +42,7 @@ lazy val commonSettings = Seq(
 
   scalariformPreferences := scalariformPreferences.value
     .setPreference(DanglingCloseParenthesis, Prevent)
-    .setPreference(DoubleIndentClassDeclaration, true)
+    .setPreference(DoubleIndentConstructorArguments, true)
     .setPreference(PlaceScaladocAsterisksBeneathSecondAsterisk, true),
 
   scalacOptions ++= Seq(
