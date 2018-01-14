@@ -57,34 +57,22 @@ lazy val commonSettings = Seq(
 
   tutTargetDirectory := baseDirectory.value,
 
-  publishTo := {
-    val nexus = "https://oss.sonatype.org/"
-    if (isSnapshot.value)
-      Some("snapshots" at nexus + "content/repositories/snapshots")
-    else
-      Some("releases"  at nexus + "service/local/staging/deploy/maven2")
-  },
-
   publishMavenStyle := true,
   publishArtifact in Test := false,
   pomIncludeRepository := { _ => false },
 
   licenses := Seq("MIT License" -> url("http://www.opensource.org/licenses/mit-license.php")),
   homepage := Some(url("https://github.com/ruippeixotog/scala-scraper")),
-  pomExtra := {
-    <scm>
-      <url>https://github.com/ruippeixotog/scala-scraper</url>
-      <connection>scm:git:https://github.com/ruippeixotog/scala-scraper.git</connection>
-    </scm>
-    <developers>
-      <developer>
-        <id>ruippeixotog</id>
-        <name>Rui Gonçalves</name>
-        <url>http://www.ruippeixotog.net</url>
-      </developer>
-    </developers>
-  },
+  developers := List(
+    Developer("ruippeixotog", "Rui Gonçalves", "ruippeixotog@gmail.com", url("http://www.ruippeixotog.net"))),
+
   releasePublishArtifactsAction := PgpKeys.publishSigned.value)
+
+publishTo := {
+  val nexus = "https://oss.sonatype.org/"
+  if (isSnapshot.value) Some("snapshots" at nexus + "content/repositories/snapshots")
+  else Some("releases"  at nexus + "service/local/staging/deploy/maven2")
+}
 
 releaseCrossBuild := true
 releaseTagComment := s"Release ${(version in ThisBuild).value}"
