@@ -43,7 +43,7 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
       </body>
     <html>"""
 
-  def uri(uriStr: String) = Uri.fromString(uriStr).validation.getOrElse(throw new Exception)
+  def uri(uriStr: String) = Uri.fromString(uriStr).right.get
 
   lazy val testService = HttpService {
     case GET -> Root / "hello" => Ok(html)
@@ -67,7 +67,7 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
     case GET -> Root / "setcookieA" => Ok("cookie set").putHeaders(Header.Raw("Set-Cookie".ci, "a=4"))
     case GET -> Root / "setcookieB" => Ok("cookie set").putHeaders(Header.Raw("Set-Cookie".ci, "b=5"))
     case req @ GET -> Root / "cookies" =>
-      val cookies = req.headers.get(headers.Cookie).toSeq.flatMap(_.values.list).sortBy(_.name)
+      val cookies = req.headers.get(headers.Cookie).toSeq.flatMap(_.values.toList).sortBy(_.name)
       val cookiesStr = cookies.map { c => s"${c.name}=${c.content}" }.mkString(";")
       serveText(cookiesStr)
   }
