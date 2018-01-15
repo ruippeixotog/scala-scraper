@@ -18,11 +18,11 @@ class ProxyUtilsSpec extends Specification with BrowserHelper with SocksTestHelp
   }
 
   "A Browser" should {
-    usingBrowsers(JsoupBrowser(), HtmlUnitBrowser()) { browser =>
+    usingBrowsersLazy("JsoupBrowser" -> JsoupBrowser.apply _, "HtmlUnitBrowser" -> HtmlUnitBrowser.apply _) { browser =>
 
       "make requests through a SOCKS server if a global one is configured" in skipIfProxyUnavailable {
-        val proxyIP = withGlobalProxy { browser.get("http://ipv4.icanhazip.com").body.text }
-        val myIP = browser.get("http://ipv4.icanhazip.com").body.text
+        val proxyIP = withGlobalProxy { browser().get("http://ipv4.icanhazip.com").body.text }
+        val myIP = browser().get("http://ipv4.icanhazip.com").body.text
         proxyIP !=== myIP
       }
     }
