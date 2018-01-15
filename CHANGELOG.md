@@ -1,4 +1,4 @@
-### 2.1.0 (unreleased)
+### 2.1.0 (Jan 15, 2018)
  
 - Deprecations
   - `ProxyUtils` was deprecated in favor of setting proxy servers per `Browser` instance (see below);
