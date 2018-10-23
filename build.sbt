@@ -13,14 +13,14 @@ lazy val core = project.in(file("core"))
     name := "scala-scraper",
 
     libraryDependencies ++= Seq(
-      "com.github.nscala-time"     %% "nscala-time"          % "2.18.0",
+      "com.github.nscala-time"     %% "nscala-time"          % "2.20.0",
       "net.sourceforge.htmlunit"    % "htmlunit"             % "2.29",
-      "org.jsoup"                   % "jsoup"                % "1.11.2",
-      "org.scalaz"                 %% "scalaz-core"          % "7.2.18",
+      "org.jsoup"                   % "jsoup"                % "1.11.3",
+      "org.scalaz"                 %% "scalaz-core"          % "7.2.26",
       "org.http4s"                 %% "http4s-blaze-server"  % "0.17.6"               % "test",
       "org.http4s"                 %% "http4s-dsl"           % "0.17.6"               % "test",
       "org.slf4j"                   % "slf4j-nop"            % "1.7.25"               % "test",
-      "org.specs2"                 %% "specs2-core"          % "4.0.2"                % "test"),
+      "org.specs2"                 %% "specs2-core"          % "4.3.5"                % "test"),
 
     tutTargetDirectory := file("."))
 
@@ -32,8 +32,8 @@ lazy val config = project.in(file("modules/config"))
     name := "scala-scraper-config",
 
     libraryDependencies ++= Seq(
-      "com.typesafe"                % "config"               % "1.3.2",
-      "org.specs2"                 %% "specs2-core"          % "4.0.2"                % "test"))
+      "com.typesafe"                % "config"               % "1.3.3",
+      "org.specs2"                 %% "specs2-core"          % "4.3.5"                % "test"))
 
 lazy val commonSettings = Seq(
   resolvers ++= Seq(
