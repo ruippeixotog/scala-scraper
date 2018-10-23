@@ -14,7 +14,7 @@ lazy val core = project.in(file("core"))
 
     libraryDependencies ++= Seq(
       "com.github.nscala-time"     %% "nscala-time"          % "2.20.0",
-      "net.sourceforge.htmlunit"    % "htmlunit"             % "2.29",
+      "net.sourceforge.htmlunit"    % "htmlunit"             % "2.33",
       "org.jsoup"                   % "jsoup"                % "1.11.3",
       "org.scalaz"                 %% "scalaz-core"          % "7.2.26",
       "org.http4s"                 %% "http4s-blaze-server"  % "0.17.6"               % "test",
