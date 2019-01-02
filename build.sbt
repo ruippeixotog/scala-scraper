@@ -16,11 +16,11 @@ lazy val core = project.in(file("core"))
       "com.github.nscala-time"     %% "nscala-time"          % "2.20.0",
       "net.sourceforge.htmlunit"    % "htmlunit"             % "2.33",
       "org.jsoup"                   % "jsoup"                % "1.11.3",
-      "org.scalaz"                 %% "scalaz-core"          % "7.2.26",
+      "org.scalaz"                 %% "scalaz-core"          % "7.2.27",
       "org.http4s"                 %% "http4s-blaze-server"  % "0.17.6"               % "test",
       "org.http4s"                 %% "http4s-dsl"           % "0.17.6"               % "test",
       "org.slf4j"                   % "slf4j-nop"            % "1.7.25"               % "test",
-      "org.specs2"                 %% "specs2-core"          % "4.3.5"                % "test"),
+      "org.specs2"                 %% "specs2-core"          % "4.3.6"                % "test"),
 
     tutTargetDirectory := file("."))
 
@@ -33,7 +33,7 @@ lazy val config = project.in(file("modules/config"))
 
     libraryDependencies ++= Seq(
       "com.typesafe"                % "config"               % "1.3.3",
-      "org.specs2"                 %% "specs2-core"          % "4.3.5"                % "test"))
+      "org.specs2"                 %% "specs2-core"          % "4.3.6"                % "test"))
 
 lazy val commonSettings = Seq(
   resolvers ++= Seq(
