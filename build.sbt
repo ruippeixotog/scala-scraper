@@ -4,36 +4,39 @@ import scalariform.formatter.preferences._
 organization in ThisBuild := "net.ruippeixotog"
 
 scalaVersion in ThisBuild := "2.13.0"
-crossScalaVersions in ThisBuild := Seq("2.12.8","2.13.0")
+crossScalaVersions in ThisBuild := Seq("2.12.8", "2.13.0")
 
-lazy val core = project.in(file("core"))
+lazy val core = project
+  .in(file("core"))
   .enablePlugins(TutPlugin)
   .settings(commonSettings: _*)
   .settings(
     name := "scala-scraper",
-
     libraryDependencies ++= Seq(
-      "com.github.nscala-time"     %% "nscala-time"          % "2.22.0",
-      "net.sourceforge.htmlunit"    % "htmlunit"             % "2.34.1",
-      "org.jsoup"                   % "jsoup"                % "1.11.3",
-      "org.scalaz"                 %% "scalaz-core"          % "7.2.28",
-      "org.http4s"                 %% "http4s-blaze-server"  % "0.21.0-M4"               % "test",
-      "org.http4s"                 %% "http4s-dsl"           % "0.21.0-M4"               % "test",
-      "org.slf4j"                   % "slf4j-nop"            % "1.7.26"               % "test",
-      "org.specs2"                 %% "specs2-core"          % "4.5.1"                % "test"),
+      "com.github.nscala-time" %% "nscala-time" % "2.22.0",
+      "net.sourceforge.htmlunit" % "htmlunit" % "2.34.1",
+      "org.jsoup" % "jsoup" % "1.11.3",
+      "org.scalaz" %% "scalaz-core" % "7.2.28",
+      "org.http4s" %% "http4s-blaze-server" % "0.21.0-M4" % "test",
+      "org.http4s" %% "http4s-dsl" % "0.21.0-M4" % "test",
+      "org.slf4j" % "slf4j-nop" % "1.7.28" % "test",
+      "org.specs2" %% "specs2-core" % "4.5.1" % "test"
+    ),
+    tutTargetDirectory := file(".")
+  )
 
-    tutTargetDirectory := file("."))
-
-lazy val config = project.in(file("modules/config"))
+lazy val config = project
+  .in(file("modules/config"))
   .dependsOn(core)
   .enablePlugins(TutPlugin)
   .settings(commonSettings: _*)
   .settings(
     name := "scala-scraper-config",
-
     libraryDependencies ++= Seq(
-      "com.typesafe"                % "config"               % "1.3.3",
-      "org.specs2"                 %% "specs2-core"          % "4.5.1"                % "test"))
+      "com.typesafe" % "config" % "1.3.3",
+      "org.specs2" %% "specs2-core" % "4.5.1" % "test"
+    )
+  )
 
 val baseScalacOptions = Seq(
   "-deprecation",
@@ -46,44 +49,51 @@ val baseScalacOptions = Seq(
 lazy val commonSettings = Seq(
   resolvers ++= Seq(
     Resolver.sonatypeRepo("snapshots"),
-    "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases"),
-
+    "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases"
+  ),
   scalariformPreferences := scalariformPreferences.value
     .setPreference(DanglingCloseParenthesis, Prevent)
     .setPreference(DoubleIndentConstructorArguments, true)
     .setPreference(PlaceScaladocAsterisksBeneathSecondAsterisk, true),
-
-
-
-  scalacOptions ++= baseScalacOptions ++ (CrossVersion.partialVersion(scalaVersion.value) match {
-    case Some((2, scalaMajor)) if scalaMajor == 12 => Seq(
-      "-Ypartial-unification"
-    )
+  scalacOptions ++= baseScalacOptions ++ (CrossVersion
+    .partialVersion(scalaVersion.value) match {
+    case Some((2, scalaMajor)) if scalaMajor == 12 =>
+      Seq("-Ypartial-unification")
     case _ => Seq.empty[String]
   }),
-
   fork in Test := true,
-
   tutTargetDirectory := baseDirectory.value,
-
   publishTo := {
     val nexus = "https://oss.sonatype.org/"
-    if (isSnapshot.value) Some("snapshots" at nexus + "content/repositories/snapshots")
-    else Some("releases"  at nexus + "service/local/staging/deploy/maven2")
+    if (isSnapshot.value)
+      Some("snapshots" at nexus + "content/repositories/snapshots")
+    else Some("releases" at nexus + "service/local/staging/deploy/maven2")
   },
-
   publishMavenStyle := true,
   publishArtifact in Test := false,
-  pomIncludeRepository := { _ => false },
-
-  licenses := Seq("MIT License" -> url("http://www.opensource.org/licenses/mit-license.php")),
+  pomIncludeRepository := { _ =>
+    false
+  },
+  licenses := Seq(
+    "MIT License" -> url("http://www.opensource.org/licenses/mit-license.php")
+  ),
   homepage := Some(url("https://github.com/ruippeixotog/scala-scraper")),
-  scmInfo := Some(ScmInfo(
-    url("https://github.com/ruippeixotog/scala-scraper"),
-    "scm:git:https://github.com/ruippeixotog/scala-scraper.git",
-    "scm:git:git@github.com:ruippeixotog/scala-scraper.git")),
+  scmInfo := Some(
+    ScmInfo(
+      url("https://github.com/ruippeixotog/scala-scraper"),
+      "scm:git:https://github.com/ruippeixotog/scala-scraper.git",
+      "scm:git:git@github.com:ruippeixotog/scala-scraper.git"
+    )
+  ),
   developers := List(
-    Developer("ruippeixotog", "Rui Gonçalves", "ruippeixotog@gmail.com", url("http://www.ruippeixotog.net"))))
+    Developer(
+      "ruippeixotog",
+      "Rui Gonçalves",
+      "ruippeixotog@gmail.com",
+      url("http://www.ruippeixotog.net")
+    )
+  )
+)
 
 // do not publish the root project
 skip in publish := true
@@ -104,4 +114,5 @@ releaseProcess := Seq[ReleaseStep](
   releaseStepCommandAndRemaining("+publishSigned"),
   setNextVersion,
   commitNextVersion,
-  pushChanges)
+  pushChanges
+)
