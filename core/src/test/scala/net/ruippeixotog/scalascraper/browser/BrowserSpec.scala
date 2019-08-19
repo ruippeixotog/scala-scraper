@@ -2,12 +2,13 @@ package net.ruippeixotog.scalascraper.browser
 
 import java.io.File
 
+import cats.effect.IO
 import org.http4s._
-import org.http4s.dsl._
+import org.http4s.dsl.io._
 import org.http4s.headers.`Content-Encoding`
 import org.specs2.mutable.Specification
-
 import net.ruippeixotog.scalascraper.model._
+import org.http4s.util.CaseInsensitiveString
 
 class BrowserSpec extends Specification with BrowserHelper with TestServer {
 
@@ -48,24 +49,24 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
   lazy val testService = HttpService {
     case GET -> Root / "hello" => Ok(html)
     case GET -> Root / "encoding" / charset =>
-      serveResource(s"encoding-${charset.toLowerCase}.html", charset)
-        .putHeaders(`Content-Encoding`(charset.ci))
+      serveResource(s"encoding-${charset.toLowerCase}.html", charset, List(Header("Content-Encoding", charset)))
 
     case req @ POST -> Root / "form" =>
       req.decode[UrlForm] { form =>
-        val dataHtml = form.values.map { case (k, vs) => s"""<span id="$k">${vs.head}</span>""" }.mkString
-        serveText(dataHtml)
+        serveText(form.values.toList.map { case (k, vs) => s"""<span id="$k">${vs.headOption.get}</span>""" }.mkString)
       }
 
     case req @ GET -> Root / "agent" =>
-      val userAgent = req.headers.get("User-Agent".ci).fold("")(_.value)
+      val userAgent = req.headers.get(CaseInsensitiveString("User-Agent")).fold("")(_.value)
       serveText(userAgent)
 
     case GET -> Root / "redirect" => Found(uri(testServerUri("redirected")))
     case GET -> Root / "redirected" => serveText("redirected")
 
-    case GET -> Root / "setcookieA" => Ok("cookie set").putHeaders(Header.Raw("Set-Cookie".ci, "a=4"))
-    case GET -> Root / "setcookieB" => Ok("cookie set").putHeaders(Header.Raw("Set-Cookie".ci, "b=5"))
+    case GET -> Root / "setcookieA" =>
+      IO(Response(Status.Ok, headers = Headers.of(Header("Set-Cookie", "a=4"))).withEntity("cookie set"))
+    case GET -> Root / "setcookieB" =>
+      IO(Response(Status.Ok, headers = Headers.of(Header("Set-Cookie", "b=5"))).withEntity("cookie set"))
     case req @ GET -> Root / "cookies" =>
       val cookies = req.headers.get(headers.Cookie).toSeq.flatMap(_.values.toList).sortBy(_.name)
       val cookiesStr = cookies.map { c => s"${c.name}=${c.content}" }.mkString(";")
@@ -272,7 +273,7 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
           val doc = browser.parseString(html)
 
           val middleDiv = doc.root.select("#sibling3").head
-          val Seq(sibling1, sibling2, sibling4, sibling5) = middleDiv.siblings
+          val Seq(sibling1, sibling2, sibling4, sibling5) = middleDiv.siblings.toList
           sibling1.attr("id") mustEqual "sibling1"
           sibling2.attr("id") mustEqual "sibling2"
           sibling4.attr("id") mustEqual "sibling4"

@@ -4,16 +4,16 @@ import java.io.File
 
 import com.gargoylesoftware.htmlunit.{ BrowserVersion, ProxyConfig }
 import org.http4s.HttpService
-import org.http4s.dsl._
+import org.http4s.dsl.io._
 import org.specs2.mutable.Specification
-
 import net.ruippeixotog.scalascraper.SocksTestHelper
+import org.http4s.util.CaseInsensitiveString
 
 class HtmlUnitBrowserSpec extends Specification with TestServer with SocksTestHelper {
 
   lazy val testService = HttpService {
     case req @ GET -> Root / "agent" =>
-      val userAgent = req.headers.get("User-Agent".ci).fold("")(_.value)
+      val userAgent = req.headers.get(CaseInsensitiveString("User-Agent")).fold("")(_.value)
       serveText(userAgent)
 
     case GET -> Root / "jsredirect" => serveResource("testjs2.1.html")

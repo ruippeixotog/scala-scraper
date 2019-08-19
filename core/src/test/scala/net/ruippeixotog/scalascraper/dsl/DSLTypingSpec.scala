@@ -1,17 +1,15 @@
 package net.ruippeixotog.scalascraper.dsl
 
-import org.http4s.HttpService
-import org.http4s.dsl._
+import org.http4s._
+import org.http4s.dsl.io._
 import org.specs2.mutable.Specification
-
 import net.ruippeixotog.scalascraper.browser._
-import net.ruippeixotog.scalascraper.browser.HtmlUnitBrowser.HtmlUnitDocument
 import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.scraper.ContentExtractors.{ text => stext, _ }
 
 class DSLTypingSpec extends Specification with TestServer {
 
-  lazy val testService = HttpService {
+  lazy val testService = HttpRoutes.of {
     case GET -> Root / "clickable" => serveText("""<a href="/clicked"></a>""")
     case GET -> Root / "clicked" => serveText("clicked")
   }
