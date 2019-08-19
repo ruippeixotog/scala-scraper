@@ -56,7 +56,7 @@ lazy val commonSettings = Seq(
 
 
   scalacOptions ++= baseScalacOptions ++ (CrossVersion.partialVersion(scalaVersion.value) match {
-    case Some((2, scalaMajor)) if scalaMajor == 11 || scalaMajor == 12 => Seq(
+    case Some((2, scalaMajor)) if scalaMajor == 12 => Seq(
       "-Ypartial-unification"
     )
     case _ => Seq.empty[String]
