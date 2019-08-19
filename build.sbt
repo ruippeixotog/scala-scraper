@@ -3,8 +3,8 @@ import scalariform.formatter.preferences._
 
 organization in ThisBuild := "net.ruippeixotog"
 
-scalaVersion in ThisBuild := "2.12.8"
-crossScalaVersions in ThisBuild := Seq("2.11.12", "2.12.8")
+scalaVersion in ThisBuild := "2.13.0"
+crossScalaVersions in ThisBuild := Seq("2.11.12", "2.12.8","2.13.0")
 
 lazy val core = project.in(file("core"))
   .enablePlugins(TutPlugin)
@@ -16,7 +16,7 @@ lazy val core = project.in(file("core"))
       "com.github.nscala-time"     %% "nscala-time"          % "2.22.0",
       "net.sourceforge.htmlunit"    % "htmlunit"             % "2.34.1",
       "org.jsoup"                   % "jsoup"                % "1.11.3",
-      "org.scalaz"                 %% "scalaz-core"          % "7.2.27",
+      "org.scalaz"                 %% "scalaz-core"          % "7.2.28",
       "com.typesafe.akka"          %% "akka-http"            % "10.1.9"               % "test",
       "com.typesafe.akka"          %% "akka-stream"          % "2.5.25"               % "test",
       "org.slf4j"                   % "slf4j-nop"            % "1.7.26"               % "test",
@@ -35,6 +35,14 @@ lazy val config = project.in(file("modules/config"))
       "com.typesafe"                % "config"               % "1.3.3",
       "org.specs2"                 %% "specs2-core"          % "4.5.1"                % "test"))
 
+val baseScalacOptions = Seq(
+  "-deprecation",
+  "-unchecked",
+  "-feature",
+  "-language:implicitConversions",
+  "-language:higherKinds"
+)
+
 lazy val commonSettings = Seq(
   resolvers ++= Seq(
     Resolver.sonatypeRepo("snapshots"),
@@ -45,13 +53,14 @@ lazy val commonSettings = Seq(
     .setPreference(DoubleIndentConstructorArguments, true)
     .setPreference(PlaceScaladocAsterisksBeneathSecondAsterisk, true),
 
-  scalacOptions ++= Seq(
-    "-deprecation",
-    "-unchecked",
-    "-feature",
-    "-language:implicitConversions",
-    "-language:higherKinds",
-    "-Ypartial-unification"),
+
+
+  scalacOptions ++= baseScalacOptions ++ (CrossVersion.partialVersion(scalaVersion.value) match {
+    case Some((2, scalaMajor)) if scalaMajor == 11 || scalaMajor == 12 => Seq(
+      "-Ypartial-unification"
+    )
+    case _ => Seq.empty[String]
+  }),
 
   fork in Test := true,
 
