@@ -15,7 +15,7 @@ script:
   - sbt ++$TRAVIS_SCALA_VERSION clean coverage test tut
 
   # check if there are no changes after `tut` runs
-  - if [[ $TRAVIS_SCALA_VERSION =~ '^2\.12.*' ]]; then
+  - if [[ $TRAVIS_SCALA_VERSION =~ '^2\.13.*' ]]; then
       git diff --exit-code;
       fi
 after_success:
