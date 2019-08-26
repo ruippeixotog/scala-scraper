@@ -16,7 +16,7 @@ script:
 
   # check if there are no changes after `tut` runs
   - if [[ $TRAVIS_SCALA_VERSION =~ '^2\.12.*' ]]; then
-      sbt tut
+      sbt tut;
       git diff --exit-code;
       fi
 after_success:
