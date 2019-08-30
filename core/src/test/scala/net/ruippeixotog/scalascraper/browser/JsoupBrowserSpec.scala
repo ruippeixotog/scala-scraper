@@ -2,18 +2,19 @@ package net.ruippeixotog.scalascraper.browser
 
 import java.net.{ InetSocketAddress, Proxy }
 
-import org.http4s.HttpService
-import org.http4s.dsl._
+import akka.http.scaladsl.server.Directives._
 import org.specs2.mutable.Specification
 
 import net.ruippeixotog.scalascraper.SocksTestHelper
 
 class JsoupBrowserSpec extends Specification with TestServer with SocksTestHelper {
 
-  lazy val testService = HttpService {
-    case req @ GET -> Root / "agent" =>
-      val userAgent = req.headers.get("User-Agent".ci).fold("")(_.value)
-      serveText(userAgent)
+  lazy val testService = get {
+    path("agent") {
+      headerValueByName("User-Agent") { userAgent =>
+        serveText(userAgent)
+      }
+    }
   }
 
   "A JsoupBrowser" should {

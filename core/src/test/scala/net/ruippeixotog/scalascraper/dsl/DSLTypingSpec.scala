@@ -1,20 +1,20 @@
 package net.ruippeixotog.scalascraper.dsl
 
-import org.http4s.HttpService
-import org.http4s.dsl._
+import akka.http.scaladsl.server.Directives._
 import org.specs2.mutable.Specification
 
 import net.ruippeixotog.scalascraper.browser._
-import net.ruippeixotog.scalascraper.browser.HtmlUnitBrowser.HtmlUnitDocument
 import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.scraper.ContentExtractors.{ text => stext, _ }
 
 class DSLTypingSpec extends Specification with TestServer {
 
-  lazy val testService = HttpService {
-    case GET -> Root / "clickable" => serveText("""<a href="/clicked"></a>""")
-    case GET -> Root / "clicked" => serveText("clicked")
+  // format: OFF
+  lazy val testService = get {
+    path("clickable") { serveText("""<a href="/clicked"></a>""") } ~
+    path("clicked") { serveText("clicked") }
   }
+  // format: ON
 
   "The scraping DSL" should {
 
@@ -37,7 +37,7 @@ class DSLTypingSpec extends Specification with TestServer {
     "using a typed HtmlUnitBrowser" in {
 
       lazy val doc = HtmlUnitBrowser.typed().parseResource("/test2.html")
-      lazy val doc2 = HtmlUnitBrowser.typed().get(s"http://localhost:$testServerPort/clickable")
+      lazy val doc2 = HtmlUnitBrowser.typed().get(testServerUri("clickable"))
 
       "allow extracting the underlying HtmlUnit DomElement instances" in {
         doc >> "#menu" >> stext(".active") mustEqual "Section 2"

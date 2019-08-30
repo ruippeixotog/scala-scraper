@@ -2,9 +2,10 @@ package net.ruippeixotog.scalascraper.browser
 
 import java.io.File
 
-import org.http4s._
-import org.http4s.dsl._
-import org.http4s.headers.`Content-Encoding`
+import akka.http.scaladsl.model.StatusCodes._
+import akka.http.scaladsl.model.Uri
+import akka.http.scaladsl.model.headers._
+import akka.http.scaladsl.server.Directives.{ post => httpPost, _ }
 import org.specs2.mutable.Specification
 
 import net.ruippeixotog.scalascraper.model._
@@ -43,34 +44,45 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
       </body>
     <html>"""
 
-  def uri(uriStr: String) = Uri.fromString(uriStr).right.get
-
-  lazy val testService = HttpService {
-    case GET -> Root / "hello" => Ok(html)
-    case GET -> Root / "encoding" / charset =>
-      serveResource(s"encoding-${charset.toLowerCase}.html", charset)
-        .putHeaders(`Content-Encoding`(charset.ci))
-
-    case req @ POST -> Root / "form" =>
-      req.decode[UrlForm] { form =>
-        val dataHtml = form.values.map { case (k, vs) => s"""<span id="$k">${vs.head}</span>""" }.mkString
-        serveText(dataHtml)
+  // format: OFF
+  lazy val testService = {
+    get {
+      path("hello") { serveHtml(html) } ~
+      path("encoding" / Segment) { charset =>
+        respondWithHeader(`Content-Encoding`.parseFromValueString(charset).right.get) {
+          serveResource(s"encoding-${charset.toLowerCase}.html", charset)
+        }
+      } ~
+      path("agent") {
+        headerValueByName("User-Agent") { userAgent =>
+          serveText(userAgent)
+        }
+      } ~
+      path("redirect") { redirect(Uri(testServerUri("redirected")) , Found) } ~
+      path("redirected") { serveText("redirected") } ~
+      path("setcookieA") {
+        setCookie(HttpCookie("a", "4")) { serveText("cookie set") }
+      } ~
+      path("setcookieB") {
+        setCookie(HttpCookie("b", "5")) { serveText("cookie set") }
+      } ~
+      path("cookies") {
+        optionalHeaderValuePF({ case Cookie(cookies) => cookies }) { cookies =>
+          val str = cookies.toSeq.flatten.sortBy(_.name).map { c => s"${c.name}=${c.value}" }.mkString(";")
+          serveText(str)
+        }
       }
-
-    case req @ GET -> Root / "agent" =>
-      val userAgent = req.headers.get("User-Agent".ci).fold("")(_.value)
-      serveText(userAgent)
-
-    case GET -> Root / "redirect" => Found(uri(testServerUri("redirected")))
-    case GET -> Root / "redirected" => serveText("redirected")
-
-    case GET -> Root / "setcookieA" => Ok("cookie set").putHeaders(Header.Raw("Set-Cookie".ci, "a=4"))
-    case GET -> Root / "setcookieB" => Ok("cookie set").putHeaders(Header.Raw("Set-Cookie".ci, "b=5"))
-    case req @ GET -> Root / "cookies" =>
-      val cookies = req.headers.get(headers.Cookie).toSeq.flatMap(_.values.toList).sortBy(_.name)
-      val cookiesStr = cookies.map { c => s"${c.name}=${c.content}" }.mkString(";")
-      serveText(cookiesStr)
+    } ~
+    httpPost {
+      path("form") {
+        formFieldSeq { fields =>
+          val dataHtml = fields.map { case (k, vs) => s"""<span id="$k">$vs</span>""" }.mkString
+          serveText(dataHtml)
+        }
+      }
+    }
   }
+  // format: ON
 
   "A Browser" should {
 
