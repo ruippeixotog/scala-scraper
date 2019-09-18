@@ -61,8 +61,10 @@ class HtmlUnitBrowserSpec extends Specification with TestServer with SocksTestHe
       doc.location mustEqual s"http://localhost:$testServerPort/jsredirect"
       doc.root.select("#t").head.text mustEqual "First"
 
-      doc.location must beEqualTo(s"http://localhost:$testServerPort/jsredirected").eventually
-      doc.root.select("#t").head.text mustEqual "Second"
+      eventually {
+        doc.location must beEqualTo(s"http://localhost:$testServerPort/jsredirected")
+        doc.root.select("#t").head.text mustEqual "Second"
+      }
     }
 
     "keep the documented mutability semantics on page refreshes and redirects" in {

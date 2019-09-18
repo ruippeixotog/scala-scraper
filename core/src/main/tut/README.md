@@ -371,7 +371,7 @@ aElem >> attr("href")
 // get the location of the document (without the host and the full path parts)
 typedDoc.location.split("/").last
 
-def click(elem: HtmlUnitElement) {
+def click(elem: HtmlUnitElement): Unit = {
   // the type param may be needed, as the original API uses Java wildcards
   aElem.underlying.click[com.gargoylesoftware.htmlunit.Page]()
 }

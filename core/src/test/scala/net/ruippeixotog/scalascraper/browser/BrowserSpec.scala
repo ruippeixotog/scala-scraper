@@ -284,7 +284,7 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
           val doc = browser.parseString(html)
 
           val middleDiv = doc.root.select("#sibling3").head
-          val Seq(sibling1, sibling2, sibling4, sibling5) = middleDiv.siblings
+          val Seq(sibling1, sibling2, sibling4, sibling5) = middleDiv.siblings.toList
           sibling1.attr("id") mustEqual "sibling1"
           sibling2.attr("id") mustEqual "sibling2"
           sibling4.attr("id") mustEqual "sibling4"

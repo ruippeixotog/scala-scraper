@@ -82,7 +82,7 @@ object MusicGenreTreeApp extends App {
     def leaves = root >> elementList("> a.genre") map { e => e.text -> e }
     def nodes = root >> elementList("> div:has(b:has(a.genre))") >> (text(".genre"), element("blockquote"))
 
-    def children: Map[String, GenreNode] = SortedMap(leaves ++ nodes: _*).mapValues(GenreNode.apply)
+    def children: Map[String, GenreNode] = SortedMap(leaves ++ nodes: _*).mapValues(GenreNode.apply).toMap
 
     def renderYaml(d: Int = 0): String =
       children.map {

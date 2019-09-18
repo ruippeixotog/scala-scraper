@@ -28,10 +28,10 @@ trait ConfigLoaders {
     configs.map(validatorAt[R])
 
   @inline final def validatorsAt[R: ConfigReader](config: Config, path: String): Seq[HtmlValidator[Element, R]] =
-    validatorsAt[R](config.getConfigList(path).asScala)
+    validatorsAt[R](config.getConfigList(path).asScala.toSeq)
 
   @inline final def validatorsAt[R: ConfigReader](path: String): Seq[HtmlValidator[Element, R]] =
-    validatorsAt[R](ConfigFactory.load.getConfigList(path).asScala)
+    validatorsAt[R](ConfigFactory.load.getConfigList(path).asScala.toSeq)
 
   def extractorAt[A](config: Config): HtmlExtractor[Element, A] =
     ConfigHtmlExtractor[A](config)
