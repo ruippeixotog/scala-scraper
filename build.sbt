@@ -4,7 +4,7 @@ import scalariform.formatter.preferences._
 organization in ThisBuild := "net.ruippeixotog"
 
 scalaVersion in ThisBuild := "2.12.9"
-crossScalaVersions in ThisBuild := Seq("2.12.9", "2.13.0")
+crossScalaVersions in ThisBuild := Seq("2.11.12", "2.12.9", "2.13.0")
 
 lazy val core = project.in(file("core"))
   .enablePlugins(TutPlugin)
@@ -55,7 +55,7 @@ lazy val commonSettings = Seq(
 
   scalacOptions ++= baseScalacOptions ++ (CrossVersion
     .partialVersion(scalaVersion.value) match {
-        case Some((2, scalaMajor)) if scalaMajor == 12 =>
+        case Some((2, scalaMajor)) if scalaMajor <= 12 =>
           Seq("-Ypartial-unification")
         case _ => Seq.empty[String]
       }),
