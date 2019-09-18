@@ -1,3 +1,8 @@
+### 2.2.0 (Sep 18, 2019)
+
+- New features
+  - Added support for Scala 2.13.
+
 ### 2.1.0 (Jan 15, 2018)
  
 - Deprecations
