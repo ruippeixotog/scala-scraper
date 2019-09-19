@@ -15,7 +15,7 @@ lazy val core = project.in(file("core"))
     libraryDependencies ++= Seq(
       "com.github.nscala-time"     %% "nscala-time"          % "2.22.0",
       "net.sourceforge.htmlunit"    % "htmlunit"             % "2.34.1",
-      "org.jsoup"                   % "jsoup"                % "1.11.3",
+      "org.jsoup"                   % "jsoup"                % "1.12.1",
       "org.scalaz"                 %% "scalaz-core"          % "7.2.28",
       "com.typesafe.akka"          %% "akka-http"            % "10.1.9"               % "test",
       "com.typesafe.akka"          %% "akka-stream"          % "2.5.25"               % "test",
