@@ -16,7 +16,7 @@ lazy val core = project.in(file("core"))
       "com.github.nscala-time"     %% "nscala-time"          % "2.22.0",
       "net.sourceforge.htmlunit"    % "htmlunit"             % "2.36.0",
       "org.jsoup"                   % "jsoup"                % "1.12.1",
-      "org.scalaz"                 %% "scalaz-core"          % "7.2.28",
+      "org.scalaz"                 %% "scalaz-core"          % "7.2.29",
       "com.typesafe.akka"          %% "akka-http"            % "10.1.10"               % "test",
       "com.typesafe.akka"          %% "akka-stream"          % "2.5.25"               % "test",
       "org.slf4j"                   % "slf4j-nop"            % "1.7.28"               % "test",
