@@ -18,7 +18,7 @@ lazy val core = project.in(file("core"))
       "org.jsoup"                   % "jsoup"                % "1.12.1",
       "org.scalaz"                 %% "scalaz-core"          % "7.2.29",
       "com.typesafe.akka"          %% "akka-http"            % "10.1.10"               % "test",
-      "com.typesafe.akka"          %% "akka-stream"          % "2.5.25"               % "test",
+      "com.typesafe.akka"          %% "akka-stream"          % "2.5.26"               % "test",
       "org.slf4j"                   % "slf4j-nop"            % "1.7.28"               % "test",
       "org.specs2"                 %% "specs2-core"          % "4.8.0"                % "test"),
 
