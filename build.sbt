@@ -19,7 +19,7 @@ lazy val core = project.in(file("core"))
       "org.scalaz"                 %% "scalaz-core"          % "7.2.29",
       "com.typesafe.akka"          %% "akka-http"            % "10.1.10"               % "test",
       "com.typesafe.akka"          %% "akka-stream"          % "2.5.26"               % "test",
-      "org.slf4j"                   % "slf4j-nop"            % "1.7.28"               % "test",
+      "org.slf4j"                   % "slf4j-nop"            % "1.7.29"               % "test",
       "org.specs2"                 %% "specs2-core"          % "4.8.0"                % "test"),
 
     tutTargetDirectory := file("."))
