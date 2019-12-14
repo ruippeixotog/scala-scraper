@@ -3,8 +3,8 @@ import scalariform.formatter.preferences._
 
 organization in ThisBuild := "net.ruippeixotog"
 
-scalaVersion in ThisBuild := "2.12.9"
-crossScalaVersions in ThisBuild := Seq("2.11.12", "2.12.9", "2.13.0")
+scalaVersion in ThisBuild := "2.13.1"
+crossScalaVersions in ThisBuild := Seq("2.11.12", "2.12.10", "2.13.1")
 
 lazy val core = project.in(file("core"))
   .enablePlugins(TutPlugin)
@@ -46,7 +46,7 @@ lazy val config = project.in(file("modules/config"))
 lazy val commonSettings = Seq(
   resolvers ++= Seq(
     Resolver.sonatypeRepo("snapshots"),
-    "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases"),
+    "Scalaz Bintray Repo" at "https://dl.bintray.com/scalaz/releases"),
 
   scalariformPreferences := scalariformPreferences.value
     .setPreference(DanglingCloseParenthesis, Prevent)
