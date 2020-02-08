@@ -11,6 +11,7 @@ import org.apache.commons.io.IOUtils
 import org.apache.http.HttpStatus
 import com.gargoylesoftware.htmlunit._
 import com.gargoylesoftware.htmlunit.html._
+import com.gargoylesoftware.htmlunit.html.parser.neko.HtmlUnitNekoHtmlParser
 import com.gargoylesoftware.htmlunit.util.{ NameValuePair, StringUtils }
 
 import net.ruippeixotog.scalascraper.browser.HtmlUnitBrowser._
@@ -71,7 +72,7 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME, proxy
   def parseString(html: String): HtmlUnitDocument = {
     val response = new StringWebResponse(html, WebClient.URL_ABOUT_BLANK)
     val window = newWindow()
-    HTMLParser.parseHtml(response, window)
+    new HtmlUnitNekoHtmlParser().parseHtml(response, window)
     HtmlUnitDocument(window)
   }
 
@@ -81,7 +82,7 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME, proxy
         newWebResponseData(inputStream, charset),
         newRequest(WebClient.URL_ABOUT_BLANK, charset = Some(charset)), 0)
       val window = newWindow()
-      HTMLParser.parseHtml(response, window)
+      new HtmlUnitNekoHtmlParser().parseHtml(response, window)
       HtmlUnitDocument(window)
     }
   }
@@ -205,7 +206,7 @@ object HtmlUnitBrowser {
           case page: SgmlPage => page
           case page: TextPage =>
             val response = new StringWebResponse(page.getContent, page.getUrl)
-            HTMLParser.parseHtml(response, page.getEnclosingWindow)
+            new HtmlUnitNekoHtmlParser().parseHtml(response, page.getEnclosingWindow)
         }
       }
       _underlying
