@@ -20,7 +20,7 @@ lazy val core = project.in(file("core"))
       "com.typesafe.akka"          %% "akka-http"            % "10.1.11"               % "test",
       "com.typesafe.akka"          %% "akka-stream"          % "2.5.29"               % "test",
       "org.slf4j"                   % "slf4j-nop"            % "1.7.30"               % "test",
-      "org.specs2"                 %% "specs2-core"          % "4.8.3"                % "test"),
+      "org.specs2"                 %% "specs2-core"          % "4.9.1"                % "test"),
 
     tutTargetDirectory := file("."))
 
@@ -41,7 +41,7 @@ lazy val config = project.in(file("modules/config"))
 
     libraryDependencies ++= Seq(
       "com.typesafe"                % "config"               % "1.4.0",
-      "org.specs2"                 %% "specs2-core"          % "4.8.3"                % "test"))
+      "org.specs2"                 %% "specs2-core"          % "4.9.1"                % "test"))
 
 lazy val commonSettings = Seq(
   resolvers ++= Seq(
