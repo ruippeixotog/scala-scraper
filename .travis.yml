@@ -16,7 +16,7 @@ script:
   - sbt ++$TRAVIS_SCALA_VERSION clean coverage scalafmtCheckAll test
 
   # check if there are no changes after `tut` runs
-  - if [[ $TRAVIS_SCALA_VERSION =~ '^2\.12.*' ]]; then
+  - if [[ $TRAVIS_SCALA_VERSION =~ ^2\.12\.* ]]; then
       sbt tut;
       git diff --exit-code;
       fi
