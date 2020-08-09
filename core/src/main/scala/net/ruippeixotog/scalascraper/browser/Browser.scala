@@ -1,6 +1,6 @@
 package net.ruippeixotog.scalascraper.browser
 
-import java.io.{ File, InputStream }
+import java.io.{File, InputStream}
 
 import net.ruippeixotog.scalascraper.model.Document
 

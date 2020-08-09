@@ -1,6 +1,6 @@
 package net.ruippeixotog.scalascraper.config
 
-import scala.util.{ Failure, Success, Try }
+import scala.util.{Failure, Success, Try}
 
 import com.typesafe.config.Config
 

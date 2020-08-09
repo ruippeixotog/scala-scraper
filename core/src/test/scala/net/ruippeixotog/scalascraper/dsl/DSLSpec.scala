@@ -4,8 +4,8 @@ import org.specs2.mutable.Specification
 
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 import net.ruippeixotog.scalascraper.dsl.DSL._
-import net.ruippeixotog.scalascraper.model.{ Document, Element }
-import net.ruippeixotog.scalascraper.scraper.ContentExtractors.{ text => stext, _ }
+import net.ruippeixotog.scalascraper.model.{Document, Element}
+import net.ruippeixotog.scalascraper.scraper.ContentExtractors.{text => stext, _}
 import net.ruippeixotog.scalascraper.scraper.HtmlExtractor
 import net.ruippeixotog.scalascraper.util.EitherRightBias._
 

@@ -1,5 +1,4 @@
 import ReleaseTransformations._
-import scalariform.formatter.preferences._
 
 organization in ThisBuild := "net.ruippeixotog"
 
@@ -48,17 +47,14 @@ lazy val commonSettings = Seq(
     Resolver.sonatypeRepo("snapshots"),
     "Scalaz Bintray Repo" at "https://dl.bintray.com/scalaz/releases"),
 
-  scalariformPreferences := scalariformPreferences.value
-    .setPreference(DanglingCloseParenthesis, Prevent)
-    .setPreference(DoubleIndentConstructorArguments, true)
-    .setPreference(PlaceScaladocAsterisksBeneathSecondAsterisk, true),
-
   scalacOptions ++= baseScalacOptions ++ (CrossVersion
     .partialVersion(scalaVersion.value) match {
         case Some((2, scalaMajor)) if scalaMajor <= 12 =>
           Seq("-Ypartial-unification")
         case _ => Seq.empty[String]
       }),
+
+  scalafmtOnCompile := true,
 
   fork in Test := true,
 

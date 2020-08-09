@@ -8,9 +8,10 @@ trait ConfigReader[A] {
 }
 
 object ConfigReader {
-  def apply[A](readFunc: (Config, String) => A) = new ConfigReader[A] {
-    def read(conf: Config, path: String) = readFunc(conf, path)
-  }
+  def apply[A](readFunc: (Config, String) => A) =
+    new ConfigReader[A] {
+      def read(conf: Config, path: String) = readFunc(conf, path)
+    }
 
   implicit def boolConfReader: ConfigReader[Boolean] = ConfigReader(_.getBoolean(_))
   implicit def stringConfReader: ConfigReader[String] = ConfigReader(_.getString(_))

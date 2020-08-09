@@ -5,7 +5,7 @@ import java.io.File
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.model.Uri
 import akka.http.scaladsl.model.headers._
-import akka.http.scaladsl.server.Directives.{ post => httpPost, _ }
+import akka.http.scaladsl.server.Directives.{post => httpPost, _}
 import org.specs2.mutable.Specification
 
 import net.ruippeixotog.scalascraper.model._
@@ -87,7 +87,6 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
   "A Browser" should {
 
     usingBrowsers(JsoupBrowser(), HtmlUnitBrowser()) { browser =>
-
       "do GET requests and parse correctly the returned HTML" in {
         val body = browser.get(testServerUri("hello")).body
 
@@ -164,14 +163,14 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
         def getText(doc: Document) = doc.root.select("#a").head.text
 
         getText(browser.parseResource("/encoding-utf-8.html")) mustEqual testPhrase
-        getText(browser.parseResource(
-          "/encoding-utf-8.html",
-          "ISO-8859-1")) must not(beEqualTo(testPhrase))
+        getText(browser.parseResource("/encoding-utf-8.html", "ISO-8859-1")) must not(beEqualTo(testPhrase))
 
         getText(browser.parseResource("/encoding-iso-8859-1.html")) must not(beEqualTo(testPhrase))
         getText(browser.parseResource("/encoding-iso-8859-1.html", "ISO-8859-1")) mustEqual testPhrase
 
-        getText(browser.parseResource("/encoding-utf-16be.html")) must throwAn[Exception] // file is not valid HTML in UTF-8
+        getText(browser.parseResource("/encoding-utf-16be.html")) must throwAn[
+          Exception
+        ] // file is not valid HTML in UTF-8
         getText(browser.parseResource("/encoding-utf-16be.html", "UTF-16BE")) mustEqual testPhrase
       }
 
@@ -299,11 +298,20 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
 
           textNode.children mustEqual Seq(b, i)
           textNode.childNodes mustEqual Seq(
-            TextNode("this is "), ElementNode(b), TextNode(" text with "), ElementNode(i), TextNode(" styles"))
+            TextNode("this is "),
+            ElementNode(b),
+            TextNode(" text with "),
+            ElementNode(i),
+            TextNode(" styles")
+          )
 
           b.siblings mustEqual Seq(i)
           b.siblingNodes mustEqual Seq(
-            TextNode("this is "), TextNode(" text with "), ElementNode(i), TextNode(" styles"))
+            TextNode("this is "),
+            TextNode(" text with "),
+            ElementNode(i),
+            TextNode(" styles")
+          )
         }
       }
     }

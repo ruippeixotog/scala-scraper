@@ -1,13 +1,13 @@
 package net.ruippeixotog.scalascraper.browser
 
-import java.io.{ File, InputStream }
+import java.io.{File, InputStream}
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 
 import org.jsoup.Connection.Method._
 import org.jsoup.Connection.Response
-import org.jsoup.{ Connection, Jsoup }
+import org.jsoup.{Connection, Jsoup}
 
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser._
 import net.ruippeixotog.scalascraper.model._
@@ -62,12 +62,13 @@ class JsoupBrowser(val userAgent: String = "jsoup/1.8", val proxy: java.net.Prox
   def requestSettings(conn: Connection): Connection = conn
 
   protected[this] def defaultRequestSettings(conn: Connection): Connection =
-    conn.cookies(cookieMap.asJava).
-      userAgent(userAgent).
-      header("Accept", "text/html,application/xhtml+xml,application/xml").
-      header("Accept-Charset", "utf-8").
-      timeout(15000).
-      maxBodySize(0)
+    conn
+      .cookies(cookieMap.asJava)
+      .userAgent(userAgent)
+      .header("Accept", "text/html,application/xhtml+xml,application/xml")
+      .header("Accept-Charset", "utf-8")
+      .timeout(15000)
+      .maxBodySize(0)
 
   protected[this] def executeRequest(conn: Connection): Response =
     conn.execute()
@@ -127,11 +128,12 @@ object JsoupBrowser {
   }
 
   object JsoupNode {
-    def apply(underlying: org.jsoup.nodes.Node): Option[Node] = underlying match {
-      case elem: org.jsoup.nodes.Element => Some(ElementNode(JsoupElement(elem)))
-      case textNode: org.jsoup.nodes.TextNode => Some(TextNode(textNode.text))
-      case _ => None
-    }
+    def apply(underlying: org.jsoup.nodes.Node): Option[Node] =
+      underlying match {
+        case elem: org.jsoup.nodes.Element => Some(ElementNode(JsoupElement(elem)))
+        case textNode: org.jsoup.nodes.TextNode => Some(TextNode(textNode.text))
+        case _ => None
+      }
   }
 
   case class JsoupDocument(underlying: org.jsoup.nodes.Document) extends Document {

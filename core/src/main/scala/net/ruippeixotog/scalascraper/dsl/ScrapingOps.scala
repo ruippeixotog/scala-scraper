@@ -1,7 +1,7 @@
 package net.ruippeixotog.scalascraper.dsl
 
 import net.ruippeixotog.scalascraper.model.Element
-import net.ruippeixotog.scalascraper.scraper.{ HtmlExtractor, HtmlValidator }
+import net.ruippeixotog.scalascraper.scraper.{HtmlExtractor, HtmlValidator}
 import net.ruippeixotog.scalascraper.util._
 import scala.util.Try
 import scalaz._
@@ -34,7 +34,11 @@ trait ScrapingOps extends syntax.ToIdOps with ToFunctorOps with std.AllInstances
     def >?>[B, C](extractor1: HtmlExtractor[E, B], extractor2: HtmlExtractor[E, C]) =
       self.map { doc => (Try(extractor1.extract(doc)).toOption, Try(extractor2.extract(doc)).toOption) }
 
-    def >?>[B, C, D](extractor1: HtmlExtractor[E, B], extractor2: HtmlExtractor[E, C], extractor3: HtmlExtractor[E, D]) =
+    def >?>[B, C, D](
+        extractor1: HtmlExtractor[E, B],
+        extractor2: HtmlExtractor[E, C],
+        extractor3: HtmlExtractor[E, D]
+    ) =
       self.map { doc =>
         val e1 = Try(extractor1.extract(doc)).toOption
         val e2 = Try(extractor2.extract(doc)).toOption
@@ -57,15 +61,19 @@ trait ScrapingOps extends syntax.ToIdOps with ToFunctorOps with std.AllInstances
     }
 
     def validateWith[R](
-      success: HtmlValidator[E, _],
-      errors: Seq[HtmlValidator[E, R]],
-      default: => R = throw new ValidationException): F[Either[R, A]] = {
+        success: HtmlValidator[E, _],
+        errors: Seq[HtmlValidator[E, R]],
+        default: => R = throw new ValidationException
+    ): F[Either[R, A]] = {
 
       self.map { doc =>
         if (success.matches(doc)) Right(doc)
-        else errors.foldLeft[Either[R, A]](Right(doc)) { (res, error) =>
-          if (res.isLeft || !error.matches(doc)) res else Left(error.result.get)
-        }.fold(Left.apply, _ => Left(default))
+        else
+          errors
+            .foldLeft[Either[R, A]](Right(doc)) { (res, error) =>
+              if (res.isLeft || !error.matches(doc)) res else Left(error.result.get)
+            }
+            .fold(Left.apply, _ => Left(default))
       }
     }
 
@@ -106,7 +114,9 @@ trait ScrapingOps extends syntax.ToIdOps with ToFunctorOps with std.AllInstances
     @inline final def and = self
   }
 
-  implicit def deepFunctorOps[FA, A, E <: Element](self: FA)(implicit df: DeepFunctor.AuxA[FA, A], conv: ToQuery.Aux[A, E]) =
+  implicit def deepFunctorOps[FA, A, E <: Element](
+      self: FA
+  )(implicit df: DeepFunctor.AuxA[FA, A], conv: ToQuery.Aux[A, E]) =
     new ElementsScrapingOps[df.F, A, E](df.asF(self))(df.f, conv)
 }
 
