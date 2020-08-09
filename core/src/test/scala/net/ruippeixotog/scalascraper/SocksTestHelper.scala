@@ -1,6 +1,6 @@
 package net.ruippeixotog.scalascraper
 
-import java.net.{ ConnectException, Socket, SocketException }
+import java.net.{ConnectException, Socket, SocketException}
 
 import org.specs2.matcher.ThrownMessages
 import org.specs2.mutable.Specification

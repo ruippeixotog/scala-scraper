@@ -2,7 +2,7 @@ package net.ruippeixotog.scalascraper.scraper
 
 import scala.util.Try
 
-import net.ruippeixotog.scalascraper.model.{ Element, ElementQuery }
+import net.ruippeixotog.scalascraper.model.{Element, ElementQuery}
 
 /**
   * An object containing `HtmlExtractor` instances for extracting primitive data such as text, elements or attributes,
@@ -133,17 +133,18 @@ object ContentExtractors {
       }
     }
 
-    def buildTable(rows: List[Element], openCells: List[OpenCell]): List[List[Element]] = (rows, openCells) match {
-      case (Nil, Nil) => Nil
+    def buildTable(rows: List[Element], openCells: List[OpenCell]): List[List[Element]] =
+      (rows, openCells) match {
+        case (Nil, Nil) => Nil
 
-      case (r :: rs, ocs) =>
-        val (rowCells, nextOcs) = buildRow(0, r.select("th,td").toList, ocs)
-        rowCells :: buildTable(rs, nextOcs)
+        case (r :: rs, ocs) =>
+          val (rowCells, nextOcs) = buildRow(0, r.select("th,td").toList, ocs)
+          rowCells :: buildTable(rs, nextOcs)
 
-      case (Nil, ocs) =>
-        val (rowCells, nextOcs) = buildRow(0, Nil, ocs)
-        rowCells :: buildTable(Nil, nextOcs)
-    }
+        case (Nil, ocs) =>
+          val (rowCells, nextOcs) = buildRow(0, Nil, ocs)
+          rowCells :: buildTable(Nil, nextOcs)
+      }
 
     val rows = elems.select("thead > tr") ++ elems.select("tbody > tr") ++ elems.select("tfoot > tr")
     buildTable(rows.toList, Nil).map(_.toVector).toVector

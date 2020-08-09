@@ -4,8 +4,8 @@ import com.github.nscala_time.time.Imports._
 
 import net.ruippeixotog.scalascraper.browser._
 import net.ruippeixotog.scalascraper.dsl.DSL._
-import net.ruippeixotog.scalascraper.model.{ Element, ElementQuery }
-import net.ruippeixotog.scalascraper.scraper.ContentExtractors.{ text => stext, _ }
+import net.ruippeixotog.scalascraper.model.{Element, ElementQuery}
+import net.ruippeixotog.scalascraper.scraper.ContentExtractors.{text => stext, _}
 import net.ruippeixotog.scalascraper.scraper.ContentParsers._
 import net.ruippeixotog.scalascraper.scraper.HtmlExtractor
 import org.specs2.mutable.Specification
@@ -83,7 +83,8 @@ class DSLExtractingSpec extends Specification with BrowserHelper {
           Vector("1,0", "1,1", "1,1", "1,3", "1,4", "1,5"),
           Vector("2,0", "1,1", "1,1", "2,3", "1,4", "2,5"),
           Vector("3,0", "3,1", "3,2", "3,3", "3,3", "3,3"),
-          Vector("4,0", "4,1", "4,2", "4,3", "4,4", "4,5"))
+          Vector("4,0", "4,1", "4,2", "4,3", "4,4", "4,5")
+        )
       }
 
       "allow extracting tables from HTML tables with thead, tbody and tfoot" in {
@@ -106,7 +107,11 @@ class DSLExtractingSpec extends Specification with BrowserHelper {
         doc >> extractor("#date", stext, asLocalDate("yyyy-MMM-dd")) must throwAn[Exception]
         doc >> extractor("#date", stext, asLocalDate("yyyy-MMM-dd", "yyyy-MM-dd")) mustEqual "2014-10-26".toLocalDate
 
-        doc >> extractor("#datefull", stext, asDateTime("yyyy-MM-dd'T'HH:mm:ssZ")) mustEqual "2014-10-26T12:30:05Z".toDateTime
+        doc >> extractor(
+          "#datefull",
+          stext,
+          asDateTime("yyyy-MM-dd'T'HH:mm:ssZ")
+        ) mustEqual "2014-10-26T12:30:05Z".toDateTime
         doc >> extractor("#datefull", stext, asDateTime("yyyy-MMM-dd'T'HH:mm:ssZ")) must throwAn[Exception]
         doc >> extractor("#datefull", stext, asDateTime("yyyy-MMM-dd'T'HH:mm:ssZ", "yyyy-MM-dd'T'HH:mm:ssZ")) mustEqual
           "2014-10-26T12:30:05Z".toDateTime
@@ -151,10 +156,12 @@ class DSLExtractingSpec extends Specification with BrowserHelper {
         case class MyPage(title: String, date: LocalDate, section: String)
 
         val myExtractor = new HtmlExtractor[Element, MyPage] {
-          def extract(doc: ElementQuery[Element]) = MyPage(
-            doc >> stext("title"),
-            doc >> extractor("#date", stext, asLocalDate("yyyy-MM-dd")),
-            doc >> stext("#menu .active"))
+          def extract(doc: ElementQuery[Element]) =
+            MyPage(
+              doc >> stext("title"),
+              doc >> extractor("#date", stext, asLocalDate("yyyy-MM-dd")),
+              doc >> stext("#menu .active")
+            )
         }
 
         doc >> myExtractor mustEqual MyPage("Test page", "2014-10-26".toLocalDate, "Section 2")

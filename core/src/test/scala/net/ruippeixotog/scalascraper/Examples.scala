@@ -1,12 +1,12 @@
 package net.ruippeixotog.scalascraper
 
 import java.io.PrintStream
-import java.net.{ InetSocketAddress, Proxy }
+import java.net.{InetSocketAddress, Proxy}
 
 import scala.collection.immutable.SortedMap
 
 import net.ruippeixotog.scalascraper.ExampleMatchers._
-import net.ruippeixotog.scalascraper.browser.{ HtmlUnitBrowser, JsoupBrowser }
+import net.ruippeixotog.scalascraper.browser.{HtmlUnitBrowser, JsoupBrowser}
 import net.ruippeixotog.scalascraper.dsl.DSL.Extract._
 import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.model.Element
@@ -17,7 +17,8 @@ object ExampleMatchers {
   val succ = HtmlValidator(text("head > title"), 1)(_.matches(".*Observador.*"))
   val errs = Seq(
     HtmlValidator(attr("content")("meta[name=viewport]"), 2)(_.matches(".*initial-scale=2\\.0.*")),
-    HtmlValidator(elements("meta[name=viewport]"), 3)(_.nonEmpty))
+    HtmlValidator(elements("meta[name=viewport]"), 3)(_.nonEmpty)
+  )
 }
 
 object ProxyApp extends App {

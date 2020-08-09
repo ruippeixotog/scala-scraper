@@ -29,31 +29,36 @@ object ToQuery extends LowerPriorityToQuery {
 
   def apply[A](implicit toQuery: ToQuery[A]): Aux[A, toQuery.Out] = toQuery
 
-  implicit def queryToQuery[E <: Element] = new ToQuery[ElementQuery[E]] {
-    type Out = E
-    def apply(query: ElementQuery[E]) = query
-  }
+  implicit def queryToQuery[E <: Element] =
+    new ToQuery[ElementQuery[E]] {
+      type Out = E
+      def apply(query: ElementQuery[E]) = query
+    }
 
-  implicit def typedElemToQuery[E <: Element.Strict[E]] = new ToQuery[E] {
-    type Out = E
-    def apply(elem: E) = ElementQuery(elem)
-  }
+  implicit def typedElemToQuery[E <: Element.Strict[E]] =
+    new ToQuery[E] {
+      type Out = E
+      def apply(elem: E) = ElementQuery(elem)
+    }
 
-  implicit def typedDocToQuery[D <: Document, E <: Element.Strict[E]](implicit ev: D <:< Document.Typed[E]) = new ToQuery[D] {
-    type Out = E
-    def apply(doc: D) = ElementQuery(ev(doc).root)
-  }
+  implicit def typedDocToQuery[D <: Document, E <: Element.Strict[E]](implicit ev: D <:< Document.Typed[E]) =
+    new ToQuery[D] {
+      type Out = E
+      def apply(doc: D) = ElementQuery(ev(doc).root)
+    }
 }
 
 trait LowerPriorityToQuery {
 
-  implicit def elemToQuery[E <: Element] = new ToQuery[E] {
-    type Out = Element
-    def apply(elem: E) = ElementQuery[Element](elem)
-  }
+  implicit def elemToQuery[E <: Element] =
+    new ToQuery[E] {
+      type Out = Element
+      def apply(elem: E) = ElementQuery[Element](elem)
+    }
 
-  implicit def docToQuery[D <: Document] = new ToQuery[D] {
-    type Out = Element
-    def apply(doc: D) = ElementQuery[Element](doc.root)
-  }
+  implicit def docToQuery[D <: Document] =
+    new ToQuery[D] {
+      type Out = Element
+      def apply(doc: D) = ElementQuery[Element](doc.root)
+    }
 }

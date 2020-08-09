@@ -3,7 +3,7 @@ package net.ruippeixotog.scalascraper.browser
 import java.io.File
 
 import akka.http.scaladsl.server.Directives._
-import com.gargoylesoftware.htmlunit.{ BrowserVersion, ProxyConfig }
+import com.gargoylesoftware.htmlunit.{BrowserVersion, ProxyConfig}
 import org.specs2.mutable.Specification
 
 import net.ruippeixotog.scalascraper.SocksTestHelper

@@ -18,19 +18,19 @@ trait ElementQuery[+E <: Element] extends Iterable[E] {
   def select(query: String): ElementQuery[E]
 }
 
-private[model] class RootElementQuery[E <: Element](
-    private val target: E,
-    exec: String => Iterator[E]) extends ElementQuery[E] {
+private[model] class RootElementQuery[E <: Element](private val target: E, exec: String => Iterator[E])
+    extends ElementQuery[E] {
 
   def iterator = Iterator(target)
 
   def select(query: String): ElementQuery[E] =
     new LazyElementQuery(query.split(","), target, exec)
 
-  override def equals(obj: Any) = obj match {
-    case q: ElementQuery[_] => iterator.sameElements(q.iterator)
-    case _ => false
-  }
+  override def equals(obj: Any) =
+    obj match {
+      case q: ElementQuery[_] => iterator.sameElements(q.iterator)
+      case _ => false
+    }
 
   override def hashCode() = iterator.toSeq.hashCode()
 
@@ -40,7 +40,8 @@ private[model] class RootElementQuery[E <: Element](
 private[model] class LazyElementQuery[E <: Element](
     private val queries: Seq[String],
     private val target: E,
-    exec: String => Iterator[E]) extends ElementQuery[E] {
+    exec: String => Iterator[E]
+) extends ElementQuery[E] {
 
   def iterator = exec(queries.mkString(","))
 
@@ -49,10 +50,11 @@ private[model] class LazyElementQuery[E <: Element](
     new LazyElementQuery(newQueries, target, exec)
   }
 
-  override def equals(obj: Any) = obj match {
-    case q: ElementQuery[_] => iterator.sameElements(q.iterator)
-    case _ => false
-  }
+  override def equals(obj: Any) =
+    obj match {
+      case q: ElementQuery[_] => iterator.sameElements(q.iterator)
+      case _ => false
+    }
 
   override def hashCode() = iterator.toSeq.hashCode()
 

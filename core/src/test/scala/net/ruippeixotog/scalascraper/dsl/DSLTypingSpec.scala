@@ -5,7 +5,7 @@ import org.specs2.mutable.Specification
 
 import net.ruippeixotog.scalascraper.browser._
 import net.ruippeixotog.scalascraper.dsl.DSL._
-import net.ruippeixotog.scalascraper.scraper.ContentExtractors.{ text => stext, _ }
+import net.ruippeixotog.scalascraper.scraper.ContentExtractors.{text => stext, _}
 
 class DSLTypingSpec extends Specification with TestServer {
 

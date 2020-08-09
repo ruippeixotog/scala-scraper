@@ -1,6 +1,6 @@
 package net.ruippeixotog.scalascraper.browser
 
-import java.net.{ InetSocketAddress, Proxy }
+import java.net.{InetSocketAddress, Proxy}
 
 import akka.http.scaladsl.server.Directives._
 import org.specs2.mutable.Specification

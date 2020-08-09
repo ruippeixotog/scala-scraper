@@ -18,12 +18,13 @@ sealed trait DeepFunctor[FA] {
 }
 
 trait LowerPriorityDeepFunctor {
-  implicit def nil[A1] = new DeepFunctor[A1] {
-    type A = A1
-    type F[X] = X
-    val f = implicitly[Functor[Id]]
-    def asF(a: A) = a
-  }
+  implicit def nil[A1] =
+    new DeepFunctor[A1] {
+      type A = A1
+      type F[X] = X
+      val f = implicitly[Functor[Id]]
+      def asF(a: A) = a
+    }
 }
 
 object DeepFunctor extends LowerPriorityDeepFunctor {

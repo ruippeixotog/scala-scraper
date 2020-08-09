@@ -32,10 +32,11 @@ trait PolyHtmlExtractor { outer =>
     * @return a `PolyHtmlExtractor` returning the contents extracted by this extractor after `cssQuery` is applied to
     *         the input queries.
     */
-  def mapQuery(cssQuery: String): PolyHtmlExtractor.Aux[Out] = new PolyHtmlExtractor {
-    type Out[E <: Element] = outer.Out[E]
-    def apply[E <: Element] = outer[E].mapQuery(cssQuery)
-  }
+  def mapQuery(cssQuery: String): PolyHtmlExtractor.Aux[Out] =
+    new PolyHtmlExtractor {
+      type Out[E <: Element] = outer.Out[E]
+      def apply[E <: Element] = outer[E].mapQuery(cssQuery)
+    }
 
   /**
     * Applies a CSS query to `ElementQuery` inputs before passing them to this extractor.
@@ -53,5 +54,6 @@ object PolyHtmlExtractor {
   type Aux[Out0[E <: Element]] = PolyHtmlExtractor { type Out[E <: Element] = Out0[E] }
 
   implicit def polyHtmlExtractorAsExtractor[E <: Element](
-    polyExtractor: PolyHtmlExtractor): HtmlExtractor[E, polyExtractor.Out[E]] = polyExtractor[E]
+      polyExtractor: PolyHtmlExtractor
+  ): HtmlExtractor[E, polyExtractor.Out[E]] = polyExtractor[E]
 }

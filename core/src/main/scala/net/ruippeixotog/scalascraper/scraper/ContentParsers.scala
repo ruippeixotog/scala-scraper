@@ -3,7 +3,7 @@ package net.ruippeixotog.scalascraper.scraper
 import scala.util.matching.Regex
 
 import org.joda.time.format._
-import org.joda.time.{ DateTime, DateTimeZone }
+import org.joda.time.{DateTime, DateTimeZone}
 
 /**
   * An object containing functions for parsing extracted content. They can be used together with the DSL `extractor`

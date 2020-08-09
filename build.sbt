@@ -54,6 +54,8 @@ lazy val commonSettings = Seq(
         case _ => Seq.empty[String]
       }),
 
+  scalafmtOnCompile := true,
+
   fork in Test := true,
 
   tutTargetDirectory := baseDirectory.value,
