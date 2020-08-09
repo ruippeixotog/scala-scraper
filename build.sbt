@@ -1,5 +1,4 @@
 import ReleaseTransformations._
-import scalariform.formatter.preferences._
 
 organization in ThisBuild := "net.ruippeixotog"
 
@@ -47,11 +46,6 @@ lazy val commonSettings = Seq(
   resolvers ++= Seq(
     Resolver.sonatypeRepo("snapshots"),
     "Scalaz Bintray Repo" at "https://dl.bintray.com/scalaz/releases"),
-
-  scalariformPreferences := scalariformPreferences.value
-    .setPreference(DanglingCloseParenthesis, Prevent)
-    .setPreference(DoubleIndentConstructorArguments, true)
-    .setPreference(PlaceScaladocAsterisksBeneathSecondAsterisk, true),
 
   scalacOptions ++= baseScalacOptions ++ (CrossVersion
     .partialVersion(scalaVersion.value) match {
