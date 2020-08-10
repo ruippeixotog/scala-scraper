@@ -34,7 +34,7 @@ An implementation of the `Browser` trait, such as `JsoupBrowser`, can be used to
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 
 val browser = JsoupBrowser()
-val doc = browser.parseFile("core/src/test/resources/example.html")
+val doc = browser.parseFile("src/test/resources/example.html")
 val doc2 = browser.get("http://example.com")
 ```
 
@@ -81,8 +81,7 @@ If the element may or may not be in the page, the `>?>` tries to extract the con
 // doesn't:
 doc >?> element("#footer")
 // res10: Option[net.ruippeixotog.scalascraper.model.Element] =
-// Some(JsoupElement(<div id="footer">
-//  <span>No copyright 2014</span>
+// Some(JsoupElement(<div id="footer"> <span>No copyright 2014</span>
 // </div>))
 ```
 
@@ -178,17 +177,12 @@ doc >> "h3"
 //    <div id="header">
 //     <h1>Test page h1</h1>
 //    </div>
-//    <div id="menu">
-//     <span><a href="#home">Home</a></span>
-//     <span><a href="#section1">Section 1</a></span>
-//     <span class="active">Section 2</span>
-//     <span><a href="#section3">Section 3</a></span>
+//    <div id="menu"> <span><a href="#home">Home</a></span> <span><a href="#section1">Section 1</a></span> <span class="active">Section 2</span> <span><a href="#section3">Section 3</a></span>
 //    </div>
 //    <div id="content">
-//     <h2>Test page h2</h2>
-//     <span id="date">2014-10-26</span>
-//     <span id="datefull">2014-10-26T12:30:05Z</span>
-//     <span id="rating">4....
+//     <h2>Test page h2</h2> <span id="date">2014-10-26</span> <span id="datefull">2014-10-26T12:30:05Z</span> <span id="rating">4.5</span> <span id="pages">2</span>
+//     <section>
+//      ...
 
 // Extract all text inside this document
 doc >> allText
@@ -247,20 +241,14 @@ doc >/~ validator(text("title"))(_ == "Test page")
 //    <div id="header">
 //     <h1>Test page h1</h1>
 //    </div>
-//    <div id="menu">
-//     <span><a href="#home">Home</a></span>
-//     <span><a href="#section1">Section 1</a></span>
-//     <span class="active">Section 2</span>
-//     <span><a href="#section3">Section 3</a></span>
+//    <div id="menu"> <span><a href="#home">Home</a></span> <span><a href="#section1">Section 1</a></span> <span class="active">Section 2</span> <span><a href="#section3">Section 3</a></span>
 //    </div>
 //    <div id="content">
-//     <h2>Test page h2</h2>
-//     <span id="date">2014-10-26</span>
-//     <span id="datefull">2014-10-26T12:30:05Z</span>
-//     <span id="rating">4.5</span>
-//     <span id="pages">2</span>
+//     <h2>Test page h2</h2> <span id="date">2014-10-26</span> <span id="datefull">2014-10-26T12:30:05Z</span> <span id="rating">4.5</span> <span id="pages">2</span>
 //     <section>
-//      <h3>Section 1 ...
+//      <h3>Section 1 h3</h3>
+//      <p>Some text for testing</p>
+//      <p>More tex...
 
 // Check if there are at least 3 ".active" elements
 doc >/~ validator(".active")(_.size >= 3)
@@ -422,7 +410,7 @@ import net.ruippeixotog.scalascraper.browser.HtmlUnitBrowser._
 // with their concrete type
 val typedBrowser: HtmlUnitBrowser = HtmlUnitBrowser.typed()
 
-val typedDoc: HtmlUnitDocument = typedBrowser.parseFile("core/src/test/resources/example.html")
+val typedDoc: HtmlUnitDocument = typedBrowser.parseFile("src/test/resources/example.html")
 ```
 
 Note that the `val` declarations are explicitly typed for explanation purposes only; the methods work just as well when types are inferred.

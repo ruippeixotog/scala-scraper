@@ -59,6 +59,7 @@ lazy val commonSettings = Seq(
   fork in Test := true,
 
   tutTargetDirectory := baseDirectory.value,
+  fork in Tut := true,
 
   publishTo := {
     val nexus = "https://oss.sonatype.org/"

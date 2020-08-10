@@ -20,10 +20,10 @@ This README contains the following sections:
 
 ## Quick Start
 
-To use Scala Scraper in an existing SBT project with Scala 2.11 or 2.12, add the following dependency to your `build.sbt`:
+To use Scala Scraper in an existing SBT project with Scala 2.11 or newer, add the following dependency to your `build.sbt`:
 
 ```scala
-libraryDependencies += "net.ruippeixotog" %% "scala-scraper" % "2.1.0"
+libraryDependencies += "net.ruippeixotog" %% "scala-scraper" % "2.2.0"
 ```
 
 If you are using an older version of this library, see this document for the version you're using: [1.x](https://github.com/ruippeixotog/scala-scraper/blob/v1.2.1/README.md), [0.1.2](https://github.com/ruippeixotog/scala-scraper/blob/v0.1.2/README.md), [0.1.1](https://github.com/ruippeixotog/scala-scraper/blob/v0.1.1/README.md), [0.1](https://github.com/ruippeixotog/scala-scraper/blob/v0.1/README.md).
@@ -34,7 +34,7 @@ An implementation of the `Browser` trait, such as `JsoupBrowser`, can be used to
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 
 val browser = JsoupBrowser()
-val doc = browser.parseFile("core/src/test/resources/example.html")
+val doc = browser.parseFile("src/test/resources/example.html")
 val doc2 = browser.get("http://example.com")
 ```
 
@@ -79,7 +79,7 @@ doc >?> element("#footer")
 
 With only these two operators, some useful things can already be achieved:
 
-```tut:book:silent
+```tut:book:silent:nofail
 // Go to a news website and extract the hyperlink inside the h1 element if it
 // exists. Follow that link and print both the article title and its short
 // description (inside ".lead")
@@ -337,7 +337,7 @@ import net.ruippeixotog.scalascraper.browser.HtmlUnitBrowser._
 // with their concrete type
 val typedBrowser: HtmlUnitBrowser = HtmlUnitBrowser.typed()
 
-val typedDoc: HtmlUnitDocument = typedBrowser.parseFile("core/src/test/resources/example.html")
+val typedDoc: HtmlUnitDocument = typedBrowser.parseFile("src/test/resources/example.html")
 ```
 
 Note that the `val` declarations are explicitly typed for explanation purposes only; the methods work just as well when types are inferred.
