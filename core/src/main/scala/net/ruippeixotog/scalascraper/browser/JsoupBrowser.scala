@@ -96,15 +96,17 @@ object JsoupBrowser {
 
     def tagName = underlying.tagName
 
-    def parent = Option(underlying.parent).map(JsoupElement)
+    def parent: Option[JsoupElement] = Option(underlying.parent).map(JsoupElement)
 
-    def children = underlying.children.asScala.map(JsoupElement)
+    def children: Iterable[JsoupElement] = underlying.children.asScala.map(JsoupElement)
 
-    def siblings = underlying.siblingElements.asScala.map(JsoupElement)
+    def siblings: Iterable[JsoupElement] = underlying.siblingElements.asScala.map(JsoupElement)
 
-    def childNodes = underlying.childNodes.asScala.flatMap(JsoupNode.apply)
+    def childNodes: Iterable[JsoupNode] = underlying.childNodes.asScala.flatMap(JsoupNode.apply)
 
-    def siblingNodes = underlying.siblingNodes.asScala.flatMap(JsoupNode.apply)
+    def siblingNodes: Iterable[JsoupNode] = underlying.siblingNodes.asScala.flatMap(JsoupNode.apply)
+   
+    def elementSiblingIndex = underlying.elementSiblingIndex
 
     def attrs = underlying.attributes.asScala.map { attr => attr.getKey -> attr.getValue }.toMap
 
