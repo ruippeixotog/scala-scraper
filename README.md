@@ -100,6 +100,8 @@ for {
 
 In the next two sections the core classes used by this library are presented. They are followed by a description of the full capabilities of the DSL, including the ability to parse content after extracting, validating the contents of a page and defining custom extractors or validators.
 
+The jsoup cook book provides a good overview on [CSS selector syntax](https://jsoup.org/cookbook/extracting-data/selector-syntax) with a more detailed reference available in the [API docs](https://jsoup.org/apidocs/org/jsoup/select/Selector.html).
+
 ## Core Model
 
 The library represents HTML documents and their elements by [Document](core/src/main/scala/net/ruippeixotog/scalascraper/model/Document.scala) and [Element](core/src/main/scala/net/ruippeixotog/scalascraper/model/Element.scala) objects, simple interfaces containing methods for retrieving information and navigating through the DOM.
@@ -508,4 +510,4 @@ The [CHANGELOG](CHANGELOG.md) is kept updated with the bug fixes and new feature
 
 ## Copyright
 
-Copyright (c) 2014-2018 Rui Gonçalves. See LICENSE for details.
+Copyright (c) 2014-2020 Rui Gonçalves. See LICENSE for details.
