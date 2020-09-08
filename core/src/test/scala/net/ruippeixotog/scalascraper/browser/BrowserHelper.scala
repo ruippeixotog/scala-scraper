@@ -14,8 +14,8 @@ trait BrowserHelper { this: Specification =>
   }
 
   def usingBrowsersLazy(browsers: (String, () => Browser)*)(block: (() => Browser) => Fragment): Fragment = {
-    browsers.map {
-      case (browserName, browser) => s"using $browserName" in { block(browser) }
+    browsers.map { case (browserName, browser) =>
+      s"using $browserName" in { block(browser) }
     }.last
   }
 }
