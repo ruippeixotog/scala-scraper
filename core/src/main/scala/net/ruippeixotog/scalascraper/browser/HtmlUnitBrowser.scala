@@ -72,7 +72,7 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME, proxy
   def parseString(html: String): HtmlUnitDocument = {
     val response = new StringWebResponse(html, WebClient.URL_ABOUT_BLANK)
     val window = newWindow()
-    new HtmlUnitNekoHtmlParser().parseHtml(response, window)
+    new DefaultPageCreator().createPage(response, window)
     HtmlUnitDocument(window)
   }
 
@@ -84,7 +84,7 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME, proxy
         0
       )
       val window = newWindow()
-      new HtmlUnitNekoHtmlParser().parseHtml(response, window)
+      new DefaultPageCreator().createPage(response, window)
       HtmlUnitDocument(window)
     }
   }
@@ -212,7 +212,7 @@ object HtmlUnitBrowser {
           case page: SgmlPage => page
           case page: TextPage =>
             val response = new StringWebResponse(page.getContent, page.getUrl)
-            new HtmlUnitNekoHtmlParser().parseHtml(response, page.getEnclosingWindow)
+            new DefaultPageCreator().createPage(response, window).asInstanceOf[SgmlPage]
         }
       }
       _underlying
