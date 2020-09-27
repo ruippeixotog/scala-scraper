@@ -496,4 +496,4 @@ The [CHANGELOG](CHANGELOG.md) is kept updated with the bug fixes and new feature
 
 ## Copyright
 
-Copyright (c) 2014-2018 Rui Gonçalves. See LICENSE for details.
+Copyright (c) 2014-2020 Rui Gonçalves. See LICENSE for details.
