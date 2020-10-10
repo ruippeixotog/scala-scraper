@@ -4,16 +4,14 @@ import scalaz.Monad
 
 import net.ruippeixotog.scalascraper.model.{Element, ElementQuery}
 
-/**
-  * An object able to extract content from [[net.ruippeixotog.scalascraper.model.ElementQuery]] instances.
+/** An object able to extract content from [[net.ruippeixotog.scalascraper.model.ElementQuery]] instances.
   *
   * @tparam E the type of the elements needed by this `HtmlExtractor`
   * @tparam A the type of the extracted content
   */
 trait HtmlExtractor[-E <: Element, +A] extends (ElementQuery[E] => A) {
 
-  /**
-    * Extracts content from an `ElementQuery`.
+  /** Extracts content from an `ElementQuery`.
     *
     * @param q the element query from which content is to be extracted
     * @return the extracted content.
@@ -22,8 +20,7 @@ trait HtmlExtractor[-E <: Element, +A] extends (ElementQuery[E] => A) {
 
   @inline final def apply(q: ElementQuery[E]) = extract(q)
 
-  /**
-    * Maps a function over the extracted content of this extractor.
+  /** Maps a function over the extracted content of this extractor.
     *
     * @param f the function to map over this extractor
     * @tparam B the output type of the function
@@ -32,8 +29,7 @@ trait HtmlExtractor[-E <: Element, +A] extends (ElementQuery[E] => A) {
   def map[B](f: A => B): HtmlExtractor[E, B] =
     HtmlExtractor { q => f(extract(q)) }
 
-  /**
-    * Applies a CSS query to `ElementQuery` inputs before passing them to this extractor.
+  /** Applies a CSS query to `ElementQuery` inputs before passing them to this extractor.
     *
     * @param cssQuery the CSS query to apply to input `ElementQuery` instances
     * @return an `HtmlExtractor` returning the contents extracted by this extractor after `cssQuery` is applied to the
@@ -43,13 +39,11 @@ trait HtmlExtractor[-E <: Element, +A] extends (ElementQuery[E] => A) {
     HtmlExtractor { q => extract(q.select(cssQuery)) }
 }
 
-/**
-  * The companion object for `HtmlExtractor`, containing methods for creating new extractors.
+/** The companion object for `HtmlExtractor`, containing methods for creating new extractors.
   */
 object HtmlExtractor extends HtmlExtractorInstances {
 
-  /**
-    * Creates a new `HtmlExtractor` from a function.
+  /** Creates a new `HtmlExtractor` from a function.
     *
     * @param f the function used to extract content from an `ElementQuery`
     * @tparam E the type of the elements needed by the `HtmlExtractor`
@@ -61,8 +55,7 @@ object HtmlExtractor extends HtmlExtractorInstances {
       def extract(q: ElementQuery[E]): A = f(q)
     }
 
-  /**
-    * Creates a new `HtmlExtractor` that extracts the elements of the input that match a CSS query.
+  /** Creates a new `HtmlExtractor` that extracts the elements of the input that match a CSS query.
     *
     * @param cssQuery the CSS query to apply
     * @tparam E the type of the elements needed by the `HtmlExtractor`

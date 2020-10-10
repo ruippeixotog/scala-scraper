@@ -18,8 +18,7 @@ import net.ruippeixotog.scalascraper.browser.HtmlUnitBrowser._
 import net.ruippeixotog.scalascraper.model._
 import net.ruippeixotog.scalascraper.util._
 
-/**
-  * A [[Browser]] implementation based on [[http://htmlunit.sourceforge.net HtmlUnit]], a GUI-less browser for Java
+/** A [[Browser]] implementation based on [[http://htmlunit.sourceforge.net HtmlUnit]], a GUI-less browser for Java
   * programs. `HtmlUnitBrowser` simulates thoroughly a web browser, executing JavaScript code in the pages besides
   * parsing and modelling its HTML content. It supports several compatibility modes, allowing it to emulate browsers
   * such as Internet Explorer.
@@ -94,8 +93,7 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME, proxy
 
   def clearCookies() = underlying.getCookieManager.clearCookies()
 
-  /**
-    * Closes all windows opened in this browser.
+  /** Closes all windows opened in this browser.
     */
   def closeAll() = underlying.close()
 
