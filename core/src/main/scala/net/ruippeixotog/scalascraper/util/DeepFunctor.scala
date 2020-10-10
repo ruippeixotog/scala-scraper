@@ -3,8 +3,7 @@ package net.ruippeixotog.scalascraper.util
 import scalaz._
 import Scalaz._
 
-/**
-  * Type class that identifies a type `FA` as a nested sequence of type constructors applied to a type `A`, where each
+/** Type class that identifies a type `FA` as a nested sequence of type constructors applied to a type `A`, where each
   * one has a `Functor` instance. It destructures `FA` into a composite type constructor `F[_]` applied to type `A`,
   * along with the composite `Functor` for `F`.
   *

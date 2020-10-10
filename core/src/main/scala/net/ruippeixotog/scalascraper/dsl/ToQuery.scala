@@ -2,21 +2,18 @@ package net.ruippeixotog.scalascraper.dsl
 
 import net.ruippeixotog.scalascraper.model._
 
-/**
-  * A type class indicating that an [[net.ruippeixotog.scalascraper.model.ElementQuery]] of some
+/** A type class indicating that an [[net.ruippeixotog.scalascraper.model.ElementQuery]] of some
   * [[net.ruippeixotog.scalascraper.model.Element]] type can be created from an object of a given type.
   *
   * @tparam A the type of the object to be made into an `ElementQuery`
   */
 trait ToQuery[A] {
 
-  /**
-    * The type of the element in the `ElementQuery`.
+  /** The type of the element in the `ElementQuery`.
     */
   type Out <: Element
 
-  /**
-    * Creates an `ElementQuery` for an object of type `A`.
+  /** Creates an `ElementQuery` for an object of type `A`.
     *
     * @param a the object for which an `ElementQuery` is to be created
     * @return an `ElementQuery` for the given object.

@@ -1,13 +1,11 @@
 package net.ruippeixotog.scalascraper.model
 
-/**
-  * The result of a query to an [[Element]]. It works as a collection of `Element` instances and provides a way to
+/** The result of a query to an [[Element]]. It works as a collection of `Element` instances and provides a way to
   * further query the elements.
   */
 trait ElementQuery[+E <: Element] extends Iterable[E] {
 
-  /**
-    * Executes an additional query over the elements of this query using a CSS selector.
+  /** Executes an additional query over the elements of this query using a CSS selector.
     *
     * Semantically, the result of returned composite query is equivalent to iterating over the elements of this query,
     * applying the CSS selector on each individual node and flattening the result while eliminating duplicate results.

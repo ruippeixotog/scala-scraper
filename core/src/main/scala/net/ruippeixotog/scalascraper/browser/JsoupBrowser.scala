@@ -13,8 +13,7 @@ import net.ruippeixotog.scalascraper.browser.JsoupBrowser._
 import net.ruippeixotog.scalascraper.model._
 import net.ruippeixotog.scalascraper.util._
 
-/**
-  * A [[Browser]] implementation based on [[http://jsoup.org jsoup]], a Java HTML parser library. `JsoupBrowser`
+/** A [[Browser]] implementation based on [[http://jsoup.org jsoup]], a Java HTML parser library. `JsoupBrowser`
   * provides powerful and efficient document querying, but it doesn't run JavaScript in the pages. As such, it is
   * limited to working strictly with the HTML send in the page source.
   *
