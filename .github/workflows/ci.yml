@@ -8,7 +8,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        jdk: [openjdk@1.8]
+        jdk: [openjdk@1.11.0]
         scala: [2.11.12, 2.12.11, 2.13.2]
 
     steps:
@@ -16,12 +16,15 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Set up Scala
-        uses: olafurpg/setup-scala@v7
+        uses: olafurpg/setup-scala@v10
         with:
           java-version: ${{ matrix.jdk }}
 
       - name: Install Tor
-        run: sudo apt-get install tor
+        run: >
+          sudo apt-get install tor &&
+          while ! nc -z localhost 9050; do sleep 1; done
+        timeout-minutes: 2
 
       - name: Check formatting
         run: sbt "++${{ matrix.scala }} scalafmtCheckAll"
