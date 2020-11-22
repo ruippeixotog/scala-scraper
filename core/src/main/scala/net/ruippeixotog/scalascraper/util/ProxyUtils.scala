@@ -1,7 +1,10 @@
 package net.ruippeixotog.scalascraper.util
 
-@deprecated("Proxies are now configured per Browser instance. See the constructors of JsoupBrowser and " +
-  "HtmlUnitBrowser for more information", "2.1.0")
+@deprecated(
+  "Proxies are now configured per Browser instance. See the constructors of JsoupBrowser and " +
+    "HtmlUnitBrowser for more information",
+  "2.1.0"
+)
 object ProxyUtils {
 
   private[this] val HTTP_PROXY_HOST: String = "http.proxyHost"
@@ -12,8 +15,7 @@ object ProxyUtils {
   private[this] val SOCKS_PROXY_HOST: String = "socksProxyHost"
   private[this] val SOCKS_PROXY_PORT: String = "socksProxyPort"
 
-  /**
-    * Sets the JVM-wide HTTP and HTTPS proxy configuration.
+  /** Sets the JVM-wide HTTP and HTTPS proxy configuration.
     *
     * @param host the proxy host
     * @param port the proxy port
@@ -25,8 +27,7 @@ object ProxyUtils {
     System.setProperty(HTTPS_PROXY_PORT, String.valueOf(port))
   }
 
-  /**
-    * Returns the current JVM-wide HTTP and HTTPS proxy configuration.
+  /** Returns the current JVM-wide HTTP and HTTPS proxy configuration.
     *
     * @return the current JVM-wide HTTP and HTTPS proxy configuration.
     */
@@ -37,8 +38,7 @@ object ProxyUtils {
     } yield (host, port.toInt)
   }
 
-  /**
-    * Unsets the JVM-wide HTTP and HTTPS proxy configuration.
+  /** Unsets the JVM-wide HTTP and HTTPS proxy configuration.
     */
   def removeProxy(): Unit = {
     System.clearProperty(HTTP_PROXY_HOST)
@@ -47,8 +47,7 @@ object ProxyUtils {
     System.clearProperty(HTTPS_PROXY_PORT)
   }
 
-  /**
-    * Sets the JVM-wide SOCKS proxy configuration.
+  /** Sets the JVM-wide SOCKS proxy configuration.
     *
     * @param host the proxy host
     * @param port the proxy port
@@ -58,8 +57,7 @@ object ProxyUtils {
     System.setProperty(SOCKS_PROXY_PORT, String.valueOf(port))
   }
 
-  /**
-    * Returns the current JVM-wide SOCKS proxy configuration.
+  /** Returns the current JVM-wide SOCKS proxy configuration.
     *
     * @return the current JVM-wide SOCKS proxy configuration.
     */
@@ -70,8 +68,7 @@ object ProxyUtils {
     } yield (host, port.toInt)
   }
 
-  /**
-    * Unsets the JVM-wide SOCKS proxy configuration.
+  /** Unsets the JVM-wide SOCKS proxy configuration.
     */
   def removeSocksProxy(): Unit = {
     System.clearProperty(SOCKS_PROXY_HOST)

@@ -1,6 +1,6 @@
 package net.ruippeixotog.scalascraper.dsl
 
-import net.ruippeixotog.scalascraper.model.{ Element, ElementQuery }
+import net.ruippeixotog.scalascraper.model.{Element, ElementQuery}
 import net.ruippeixotog.scalascraper.scraper._
 
 object DSL extends ImplicitConversions with ScrapingOps {
@@ -12,7 +12,10 @@ object DSL extends ImplicitConversions with ScrapingOps {
     contentExtractor.mapQuery(cssQuery)
 
   def extractor[E <: Element, C, A](
-    cssQuery: String, contentExtractor: HtmlExtractor[E, C], contentParser: C => A): HtmlExtractor[E, A] = {
+      cssQuery: String,
+      contentExtractor: HtmlExtractor[E, C],
+      contentParser: C => A
+  ): HtmlExtractor[E, A] = {
 
     contentExtractor.mapQuery(cssQuery).map(contentParser)
   }

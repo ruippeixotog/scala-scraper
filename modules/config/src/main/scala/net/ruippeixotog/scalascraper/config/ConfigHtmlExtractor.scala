@@ -5,8 +5,8 @@ import scala.collection.JavaConverters._
 import com.typesafe.config.Config
 
 import net.ruippeixotog.scalascraper.model.Element
-import net.ruippeixotog.scalascraper.scraper.ContentExtractors.{ allText, attr }
-import net.ruippeixotog.scalascraper.scraper.ContentParsers.{ asDateTime, asIs, regexMatch }
+import net.ruippeixotog.scalascraper.scraper.ContentExtractors.{allText, attr}
+import net.ruippeixotog.scalascraper.scraper.ContentParsers.{asDateTime, asIs, regexMatch}
 import net.ruippeixotog.scalascraper.scraper.HtmlExtractor
 
 object ConfigHtmlExtractor {

@@ -2,7 +2,7 @@ package net.ruippeixotog.scalascraper.dsl
 
 import net.ruippeixotog.scalascraper.browser._
 import net.ruippeixotog.scalascraper.dsl.DSL._
-import net.ruippeixotog.scalascraper.scraper.ContentExtractors.{ text => stext, _ }
+import net.ruippeixotog.scalascraper.scraper.ContentExtractors.{text => stext, _}
 import net.ruippeixotog.scalascraper.scraper.HtmlValidator._
 import org.specs2.mutable.Specification
 
@@ -34,7 +34,8 @@ class DSLValidatingSpec extends Specification with BrowserHelper {
         val errors = List(
           validator(attr("charset")("meta"), "Encoding isn't UTF-8")(_ != "utf-8"),
           validator(stext("title"), "Not in text page")(_ != "Test page"),
-          validator(stext("#menu .active"), "Shouldn't be in Section 2")(_ == "Section 2"))
+          validator(stext("#menu .active"), "Shouldn't be in Section 2")(_ == "Section 2")
+        )
 
         doc >/~ (succ, errors) must beLeft("Shouldn't be in Section 2")
         doc >/~ (succ, errors, "Unknown") must beLeft("Shouldn't be in Section 2")

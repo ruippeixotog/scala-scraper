@@ -1,7 +1,6 @@
 package net.ruippeixotog.scalascraper.model
 
-/**
-  * A representation of a HTML DOM node. Only two types of nodes are supported: element nodes (`ElementNode`) containing
+/** A representation of a HTML DOM node. Only two types of nodes are supported: element nodes (`ElementNode`) containing
   * `Element` instances and text nodes (`TextNode`) containing plain text.
   *
   * Most methods in scala-scraper deal with and return `Element` instances directly, instead of nodes. `Node` lists can
@@ -9,14 +8,12 @@ package net.ruippeixotog.scalascraper.model
   */
 sealed trait Node
 
-/**
-  * A `Node` representing a DOM element.
+/** A `Node` representing a DOM element.
   * @param element the DOM element
   */
 case class ElementNode[E <: Element](element: E) extends Node
 
-/**
-  * A `Node` representing a DOM text node.
+/** A `Node` representing a DOM text node.
   * @param content the text content of the node
   */
 case class TextNode(content: String) extends Node

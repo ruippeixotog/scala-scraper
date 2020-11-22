@@ -7,5 +7,6 @@ package object util {
   type Validated[+R, +A] = Either[R, A]
 
   def using[A <: Closeable, R](closeable: A)(f: A => R): R =
-    try f(closeable) finally closeable.close()
+    try f(closeable)
+    finally closeable.close()
 }

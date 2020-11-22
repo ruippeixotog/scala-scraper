@@ -1,0 +1,48 @@
+name: CI
+on: [push, pull_request]
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        jdk: [openjdk@1.11.0]
+        scala: [2.11.12, 2.12.11, 2.13.2]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Scala
+        uses: olafurpg/setup-scala@v10
+        with:
+          java-version: ${{ matrix.jdk }}
+
+      - name: Install Tor
+        run: >
+          sudo apt-get install tor &&
+          while ! nc -z localhost 9050; do sleep 1; done
+        timeout-minutes: 2
+
+      - name: Check formatting
+        run: sbt "++${{ matrix.scala }} scalafmtCheckAll"
+
+      - name: Compile
+        run: sbt coverage "++${{ matrix.scala }} compile"
+
+      - name: Run tests
+        run: sbt coverage "++${{ matrix.scala }} test"
+
+      - name: Upload coverage data to Coveralls
+        run: sbt ++${{ matrix.scala }} coverageAggregate coveralls
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COVERALLS_FLAG_NAME: Scala ${{ matrix.scala }}
+
+      - name: Check tut output
+        if: startsWith(matrix.scala, '2.12')
+        run: >
+          sbt "++${{ matrix.scala }} tut" &&
+          git diff --exit-code

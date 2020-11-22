@@ -1,6 +1,6 @@
 package net.ruippeixotog.scalascraper.browser
 
-import java.io.{ File, InputStream }
+import java.io.{File, InputStream}
 import java.net.URL
 import java.nio.charset.Charset
 import java.util.UUID
@@ -12,14 +12,13 @@ import org.apache.http.HttpStatus
 import com.gargoylesoftware.htmlunit._
 import com.gargoylesoftware.htmlunit.html._
 import com.gargoylesoftware.htmlunit.html.parser.neko.HtmlUnitNekoHtmlParser
-import com.gargoylesoftware.htmlunit.util.{ NameValuePair, StringUtils }
+import com.gargoylesoftware.htmlunit.util.{NameValuePair, StringUtils}
 
 import net.ruippeixotog.scalascraper.browser.HtmlUnitBrowser._
 import net.ruippeixotog.scalascraper.model._
 import net.ruippeixotog.scalascraper.util._
 
-/**
-  * A [[Browser]] implementation based on [[http://htmlunit.sourceforge.net HtmlUnit]], a GUI-less browser for Java
+/** A [[Browser]] implementation based on [[http://htmlunit.sourceforge.net HtmlUnit]], a GUI-less browser for Java
   * programs. `HtmlUnitBrowser` simulates thoroughly a web browser, executing JavaScript code in the pages besides
   * parsing and modelling its HTML content. It supports several compatibility modes, allowing it to emulate browsers
   * such as Internet Explorer.
@@ -72,7 +71,7 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME, proxy
   def parseString(html: String): HtmlUnitDocument = {
     val response = new StringWebResponse(html, WebClient.URL_ABOUT_BLANK)
     val window = newWindow()
-    new HtmlUnitNekoHtmlParser().parseHtml(response, window)
+    new DefaultPageCreator().createPage(response, window)
     HtmlUnitDocument(window)
   }
 
@@ -80,9 +79,11 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME, proxy
     using(inputStream) { _ =>
       val response = new WebResponse(
         newWebResponseData(inputStream, charset),
-        newRequest(WebClient.URL_ABOUT_BLANK, charset = Some(charset)), 0)
+        newRequest(WebClient.URL_ABOUT_BLANK, charset = Some(charset)),
+        0
+      )
       val window = newWindow()
-      new HtmlUnitNekoHtmlParser().parseHtml(response, window)
+      new DefaultPageCreator().createPage(response, window)
       HtmlUnitDocument(window)
     }
   }
@@ -92,8 +93,7 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME, proxy
 
   def clearCookies() = underlying.getCookieManager.clearCookies()
 
-  /**
-    * Closes all windows opened in this browser.
+  /** Closes all windows opened in this browser.
     */
   def closeAll() = underlying.close()
 
@@ -123,9 +123,10 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME, proxy
     req
   }
 
-  private[this] def newWindow(): WebWindow = underlying.synchronized {
-    underlying.openTargetWindow(underlying.getCurrentWindow, null, UUID.randomUUID().toString)
-  }
+  private[this] def newWindow(): WebWindow =
+    underlying.synchronized {
+      underlying.openTargetWindow(underlying.getCurrentWindow, null, UUID.randomUUID().toString)
+    }
 }
 
 object HtmlUnitBrowser {
@@ -158,8 +159,9 @@ object HtmlUnitBrowser {
 
     def attrs = underlying.getAttributesMap.asScala.mapValues(_.getValue).toMap
 
-    def hasAttr(name: String) = underlying.hasAttribute(name) &&
-      (underlying.getAttribute(name) ne DomElement.ATTRIBUTE_NOT_DEFINED)
+    def hasAttr(name: String) =
+      underlying.hasAttribute(name) &&
+        (underlying.getAttribute(name) ne DomElement.ATTRIBUTE_NOT_DEFINED)
 
     def attr(name: String) = {
       val v = underlying.getAttribute(name)
@@ -168,11 +170,12 @@ object HtmlUnitBrowser {
 
     def text = underlying.getTextContent.trim
 
-    def innerHtml = underlying.getChildNodes.iterator.asScala.map {
-      case node: DomElement => HtmlUnitElement(node).outerHtml
-      case node: DomText => node.getWholeText
-      case node => node.asXml.trim
-    }.mkString
+    def innerHtml =
+      underlying.getChildNodes.iterator.asScala.map {
+        case node: DomElement => HtmlUnitElement(node).outerHtml
+        case node: DomText => node.getWholeText
+        case node => node.asXml.trim
+      }.mkString
 
     def outerHtml = {
       val a = attrs.map { case (k, v) => s"""$k="${StringUtils.escapeXmlAttributeValue(v)}"""" }
@@ -188,11 +191,12 @@ object HtmlUnitBrowser {
   }
 
   object HtmlUnitNode {
-    def apply(underlying: DomNode): Option[Node] = underlying match {
-      case elem: DomElement => Some(ElementNode(HtmlUnitElement(elem)))
-      case textNode: DomText => Some(TextNode(textNode.getWholeText))
-      case _ => None
-    }
+    def apply(underlying: DomNode): Option[Node] =
+      underlying match {
+        case elem: DomElement => Some(ElementNode(HtmlUnitElement(elem)))
+        case textNode: DomText => Some(TextNode(textNode.getWholeText))
+        case _ => None
+      }
   }
 
   case class HtmlUnitDocument(window: WebWindow) extends Document {
@@ -206,7 +210,7 @@ object HtmlUnitBrowser {
           case page: SgmlPage => page
           case page: TextPage =>
             val response = new StringWebResponse(page.getContent, page.getUrl)
-            new HtmlUnitNekoHtmlParser().parseHtml(response, page.getEnclosingWindow)
+            new DefaultPageCreator().createPage(response, window).asInstanceOf[SgmlPage]
         }
       }
       _underlying
@@ -216,10 +220,11 @@ object HtmlUnitBrowser {
 
     def root = HtmlUnitElement(underlying.getDocumentElement)
 
-    override def title = underlying match {
-      case page: HtmlPage => page.getTitleText
-      case _ => ""
-    }
+    override def title =
+      underlying match {
+        case page: HtmlPage => page.getTitleText
+        case _ => ""
+      }
 
     def toHtml = root.outerHtml
   }

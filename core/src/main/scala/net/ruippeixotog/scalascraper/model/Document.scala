@@ -1,7 +1,6 @@
 package net.ruippeixotog.scalascraper.model
 
-/**
-  * A representation of an HTML document.
+/** A representation of an HTML document.
   *
   * This trait provides methods for retrieving the document's location and the root element, with which further queries
   * can be made. It also has methods for quick retrieval of common information and nodes, such as the title and body of
@@ -15,38 +14,31 @@ package net.ruippeixotog.scalascraper.model
   */
 trait Document {
 
-  /**
-    * The type of the elements contained in this document.
+  /** The type of the elements contained in this document.
     */
   type ElementType <: Element.Strict[ElementType]
 
-  /**
-    * The location of this document.
+  /** The location of this document.
     */
   def location: String
 
-  /**
-    * The root element of this document.
+  /** The root element of this document.
     */
   def root: ElementType
 
-  /**
-    * The title of this document.
+  /** The title of this document.
     */
   def title: String = root.select("title").headOption.fold("")(_.text.trim)
 
-  /**
-    * The `head` element of this document.
+  /** The `head` element of this document.
     */
   def head: ElementType = root.select("head").head
 
-  /**
-    * The `body` element of this document.
+  /** The `body` element of this document.
     */
   def body: ElementType = root.select("body").head
 
-  /**
-    * The HTML representation of this document as a string.
+  /** The HTML representation of this document as a string.
     */
   def toHtml: String
 }

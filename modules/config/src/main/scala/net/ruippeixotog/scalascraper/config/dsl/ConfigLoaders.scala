@@ -2,18 +2,19 @@ package net.ruippeixotog.scalascraper.config.dsl
 
 import scala.collection.JavaConverters._
 
-import com.typesafe.config.{ Config, ConfigFactory }
+import com.typesafe.config.{Config, ConfigFactory}
 
 import net.ruippeixotog.scalascraper.config.util.ConfigReader
-import net.ruippeixotog.scalascraper.config.{ ConfigHtmlExtractor, ConfigHtmlValidator }
+import net.ruippeixotog.scalascraper.config.{ConfigHtmlExtractor, ConfigHtmlValidator}
 import net.ruippeixotog.scalascraper.model.Element
 import net.ruippeixotog.scalascraper.scraper._
 
 trait ConfigLoaders {
 
-  implicit def errorReader: ConfigReader[Nothing] = ConfigReader { (_, _) =>
-    throw new Exception("A type must be provided for reading the result of a validator from config")
-  }
+  implicit def errorReader: ConfigReader[Nothing] =
+    ConfigReader { (_, _) =>
+      throw new Exception("A type must be provided for reading the result of a validator from config")
+    }
 
   def validatorAt[R: ConfigReader](config: Config): HtmlValidator[Element, R] =
     ConfigHtmlValidator[R](config)

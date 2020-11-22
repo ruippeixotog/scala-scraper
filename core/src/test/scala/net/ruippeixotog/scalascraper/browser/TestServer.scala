@@ -3,7 +3,7 @@ package net.ruippeixotog.scalascraper.browser
 import java.util.concurrent.atomic.AtomicInteger
 
 import scala.concurrent.duration._
-import scala.concurrent.{ Await, ExecutionContext }
+import scala.concurrent.{Await, ExecutionContext}
 import scala.io.Source
 
 import akka.actor.ActorSystem
@@ -13,7 +13,7 @@ import akka.http.scaladsl.model.ContentTypes._
 import akka.http.scaladsl.model.HttpEntity
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import akka.stream.{ ActorMaterializer, Materializer }
+import akka.stream.{ActorMaterializer, Materializer}
 import org.specs2.mutable.Specification
 import org.specs2.specification.BeforeAfterAll
 
