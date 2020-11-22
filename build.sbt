@@ -16,7 +16,7 @@ lazy val core = project.in(file("core"))
       "net.sourceforge.htmlunit"    % "htmlunit"             % "2.45.0",
       "org.jsoup"                   % "jsoup"                % "1.13.1",
       "org.scalaz"                 %% "scalaz-core"          % "7.2.30",
-      "com.typesafe.akka"          %% "akka-http"            % "10.1.12"               % "test",
+      "com.typesafe.akka"          %% "akka-http"            % "10.1.13"               % "test",
       "com.typesafe.akka"          %% "akka-stream"          % "2.5.32"               % "test",
       "org.slf4j"                   % "slf4j-nop"            % "1.7.30"               % "test",
       "org.specs2"                 %% "specs2-core"          % "4.10.5"                % "test"),
