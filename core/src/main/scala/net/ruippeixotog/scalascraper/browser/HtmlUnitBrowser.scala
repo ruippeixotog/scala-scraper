@@ -116,7 +116,7 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME, proxy
     new WebResponseData(bytes, HttpStatus.SC_OK, "OK", compiledHeaders.asJava)
   }
 
-  private[this] def newRequest(url: URL, method: HttpMethod = HttpMethod.GET, charset: Option[String] = None) = {
+  def newRequest(url: URL, method: HttpMethod = HttpMethod.GET, charset: Option[String] = None) = {
     val req = new WebRequest(url, method)
     charset.map(Charset.forName).foreach(req.setCharset)
     defaultRequestSettings(req)
