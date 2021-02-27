@@ -3,7 +3,7 @@ import ReleaseTransformations._
 organization in ThisBuild := "net.ruippeixotog"
 
 scalaVersion in ThisBuild := "2.13.1"
-crossScalaVersions in ThisBuild := Seq("2.11.12", "2.12.10", "2.13.1")
+crossScalaVersions in ThisBuild := Seq("2.11.12", "2.12.13", "2.13.1")
 
 lazy val core = project.in(file("core"))
   .enablePlugins(TutPlugin)
