@@ -4,12 +4,17 @@ import net.ruippeixotog.scalascraper.model.Element
 import net.ruippeixotog.scalascraper.scraper.{HtmlExtractor, HtmlValidator}
 import net.ruippeixotog.scalascraper.util._
 import scala.util.Try
+
 import scalaz._
-import scalaz.syntax.ToFunctorOps
+import scalaz.syntax.FunctorSyntax
 
-trait ScrapingOps extends syntax.ToIdOps with ToFunctorOps with std.AllInstances with IdInstances {
+trait ScrapingOps extends syntax.ToIdOps with std.AllInstances with IdInstances {
 
-  class ElementsScrapingOps[+F[_]: Functor, A, E <: Element](val self: F[A])(implicit toQuery: ToQuery.Aux[A, E]) {
+  class ElementsScrapingOps[F[_]: Functor, A, E <: Element](val self: F[A])(implicit toQuery: ToQuery.Aux[A, E])
+      extends FunctorSyntax[F] {
+
+    override def F: Functor[F] = Functor[F]
+
     @inline implicit private[this] def aToQuery(a: A) = toQuery(a)
 
     def extract[B](extractor: HtmlExtractor[E, B]) = self.map(extractor.extract(_))
@@ -116,7 +121,7 @@ trait ScrapingOps extends syntax.ToIdOps with ToFunctorOps with std.AllInstances
 
   implicit def deepFunctorOps[FA, A, E <: Element](
       self: FA
-  )(implicit df: DeepFunctor.AuxA[FA, A], conv: ToQuery.Aux[A, E]) =
+  )(implicit df: DeepFunctor.AuxA[FA, A], conv: ToQuery.Aux[A, E]): ElementsScrapingOps[df.F, A, E] =
     new ElementsScrapingOps[df.F, A, E](df.asF(self))(df.f, conv)
 }
 
