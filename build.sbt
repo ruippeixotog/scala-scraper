@@ -1,9 +1,9 @@
 import ReleaseTransformations._
 
-organization in ThisBuild := "net.ruippeixotog"
+ThisBuild / organization := "net.ruippeixotog"
 
-scalaVersion in ThisBuild := "2.13.5"
-crossScalaVersions in ThisBuild := Seq("2.12.13", "2.13.5")
+ThisBuild / scalaVersion := "2.13.5"
+ThisBuild / crossScalaVersions := Seq("2.12.13", "2.13.5")
 
 lazy val core = project.in(file("core"))
   .enablePlugins(TutPlugin)
@@ -56,10 +56,10 @@ lazy val commonSettings = Seq(
 
   scalafmtOnCompile := true,
 
-  fork in Test := true,
+  Test / fork := true,
 
   tutTargetDirectory := baseDirectory.value,
-  fork in Tut := true,
+  Tut / fork := true,
 
   publishTo := {
     val nexus = "https://oss.sonatype.org/"
@@ -68,7 +68,7 @@ lazy val commonSettings = Seq(
   },
 
   publishMavenStyle := true,
-  publishArtifact in Test := false,
+  Test / publishArtifact := false,
   pomIncludeRepository := { _ => false },
 
   licenses := Seq("MIT License" -> url("http://www.opensource.org/licenses/mit-license.php")),
@@ -81,11 +81,11 @@ lazy val commonSettings = Seq(
     Developer("ruippeixotog", "Rui Gonçalves", "ruippeixotog@gmail.com", url("http://www.ruippeixotog.net"))))
 
 // do not publish the root project
-skip in publish := true
+publish / skip := true
 
 releaseCrossBuild := true
-releaseTagComment := s"Release ${(version in ThisBuild).value}"
-releaseCommitMessage := s"Set version to ${(version in ThisBuild).value}"
+releaseTagComment := s"Release ${(ThisBuild / version).value}"
+releaseCommitMessage := s"Set version to ${(ThisBuild / version).value}"
 
 // necessary due to https://github.com/sbt/sbt-release/issues/184
 releaseProcess := Seq[ReleaseStep](
