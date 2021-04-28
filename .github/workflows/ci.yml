@@ -9,7 +9,12 @@ jobs:
       fail-fast: false
       matrix:
         jdk: [adopt@1.8]
-        scala: [2.12.13, 2.13.5]
+        scala: ['2.12', '2.13']
+        include:
+          - scala: '2.12'
+            scala-version: 2.12.13
+          - scala: '2.13'
+            scala-version: 2.13.5
 
     steps:
       - name: Checkout repository
@@ -27,22 +32,22 @@ jobs:
         timeout-minutes: 2
 
       - name: Check formatting
-        run: sbt "++${{ matrix.scala }} scalafmtCheckAll"
+        run: sbt "++${{ matrix.scala-version }} scalafmtCheckAll"
 
       - name: Compile
-        run: sbt coverage "++${{ matrix.scala }} compile"
+        run: sbt coverage "++${{ matrix.scala-version }} compile"
 
       - name: Run tests
-        run: sbt coverage "++${{ matrix.scala }} test"
+        run: sbt coverage "++${{ matrix.scala-version }} test"
 
       - name: Upload coverage data to Coveralls
-        run: sbt ++${{ matrix.scala }} coverageAggregate coveralls
+        run: sbt ++${{ matrix.scala-version }} coverageAggregate coveralls
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          COVERALLS_FLAG_NAME: Scala ${{ matrix.scala }}
+          COVERALLS_FLAG_NAME: Scala ${{ matrix.scala-version }}
 
-      - name: Check tut output
-        if: startsWith(matrix.scala, '2.12')
+      - name: Check mdoc output
+        if: matrix.scala == '2.12'
         run: >
-          sbt "++${{ matrix.scala }} tut" &&
+          sbt ++${{ matrix.scala-version }} mdoc &&
           git diff --exit-code

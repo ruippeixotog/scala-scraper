@@ -23,18 +23,18 @@ This README contains the following sections:
 To use Scala Scraper in an existing SBT project with Scala 2.11 or newer, add the following dependency to your `build.sbt`:
 
 ```scala
-libraryDependencies += "net.ruippeixotog" %% "scala-scraper" % "2.2.0"
+libraryDependencies += "net.ruippeixotog" %% "scala-scraper" % "@VERSION@"
 ```
 
 If you are using an older version of this library, see this document for the version you're using: [1.x](https://github.com/ruippeixotog/scala-scraper/blob/v1.2.1/README.md), [0.1.2](https://github.com/ruippeixotog/scala-scraper/blob/v0.1.2/README.md), [0.1.1](https://github.com/ruippeixotog/scala-scraper/blob/v0.1.1/README.md), [0.1](https://github.com/ruippeixotog/scala-scraper/blob/v0.1/README.md).
 
 An implementation of the `Browser` trait, such as `JsoupBrowser`, can be used to fetch HTML from the web or to parse a local HTML file or string:
 
-```tut:book:silent
+```scala mdoc:silent
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 
 val browser = JsoupBrowser()
-val doc = browser.parseFile("src/test/resources/example.html")
+val doc = browser.parseFile("core/src/test/resources/example.html")
 val doc2 = browser.get("http://example.com")
 ```
 
@@ -44,7 +44,7 @@ You can open the [example.html](core/src/test/resources/example.html) file loade
 
 First of all, the DSL methods and conversions must be imported:
 
-```tut:book:silent
+```scala mdoc:silent
 import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.dsl.DSL.Extract._
 import net.ruippeixotog.scalascraper.dsl.DSL.Parse._
@@ -52,7 +52,7 @@ import net.ruippeixotog.scalascraper.dsl.DSL.Parse._
 
 Content can then be extracted using the `>>` extraction operator and CSS queries:
 
-```tut:book
+```scala mdoc
 import net.ruippeixotog.scalascraper.model._
 
 // Extract the text inside the element with id "header"
@@ -71,7 +71,7 @@ doc >> attr("content")("meta[name=viewport]")
 
 If the element may or may not be in the page, the `>?>` tries to extract the content and returns it wrapped in an `Option`:
 
-```tut:book
+```scala mdoc
 // Extract the element with id "footer" if it exists, return `None` if it
 // doesn't:
 doc >?> element("#footer")
@@ -79,7 +79,7 @@ doc >?> element("#footer")
 
 With only these two operators, some useful things can already be achieved:
 
-```tut:book:silent:nofail
+```scala mdoc:compile-only
 // Go to a news website and extract the hyperlink inside the h1 element if it
 // exists. Follow that link and print both the article title and its short
 // description (inside ".lead")
@@ -132,7 +132,7 @@ The DSL provides several `contentExtractor` and `contentParser` instances, which
 
 Some usage examples:
 
-```tut:book
+```scala mdoc
 // Extract the date from the "#date" element
 doc >> extractor("#date", text, asLocalDate("yyyy-MM-dd"))
 
@@ -151,7 +151,7 @@ With the help of the implicit conversions provided by the DSL, we can write more
 
 Because of that, one can write the expressions in the Quick Start section, as well as:
 
-```tut:book
+```scala mdoc
 // Extract all the "h3" elements (as a lazy iterable)
 doc >> "h3"
 
@@ -193,7 +193,7 @@ The result of a validation is an `Either[R, A]` instance, where `A` is the type 
 
 Some validation examples:
 
-```tut:book
+```scala mdoc
 // Check if the title of the page is "Test page"
 doc >/~ validator(text("title"))(_ == "Test page")
 
@@ -206,7 +206,7 @@ doc >/~ validator(allText("#mytable"))(_.contains("blue"))
 
 When a document fails a validation, it may be useful to identify the problem by pattern-matching it against common scraping pitfalls, such as a login page that appears unexpectedly because of an expired cookie, dynamic content that disappeared or server-side errors. If we define validators for both the success case and error cases:
 
-```tut:book:silent
+```scala mdoc:silent
 val succ = validator(text("title"))(_ == "My Page")
 
 val errors = Seq(
@@ -217,7 +217,7 @@ val errors = Seq(
 
 They can be used in combination to create more informative validations:
 
-```tut:book
+```scala mdoc
 doc >/~ (succ, errors)
 ```
 
@@ -227,7 +227,7 @@ Validators matching errors were constructed above using an additional `result` p
 
 As shown before in the Quick Start section, one can try if an extractor works in a page and obtain the extracted content wrapped in an `Option`:
 
-```tut:book
+```scala mdoc
 // Try to extract an element with id "optional", return `None` if none exist
 doc >?> element("#optional")
 ```
@@ -236,14 +236,14 @@ Note that when using `>?>` with content extractors that return sequences, such a
 
 If you want to use multiple extractors in a single document or element, you can pass tuples or triples to `>>`:
 
-```tut:book
+```scala mdoc
 // Extract the text of the title element and all inputs of #myform
 doc >> (text("title"), elementList("#myform input"))
 ```
 
 The extraction operators work on `List`, `Option`, `Either` and other instances for which a [Scalaz](https://github.com/scalaz/scalaz) `Functor` instance exists. The extraction occurs by mapping over the functors:
 
-```tut:book
+```scala mdoc
 // Extract the titles of all documents in the list
 List(doc, doc) >> text("title")
 
@@ -253,7 +253,7 @@ Option(doc) >> text("title")
 
 You can apply other extractors and validators to the result of an extraction, which is particularly powerful combined with the feature shown above:
 
-```tut:book
+```scala mdoc
 // From the "#menu" element, extract the text in the ".active" element inside
 doc >> element("#menu") >> text(".active")
 
@@ -270,7 +270,7 @@ doc >> elementList("#menu > span") >?> attr("href")("a")
 
 This library also provides a `Functor` for `HtmlExtractor`, making it possible to map over extractors and create chained extractors that can be passed around and stored like objects. For example, new extractors can be defined like this:
 
-```tut:book:silent
+```scala mdoc:silent
 import net.ruippeixotog.scalascraper.scraper.HtmlExtractor
 
 // An extractor for a list with the first link found in each "span" element
@@ -284,7 +284,7 @@ val spanLinksCount: HtmlExtractor[Element, Int] =
 
 You can also "prepend" a query to any existing extractor by using its `mapQuery` method:
 
-```tut:book:silent
+```scala mdoc:silent
 // An extractor for `spanLinks` that are inside "#menu"
 val menuLinks: HtmlExtractor[Element, List[Option[String]]] =
   spanLinks.mapQuery("#menu")
@@ -292,7 +292,7 @@ val menuLinks: HtmlExtractor[Element, List[Option[String]]] =
 
 And they can be used just as extractors created using other means provided by the DSL:
 
-```tut:book
+```scala mdoc
 doc >> spanLinks
 
 doc >> spanLinksCount
@@ -302,7 +302,7 @@ doc >> menuLinks
 
 Just remember that you can only apply extraction operators `>>` and `>?>` to documents, elements or functors "containing" them, which means that the following is a compile-time error:
 
-```tut:book:fail
+```scala mdoc:fail
 // The `texts` extractor extracts a list of strings and extractors cannot be
 // applied to strings
 doc >> texts("#menu > span") >> "a"
@@ -310,7 +310,7 @@ doc >> texts("#menu > span") >> "a"
 
 Finally, if you prefer not using operators for the sake of code legibility, you can use alternative methods:
 
-```tut:book
+```scala mdoc
 // `extract` is the same as `>>`
 doc extract text("title")
 
@@ -329,7 +329,7 @@ At this moment, Scala Scraper is focused on providing a DSL for querying documen
 
 First of all, make sure your `Browser` instance has a concrete type, like `HtmlUnitBrowser`:
 
-```tut:book:silent
+```scala mdoc:silent
 import net.ruippeixotog.scalascraper.browser.HtmlUnitBrowser
 import net.ruippeixotog.scalascraper.browser.HtmlUnitBrowser._
 
@@ -337,28 +337,28 @@ import net.ruippeixotog.scalascraper.browser.HtmlUnitBrowser._
 // with their concrete type
 val typedBrowser: HtmlUnitBrowser = HtmlUnitBrowser.typed()
 
-val typedDoc: HtmlUnitDocument = typedBrowser.parseFile("src/test/resources/example.html")
+val typedDoc: HtmlUnitDocument = typedBrowser.parseFile("core/src/test/resources/example.html")
 ```
 
 Note that the `val` declarations are explicitly typed for explanation purposes only; the methods work just as well when types are inferred.
 
 The content extractors `pElement`, `pElements` and `pElementList` are special types of extractors - they are polymorphic extractors. They work just like their non-polymorphic `element`, `elements` and `elementList` extractors, but they propagate the concrete types of the elements if the document or element being extracted also has a concrete type. For example:
 
-```tut:book
+```scala mdoc
 // extract the "a" inside the second child of "#menu"
 val aElem = typedDoc >> pElement("#menu span:nth-child(2) a")
 ```
 
 Note that extracting using CSS queries also keeps the concrete types of the elements:
 
-```tut:book
+```scala mdoc
 // same thing as above
 typedDoc >> "#menu" >> "span:nth-child(2)" >> "a" >> pElement
 ```
 
 Concrete element types, like `HtmlUnitElement`, expose a public `underlying` field with the underlying element object used by the browser backend. In the case of HtmlUnit, that would be a [`DomElement`](http://htmlunit.sourceforge.net/apidocs/com/gargoylesoftware/htmlunit/html/DomElement.html), which exposes a whole new range of operations:
 
-```tut:book
+```scala mdoc
 // extract the current "href" this "a" element points to
 aElem >> attr("href")
 
@@ -395,11 +395,11 @@ _NOTE: this feature is in a beta stage. Please expect API changes in future rele
 
 If you are behind an HTTP proxy, you can configure `Browser` implementations to make connections through it by setting the Java system properties `http.proxyHost`, `https.proxyHost`, `http.proxyPort` and `https.proxyPort`. Scala Scraper provides a `ProxyUtils` object that facilitates that configuration:
 
-```tut:book:silent
+```scala mdoc:silent
 import net.ruippeixotog.scalascraper.util.ProxyUtils
 
 ProxyUtils.setProxy("localhost", 3128)
-val browser = JsoupBrowser()
+val browser2 = JsoupBrowser()
 // HTTP requests and scraping operations...
 ProxyUtils.removeProxy()
 ```

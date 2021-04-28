@@ -9,12 +9,12 @@ _NOTE: this module is in a beta stage. Please expect API changes in future relea
 To use this module in an existing SBT project with Scala 2.11 or newer and `scala-scraper`, add the following dependency to your `build.sbt`:
 
 ```scala
-libraryDependencies += "net.ruippeixotog" %% "scala-scraper-config" % "2.2.0"
+libraryDependencies += "net.ruippeixotog" %% "scala-scraper-config" % "@VERSION@"
 ```
 
 The extra DSL methods offered by this module can be imported using:
 
-```tut:book:silent
+```mdoc:silent
 import net.ruippeixotog.scalascraper.config.dsl.DSL._
 ```
 

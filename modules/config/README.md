@@ -14,7 +14,7 @@ libraryDependencies += "net.ruippeixotog" %% "scala-scraper-config" % "2.2.0"
 
 The extra DSL methods offered by this module can be imported using:
 
-```scala
+```mdoc:silent
 import net.ruippeixotog.scalascraper.config.dsl.DSL._
 ```
 

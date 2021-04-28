@@ -6,7 +6,7 @@ ThisBuild / scalaVersion := "2.13.5"
 ThisBuild / crossScalaVersions := Seq("2.12.13", "2.13.5")
 
 lazy val core = project.in(file("core"))
-  .enablePlugins(TutPlugin)
+  .enablePlugins(ModuleMdocPlugin)
   .settings(commonSettings: _*)
   .settings(
     name := "scala-scraper",
@@ -20,8 +20,8 @@ lazy val core = project.in(file("core"))
       "com.typesafe.akka"          %% "akka-stream"          % "2.6.14"                % "test",
       "org.slf4j"                   % "slf4j-nop"            % "1.7.30"                % "test",
       "org.specs2"                 %% "specs2-core"          % "4.11.0"                % "test"),
-
-    tutTargetDirectory := file("."))
+    
+    mdocOut := file("."))
 
 val baseScalacOptions = Seq(
   "-deprecation",
@@ -33,7 +33,7 @@ val baseScalacOptions = Seq(
 
 lazy val config = project.in(file("modules/config"))
   .dependsOn(core)
-  .enablePlugins(TutPlugin)
+  .enablePlugins(ModuleMdocPlugin)
   .settings(commonSettings: _*)
   .settings(
     name := "scala-scraper-config",
@@ -57,9 +57,6 @@ lazy val commonSettings = Seq(
   scalafmtOnCompile := true,
 
   Test / fork := true,
-
-  tutTargetDirectory := baseDirectory.value,
-  Tut / fork := true,
 
   publishTo := {
     val nexus = "https://oss.sonatype.org/"
