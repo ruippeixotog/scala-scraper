@@ -13,14 +13,12 @@ import akka.http.scaladsl.model.ContentTypes._
 import akka.http.scaladsl.model.HttpEntity
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import akka.stream.{ActorMaterializer, Materializer}
 import org.specs2.mutable.Specification
 import org.specs2.specification.BeforeAfterAll
 
 trait TestServer extends BeforeAfterAll { this: Specification =>
 
   implicit private[this] val system: ActorSystem = ActorSystem("my-system")
-  implicit private[this] val materializer: Materializer = ActorMaterializer()
   implicit private[this] val ec: ExecutionContext = system.dispatcher
 
   def testService: Route

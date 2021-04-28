@@ -13,6 +13,7 @@ import com.gargoylesoftware.htmlunit._
 import com.gargoylesoftware.htmlunit.html._
 import com.gargoylesoftware.htmlunit.html.parser.neko.HtmlUnitNekoHtmlParser
 import com.gargoylesoftware.htmlunit.util.{NameValuePair, StringUtils}
+import com.gargoylesoftware.htmlunit.util.UrlUtils
 
 import net.ruippeixotog.scalascraper.browser.HtmlUnitBrowser._
 import net.ruippeixotog.scalascraper.model._
@@ -69,7 +70,7 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME, proxy
   }
 
   def parseString(html: String): HtmlUnitDocument = {
-    val response = new StringWebResponse(html, WebClient.URL_ABOUT_BLANK)
+    val response = new StringWebResponse(html, UrlUtils.URL_ABOUT_BLANK)
     val window = newWindow()
     new DefaultPageCreator().createPage(response, window)
     HtmlUnitDocument(window)
@@ -79,7 +80,7 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME, proxy
     using(inputStream) { _ =>
       val response = new WebResponse(
         newWebResponseData(inputStream, charset),
-        newRequest(WebClient.URL_ABOUT_BLANK, charset = Some(charset)),
+        newRequest(UrlUtils.URL_ABOUT_BLANK, charset = Some(charset)),
         0
       )
       val window = newWindow()
