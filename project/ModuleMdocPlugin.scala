@@ -37,6 +37,8 @@ object ModuleMdocPlugin extends AutoPlugin {
           mdocExtraArguments += "--no-link-hygiene",
           mdocVariables := Map("VERSION" -> latestRelease),
 
+          scalacOptions += "-Ypartial-unification",
+
           publish / skip := true
           // format: on
         )
