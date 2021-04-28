@@ -35,7 +35,7 @@ jobs:
         run: sbt "++${{ matrix.scala-version }} scalafmtCheckAll" scalafmtSbtCheck
 
       - name: Compile
-        run: sbt coverage "++${{ matrix.scala-version }} compile"
+        run: sbt "++${{ matrix.scala-version }} compile"
 
       - name: Run tests
         run: sbt coverage "++${{ matrix.scala-version }} test"
