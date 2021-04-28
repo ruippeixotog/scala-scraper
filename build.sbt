@@ -5,23 +5,24 @@ ThisBuild / organization := "net.ruippeixotog"
 ThisBuild / scalaVersion := "2.13.5"
 ThisBuild / crossScalaVersions := Seq("2.12.13", "2.13.5")
 
-lazy val core = project.in(file("core"))
+lazy val core = project
+  .in(file("core"))
   .enablePlugins(ModuleMdocPlugin)
   .settings(commonSettings: _*)
   .settings(
     name := "scala-scraper",
-
     libraryDependencies ++= Seq(
-      "com.github.nscala-time"     %% "nscala-time"          % "2.26.0",
-      "net.sourceforge.htmlunit"    % "htmlunit"             % "2.49.0",
-      "org.jsoup"                   % "jsoup"                % "1.13.1",
-      "org.scalaz"                 %% "scalaz-core"          % "7.3.3",
-      "com.typesafe.akka"          %% "akka-http"            % "10.1.13"               % "test",
-      "com.typesafe.akka"          %% "akka-stream"          % "2.6.14"                % "test",
-      "org.slf4j"                   % "slf4j-nop"            % "1.7.30"                % "test",
-      "org.specs2"                 %% "specs2-core"          % "4.11.0"                % "test"),
-    
-    mdocOut := file("."))
+      "com.github.nscala-time" %% "nscala-time" % "2.26.0",
+      "net.sourceforge.htmlunit" % "htmlunit" % "2.49.0",
+      "org.jsoup" % "jsoup" % "1.13.1",
+      "org.scalaz" %% "scalaz-core" % "7.3.3",
+      "com.typesafe.akka" %% "akka-http" % "10.1.13" % "test",
+      "com.typesafe.akka" %% "akka-stream" % "2.6.14" % "test",
+      "org.slf4j" % "slf4j-nop" % "1.7.30" % "test",
+      "org.specs2" %% "specs2-core" % "4.11.0" % "test"
+    ),
+    mdocOut := file(".")
+  )
 
 val baseScalacOptions = Seq(
   "-deprecation",
@@ -31,51 +32,53 @@ val baseScalacOptions = Seq(
   "-language:higherKinds"
 )
 
-lazy val config = project.in(file("modules/config"))
+lazy val config = project
+  .in(file("modules/config"))
   .dependsOn(core)
   .enablePlugins(ModuleMdocPlugin)
   .settings(commonSettings: _*)
   .settings(
     name := "scala-scraper-config",
-
     libraryDependencies ++= Seq(
-      "com.typesafe"                % "config"               % "1.4.1",
-      "org.specs2"                 %% "specs2-core"          % "4.11.0"                % "test"))
+      "com.typesafe" % "config" % "1.4.1",
+      "org.specs2" %% "specs2-core" % "4.11.0" % "test"
+    )
+  )
 
 lazy val commonSettings = Seq(
   resolvers ++= Seq(
     Resolver.sonatypeRepo("snapshots"),
-    "Scalaz Bintray Repo" at "https://dl.bintray.com/scalaz/releases"),
-
+    "Scalaz Bintray Repo" at "https://dl.bintray.com/scalaz/releases"
+  ),
   scalacOptions ++= baseScalacOptions ++ (CrossVersion
     .partialVersion(scalaVersion.value) match {
-        case Some((2, scalaMajor)) if scalaMajor <= 12 =>
-          Seq("-Ypartial-unification")
-        case _ => Seq.empty[String]
-      }),
-
+    case Some((2, scalaMajor)) if scalaMajor <= 12 =>
+      Seq("-Ypartial-unification")
+    case _ => Seq.empty[String]
+  }),
   scalafmtOnCompile := true,
-
   Test / fork := true,
-
   publishTo := {
     val nexus = "https://oss.sonatype.org/"
     if (isSnapshot.value) Some("snapshots" at nexus + "content/repositories/snapshots")
-    else Some("releases"  at nexus + "service/local/staging/deploy/maven2")
+    else Some("releases" at nexus + "service/local/staging/deploy/maven2")
   },
-
   publishMavenStyle := true,
   Test / publishArtifact := false,
   pomIncludeRepository := { _ => false },
-
   licenses := Seq("MIT License" -> url("http://www.opensource.org/licenses/mit-license.php")),
   homepage := Some(url("https://github.com/ruippeixotog/scala-scraper")),
-  scmInfo := Some(ScmInfo(
-    url("https://github.com/ruippeixotog/scala-scraper"),
-    "scm:git:https://github.com/ruippeixotog/scala-scraper.git",
-    "scm:git:git@github.com:ruippeixotog/scala-scraper.git")),
+  scmInfo := Some(
+    ScmInfo(
+      url("https://github.com/ruippeixotog/scala-scraper"),
+      "scm:git:https://github.com/ruippeixotog/scala-scraper.git",
+      "scm:git:git@github.com:ruippeixotog/scala-scraper.git"
+    )
+  ),
   developers := List(
-    Developer("ruippeixotog", "Rui Gonçalves", "ruippeixotog@gmail.com", url("http://www.ruippeixotog.net"))))
+    Developer("ruippeixotog", "Rui Gonçalves", "ruippeixotog@gmail.com", url("http://www.ruippeixotog.net"))
+  )
+)
 
 // do not publish the root project
 publish / skip := true
@@ -96,4 +99,5 @@ releaseProcess := Seq[ReleaseStep](
   releaseStepCommandAndRemaining("+publishSigned"),
   setNextVersion,
   commitNextVersion,
-  pushChanges)
+  pushChanges
+)

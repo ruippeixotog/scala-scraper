@@ -32,7 +32,7 @@ jobs:
         timeout-minutes: 2
 
       - name: Check formatting
-        run: sbt "++${{ matrix.scala-version }} scalafmtCheckAll"
+        run: sbt "++${{ matrix.scala-version }} scalafmtCheckAll" scalafmtSbtCheck
 
       - name: Compile
         run: sbt coverage "++${{ matrix.scala-version }} compile"
