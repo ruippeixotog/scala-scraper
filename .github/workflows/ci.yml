@@ -8,8 +8,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        jdk: [openjdk@1.11.0]
-        scala: [2.11.12, 2.12.11, 2.13.2]
+        jdk: [adopt@1.8]
+        scala: [2.12.13, 2.13.5]
 
     steps:
       - name: Checkout repository

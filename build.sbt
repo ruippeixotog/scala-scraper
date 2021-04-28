@@ -2,8 +2,8 @@ import ReleaseTransformations._
 
 organization in ThisBuild := "net.ruippeixotog"
 
-scalaVersion in ThisBuild := "2.13.1"
-crossScalaVersions in ThisBuild := Seq("2.11.12", "2.12.10", "2.13.1")
+scalaVersion in ThisBuild := "2.13.5"
+crossScalaVersions in ThisBuild := Seq("2.12.13", "2.13.5")
 
 lazy val core = project.in(file("core"))
   .enablePlugins(TutPlugin)
@@ -16,10 +16,10 @@ lazy val core = project.in(file("core"))
       "net.sourceforge.htmlunit"    % "htmlunit"             % "2.49.0",
       "org.jsoup"                   % "jsoup"                % "1.13.1",
       "org.scalaz"                 %% "scalaz-core"          % "7.3.3",
-      "com.typesafe.akka"          %% "akka-http"            % "10.1.14"               % "test",
-      "com.typesafe.akka"          %% "akka-stream"          % "2.5.32"               % "test",
-      "org.slf4j"                   % "slf4j-nop"            % "1.7.30"               % "test",
-      "org.specs2"                 %% "specs2-core"          % "4.10.6"                % "test"),
+      "com.typesafe.akka"          %% "akka-http"            % "10.1.13"               % "test",
+      "com.typesafe.akka"          %% "akka-stream"          % "2.6.14"                % "test",
+      "org.slf4j"                   % "slf4j-nop"            % "1.7.30"                % "test",
+      "org.specs2"                 %% "specs2-core"          % "4.11.0"                % "test"),
 
     tutTargetDirectory := file("."))
 
@@ -40,7 +40,7 @@ lazy val config = project.in(file("modules/config"))
 
     libraryDependencies ++= Seq(
       "com.typesafe"                % "config"               % "1.4.1",
-      "org.specs2"                 %% "specs2-core"          % "4.10.6"                % "test"))
+      "org.specs2"                 %% "specs2-core"          % "4.11.0"                % "test"))
 
 lazy val commonSettings = Seq(
   resolvers ++= Seq(

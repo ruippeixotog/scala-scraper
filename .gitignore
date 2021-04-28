@@ -1,4 +1,18 @@
-.idea
+# sbt specific
 target/
-.ensime*
 .bsp
+
+# IntelliJ specific
+.idea/
+
+# ENSIME specific
+.ensime
+.ensime_cache
+
+# Metals specific
+.bloop/
+.metals/
+metals.sbt
+
+# vscode specific
+.vscode
