@@ -1,7 +1,10 @@
+### 2.2.1 (May 9, 2021)
+
+Support for Scala 2.11 was dropped.
+
 ### 2.2.0 (Sep 18, 2019)
 
-- New features
-  - Added support for Scala 2.13.
+Support for Scala 2.13 was introduced.
 
 ### 2.1.0 (Jan 15, 2018)
  
