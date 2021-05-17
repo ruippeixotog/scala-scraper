@@ -93,7 +93,7 @@ class HtmlUnitBrowserSpec extends Specification with TestServer with SocksTestHe
     }
 
     "make requests through a SOCKS server if configured" in skipIfProxyUnavailable {
-      val proxyConfig = new ProxyConfig(socksProxyHost, socksProxyPort, true)
+      val proxyConfig = new ProxyConfig(socksProxyHost, socksProxyPort, null, true)
 
       val browser = new HtmlUnitBrowser()
       val proxiedBrowser = new HtmlUnitBrowser(proxy = proxyConfig)
