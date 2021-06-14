@@ -13,13 +13,13 @@ lazy val core = project
     name := "scala-scraper",
     libraryDependencies ++= Seq(
       "com.github.nscala-time" %% "nscala-time" % "2.28.0",
-      "net.sourceforge.htmlunit" % "htmlunit" % "2.49.1",
+      "net.sourceforge.htmlunit" % "htmlunit" % "2.50.0",
       "org.jsoup" % "jsoup" % "1.13.1",
       "org.scalaz" %% "scalaz-core" % "7.3.3",
       "com.typesafe.akka" %% "akka-http" % "10.1.13" % "test",
-      "com.typesafe.akka" %% "akka-stream" % "2.6.14" % "test",
+      "com.typesafe.akka" %% "akka-stream" % "2.6.15" % "test",
       "org.slf4j" % "slf4j-nop" % "1.7.30" % "test",
-      "org.specs2" %% "specs2-core" % "4.11.0" % "test"
+      "org.specs2" %% "specs2-core" % "4.12.1" % "test"
     ),
     mdocOut := file(".")
   )
@@ -41,7 +41,7 @@ lazy val config = project
     name := "scala-scraper-config",
     libraryDependencies ++= Seq(
       "com.typesafe" % "config" % "1.4.1",
-      "org.specs2" %% "specs2-core" % "4.11.0" % "test"
+      "org.specs2" %% "specs2-core" % "4.12.1" % "test"
     )
   )
 
