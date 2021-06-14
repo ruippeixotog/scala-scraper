@@ -28,7 +28,7 @@ jobs:
       - name: Install Tor
         run: >
           sudo apt-get install tor &&
-          while ! nc -z localhost 9050; do sleep 1; done
+          while ! curl --socks5 localhost:9050 -m 10 https://example.com; do sleep 1; done
         timeout-minutes: 2
 
       - name: Check formatting
