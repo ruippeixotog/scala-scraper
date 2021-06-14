@@ -25,11 +25,8 @@ jobs:
         with:
           java-version: ${{ matrix.jdk }}
 
-      - name: Install Tor
-        run: >
-          sudo apt-get install tor &&
-          while ! nc -z localhost 9050; do sleep 1; done
-        timeout-minutes: 2
+      - name: Setup Tor
+        uses: tor-actions/setup-tor@v1.0.0
 
       - name: Check formatting
         run: sbt "++${{ matrix.scala-version }} scalafmtCheckAll" scalafmtSbtCheck
