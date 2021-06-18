@@ -18,7 +18,7 @@ lazy val core = project
       "org.scalaz" %% "scalaz-core" % "7.3.3",
       "com.typesafe.akka" %% "akka-http" % "10.1.13" % "test",
       "com.typesafe.akka" %% "akka-stream" % "2.6.15" % "test",
-      "org.slf4j" % "slf4j-nop" % "1.7.30" % "test",
+      "org.slf4j" % "slf4j-nop" % "1.7.31" % "test",
       "org.specs2" %% "specs2-core" % "4.12.1" % "test"
     ),
     mdocOut := file(".")
