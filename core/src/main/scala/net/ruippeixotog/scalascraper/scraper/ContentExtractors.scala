@@ -60,15 +60,19 @@ object ContentExtractors {
 
   /** An extractor for the value of an attribute of the first matched element.
     *
-    * @param attr the attribute name to extract
-    * @return an extractor for an attribute of the first matched element.
+    * @param attr
+    *   the attribute name to extract
+    * @return
+    *   an extractor for an attribute of the first matched element.
     */
   def attr(attr: String): HtmlExtractor[Element, String] = _.head.attr(attr)
 
   /** An extractor for a lazy iterable of the value of an attribute of each matched element.
     *
-    * @param attr the attribute name to extract
-    * @return an extractor for a lazy iterable of the value of an attribute of each matched element.
+    * @param attr
+    *   the attribute name to extract
+    * @return
+    *   an extractor for a lazy iterable of the value of an attribute of each matched element.
     */
   def attrs(attr: String): HtmlExtractor[Element, Iterable[String]] = _.map(_.attr(attr))
 

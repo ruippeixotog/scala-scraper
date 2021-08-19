@@ -10,8 +10,10 @@ trait ElementQuery[+E <: Element] extends Iterable[E] {
     * Semantically, the result of returned composite query is equivalent to iterating over the elements of this query,
     * applying the CSS selector on each individual node and flattening the result while eliminating duplicate results.
     *
-    * @param query the CSS selector used to select elements to be returned
-    * @return an `ElementQuery` instance representing the result of the composed query
+    * @param query
+    *   the CSS selector used to select elements to be returned
+    * @return
+    *   an `ElementQuery` instance representing the result of the composed query
     */
   def select(query: String): ElementQuery[E]
 }

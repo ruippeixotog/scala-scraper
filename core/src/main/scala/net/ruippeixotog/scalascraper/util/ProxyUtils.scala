@@ -17,8 +17,10 @@ object ProxyUtils {
 
   /** Sets the JVM-wide HTTP and HTTPS proxy configuration.
     *
-    * @param host the proxy host
-    * @param port the proxy port
+    * @param host
+    *   the proxy host
+    * @param port
+    *   the proxy port
     */
   def setProxy(host: String, port: Int): Unit = {
     System.setProperty(HTTP_PROXY_HOST, host)
@@ -29,7 +31,8 @@ object ProxyUtils {
 
   /** Returns the current JVM-wide HTTP and HTTPS proxy configuration.
     *
-    * @return the current JVM-wide HTTP and HTTPS proxy configuration.
+    * @return
+    *   the current JVM-wide HTTP and HTTPS proxy configuration.
     */
   def getProxy: Option[(String, Int)] = {
     for {
@@ -49,8 +52,10 @@ object ProxyUtils {
 
   /** Sets the JVM-wide SOCKS proxy configuration.
     *
-    * @param host the proxy host
-    * @param port the proxy port
+    * @param host
+    *   the proxy host
+    * @param port
+    *   the proxy port
     */
   def setSocksProxy(host: String, port: Int): Unit = {
     System.setProperty(SOCKS_PROXY_HOST, host)
@@ -59,7 +64,8 @@ object ProxyUtils {
 
   /** Returns the current JVM-wide SOCKS proxy configuration.
     *
-    * @return the current JVM-wide SOCKS proxy configuration.
+    * @return
+    *   the current JVM-wide SOCKS proxy configuration.
     */
   def getSocksProxy: Option[(String, Int)] = {
     for {

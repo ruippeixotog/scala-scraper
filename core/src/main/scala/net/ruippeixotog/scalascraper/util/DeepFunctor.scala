@@ -7,7 +7,8 @@ import Scalaz._
   * one has a `Functor` instance. It destructures `FA` into a composite type constructor `F[_]` applied to type `A`,
   * along with the composite `Functor` for `F`.
   *
-  * @tparam FA the type to destructure as mentioned above
+  * @tparam FA
+  *   the type to destructure as mentioned above
   */
 sealed trait DeepFunctor[FA] {
   type A

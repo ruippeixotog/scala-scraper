@@ -5,7 +5,8 @@ import net.ruippeixotog.scalascraper.model._
 /** A type class indicating that an [[net.ruippeixotog.scalascraper.model.ElementQuery]] of some
   * [[net.ruippeixotog.scalascraper.model.Element]] type can be created from an object of a given type.
   *
-  * @tparam A the type of the object to be made into an `ElementQuery`
+  * @tparam A
+  *   the type of the object to be made into an `ElementQuery`
   */
 trait ToQuery[A] {
 
@@ -15,8 +16,10 @@ trait ToQuery[A] {
 
   /** Creates an `ElementQuery` for an object of type `A`.
     *
-    * @param a the object for which an `ElementQuery` is to be created
-    * @return an `ElementQuery` for the given object.
+    * @param a
+    *   the object for which an `ElementQuery` is to be created
+    * @return
+    *   an `ElementQuery` for the given object.
     */
   def apply(a: A): ElementQuery[Out]
 }
