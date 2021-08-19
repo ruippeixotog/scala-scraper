@@ -27,50 +27,64 @@ object ContentParsers {
 
   /** Parses text content as a `DateTime` using one of a list of formats.
     *
-    * @param formats the list of possible date formats
-    * @return a content parser for parsing text content as a `DateTime`.
+    * @param formats
+    *   the list of possible date formats
+    * @return
+    *   a content parser for parsing text content as a `DateTime`.
     */
   def asDateTime(formats: String*) = new AsDateTime(formats)
 
   /** Parses text content as a `LocalDate` using one of a list of formats.
     *
-    * @param formats the list of possible date formats
-    * @return a content parser for parsing text content as a `DateTime`.
+    * @param formats
+    *   the list of possible date formats
+    * @return
+    *   a content parser for parsing text content as a `DateTime`.
     */
   def asLocalDate(formats: String*) = new AsLocalDate(formats)
 
   /** Matches text content against a regex and returns the first match.
     *
-    * @param regex the regex to match the text content against
-    * @return a content parser for matching text content against a regex and returning the first match.
+    * @param regex
+    *   the regex to match the text content against
+    * @return
+    *   a content parser for matching text content against a regex and returning the first match.
     */
   def regexMatch(regex: String): RegexMatch = new RegexMatch(regex.r)
 
   /** Matches text content against a regex and returns the first match.
     *
-    * @param regex the regex to match the text content against
-    * @return a content parser for matching text content against a regex and returning the first match.
+    * @param regex
+    *   the regex to match the text content against
+    * @return
+    *   a content parser for matching text content against a regex and returning the first match.
     */
   def regexMatch(regex: Regex): RegexMatch = new RegexMatch(regex)
 
   /** Matches text content against a regex and returns all the matches.
     *
-    * @param regex the regex to match the text content against
-    * @return a content parser for matching text content against a regex and returning all the matches.
+    * @param regex
+    *   the regex to match the text content against
+    * @return
+    *   a content parser for matching text content against a regex and returning all the matches.
     */
   def regexMatches(regex: String): RegexMatches = new RegexMatches(regex.r)
 
   /** Matches text content against a regex and returns all the matches.
     *
-    * @param regex the regex to match the text content against
-    * @return a content parser for matching text content against a regex and returning all the matches.
+    * @param regex
+    *   the regex to match the text content against
+    * @return
+    *   a content parser for matching text content against a regex and returning all the matches.
     */
   def regexMatches(regex: Regex): RegexMatches = new RegexMatches(regex)
 
   /** Lifts a content parser to work on sequences of elements.
     *
-    * @param parser the content parser to lift
-    * @return a content parser for parsing a sequence of elements by applying `parser` to each of them.
+    * @param parser
+    *   the content parser to lift
+    * @return
+    *   a content parser for parsing a sequence of elements by applying `parser` to each of them.
     */
   def seq[C, A](parser: C => A): TraversableOnce[C] => TraversableOnce[A] = _.map(parser)
 
@@ -93,8 +107,10 @@ object ContentParsers {
 
     /** Parses text content as a `DateTime` using a provided default time zone.
       *
-      * @param tz the default timezone to use if there is none specified in the format
-      * @return a content parser for parsing text content as a `DateTime` using `tz` as default time zone.
+      * @param tz
+      *   the default timezone to use if there is none specified in the format
+      * @return
+      *   a content parser for parsing text content as a `DateTime` using `tz` as default time zone.
       */
     def withZone(tz: DateTimeZone): String => DateTime = formatter.withZone(tz).parseDateTime(_).withZone(tz)
   }

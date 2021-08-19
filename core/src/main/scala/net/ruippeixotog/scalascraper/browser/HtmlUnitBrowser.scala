@@ -32,7 +32,8 @@ import net.ruippeixotog.scalascraper.util._
   * refreshes or redirections. However, `Element` instances belong to a fixed DOM tree and they stop being meaningful as
   * soon as they are removed from the DOM or a client-side page reload occurs.
   *
-  * @param browserType the browser type and version to simulate
+  * @param browserType
+  *   the browser type and version to simulate
   */
 class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME, proxy: ProxyConfig = null) extends Browser {
   type DocumentType = HtmlUnitDocument

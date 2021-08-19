@@ -41,15 +41,19 @@ trait Element {
   def attrs: Map[String, String]
 
   /** Checks if an attribute is defined in this element.
-    * @param name the name of the attribute
-    * @return `true` if the attribute is defined, `false` otherwise
+    * @param name
+    *   the name of the attribute
+    * @return
+    *   `true` if the attribute is defined, `false` otherwise
     */
   def hasAttr(name: String): Boolean
 
   /** Returns the value associated with an attribute of this element.
     *
-    * @param name the name of the attribute
-    * @return the value associated with the given attribute.
+    * @param name
+    *   the name of the attribute
+    * @return
+    *   the value associated with the given attribute.
     */
   def attr(name: String): String
 
@@ -67,8 +71,10 @@ trait Element {
 
   /** Executes a query on this element using a CSS selector.
     *
-    * @param query the CSS selector used to select elements to be returned
-    * @return an `ElementQuery` instance representing the sequence of resulting elements
+    * @param query
+    *   the CSS selector used to select elements to be returned
+    * @return
+    *   an `ElementQuery` instance representing the sequence of resulting elements
     */
   def select(query: String): ElementQuery[ThisType]
 }

@@ -24,7 +24,8 @@ import net.ruippeixotog.scalascraper.util._
   * As the documents parsed by `JsoupBrowser` instances are not changed after loading, `Document` and `Element`
   * instances obtained from them are guaranteed to be immutable.
   *
-  * @param userAgent the user agent with which requests should be made
+  * @param userAgent
+  *   the user agent with which requests should be made
   */
 class JsoupBrowser(val userAgent: String = "jsoup/1.8", val proxy: java.net.Proxy = null) extends Browser {
   type DocumentType = JsoupDocument
