@@ -27,7 +27,7 @@ trait TestServer extends BeforeAfterAll { this: Specification =>
   private[this] var server = Option.empty[ServerBinding]
 
   def beforeAll(): Unit = {
-    server = Some(Await.result(Http().bindAndHandle(testService, "localhost", testServerPort), 5.seconds))
+    server = Some(Await.result(Http().newServerAt("localhost", testServerPort).bindFlow(testService), 5.seconds))
   }
 
   def afterAll(): Unit = {
