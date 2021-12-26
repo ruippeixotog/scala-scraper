@@ -25,8 +25,9 @@ class HtmlUnitBrowserSpec extends Specification with TestServer with SocksTestHe
   "An HtmlUnitBrowser" should {
 
     "execute requests with the user agent for the chosen browser" in {
-      val browser = new HtmlUnitBrowser(BrowserVersion.FIREFOX_78)
-      browser.userAgent must contain("Firefox/78.0")
+      val version = BrowserVersion.FIREFOX_ESR
+      val browser = new HtmlUnitBrowser(version)
+      browser.userAgent must contain(s"Firefox/${version.getBrowserVersionNumeric()}.0")
 
       val doc = browser.get(s"http://localhost:$testServerPort/agent")
       doc.body.text mustEqual browser.userAgent
