@@ -15,7 +15,7 @@ lazy val core = project
       "com.github.nscala-time" %% "nscala-time" % "2.30.0",
       "net.sourceforge.htmlunit" % "htmlunit" % "2.56.0",
       "org.jsoup" % "jsoup" % "1.14.3",
-      "org.scalaz" %% "scalaz-core" % "7.3.5",
+      "org.scalaz" %% "scalaz-core" % "7.3.6",
       "com.typesafe.akka" %% "akka-http" % "10.2.7" % "test",
       "com.typesafe.akka" %% "akka-stream" % "2.6.18" % "test",
       "org.slf4j" % "slf4j-nop" % "1.7.33" % "test",
