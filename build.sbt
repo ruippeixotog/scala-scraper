@@ -40,7 +40,7 @@ lazy val config = project
   .settings(
     name := "scala-scraper-config",
     libraryDependencies ++= Seq(
-      "com.typesafe" % "config" % "1.4.1",
+      "com.typesafe" % "config" % "1.4.2",
       "org.specs2" %% "specs2-core" % "4.13.2" % "test"
     )
   )
