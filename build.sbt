@@ -13,7 +13,7 @@ lazy val core = project
     name := "scala-scraper",
     libraryDependencies ++= Seq(
       "com.github.nscala-time" %% "nscala-time" % "2.30.0",
-      "net.sourceforge.htmlunit" % "htmlunit" % "2.58.0",
+      "net.sourceforge.htmlunit" % "htmlunit" % "2.59.0",
       "org.jsoup" % "jsoup" % "1.14.3",
       "org.scalaz" %% "scalaz-core" % "7.3.6",
       "com.typesafe.akka" %% "akka-http" % "10.2.9" % "test",
