@@ -17,7 +17,7 @@ lazy val core = project
       "org.jsoup" % "jsoup" % "1.14.3",
       "org.scalaz" %% "scalaz-core" % "7.3.6",
       "com.typesafe.akka" %% "akka-http" % "10.2.9" % "test",
-      "com.typesafe.akka" %% "akka-stream" % "2.6.18" % "test",
+      "com.typesafe.akka" %% "akka-stream" % "2.6.19" % "test",
       "org.slf4j" % "slf4j-nop" % "1.7.36" % "test",
       "org.specs2" %% "specs2-core" % "4.14.1" % "test"
     ),
