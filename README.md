@@ -86,7 +86,7 @@ If the element may or may not be in the page, the `>?>` tries to extract the con
 doc >?> element("#footer")
 // res3: Option[Element] = Some(
 //   JsoupElement(
-//     <div id="footer"> <span>No copyright 2014</span> 
+//     <div id="footer"><span>No copyright 2014</span>
 // </div>
 //   )
 // )
@@ -230,47 +230,49 @@ doc >/~ validator(text("title"))(_ == "Test page")
 // res12: Either[Unit, browser.DocumentType] = Right(
 //   JsoupDocument(
 //     <!doctype html>
-// <html lang="en"> 
-//  <head> 
-//   <meta charset="utf-8"> 
-//   <meta name="viewport" content="width=device-width, initial-scale=1"> 
-//   <title>Test page</title> 
-//  </head> 
-//  <body> 
-//   <div id="wrapper"> 
-//    <div id="header"> 
-//     <h1>Test page h1</h1> 
-//    </div> 
-//    <div id="menu"> <span><a href="#home">Home</a></span> <span><a href="#section1">Section 1</a></span> <span class="active">Section 2</span> <span><a href="#section3">Section 3</a></span> 
-//    </div> 
-//    <div id="content"> 
-//     <h2>Test page h2</h2> <span id="date">2014-10-26</span> <span id="datefull">2014-10-26T12:30:05Z</span> <span id="rating">4.5</span> <span id="pages">2</span> 
-//     <section> 
-//      <h3>Section 1 h3</h3> 
-//      <p>Some text for testing</p> 
-//      <p>More text for testing</p> 
-//     </section> 
-//     <section> 
-//      <h3>Section 2 h3</h3> <span>My Form</span> 
-//      <form id="myform" action="submit.html"> 
-//       <input type="text" name="name" value="John"> 
-//       <input type="text" name="address"> 
-//       <input type="submit" value="Submit"> <span><a href="#">Add field</a></span> 
-//      </form> 
-//     </section> 
-//     <section> 
-//      <h3>Section 3 h3</h3> 
-//      <table id="mytable"> 
+// <html lang="en">
+//  <head>
+//   <meta charset="utf-8">
+//   <meta name="viewport" content="width=device-width, initial-scale=1">
+//   <title>Test page</title>
+//  </head>
+//  <body>
+//   <div id="wrapper">
+//    <div id="header">
+//     <h1>Test page h1</h1>
+//    </div>
+//    <div id="menu"><span><a href="#home">Home</a></span><span><a href="#section1">Section 1</a></span><span class="active">Section 2</span><span><a href="#section3">Section 3</a></span>
+//    </div>
+//    <div id="content">
+//     <h2>Test page h2</h2><span id="date">2014-10-26</span><span id="datefull">2014-10-26T12:30:05Z</span><span id="rating">4.5</span><span id="pages">2</span>
+//     <section>
+//      <h3>Section 1 h3</h3>
+//      <p>Some text for testing</p>
+//      <p>More text for testing</p>
+//     </section>
+//     <section>
+//      <h3>Section 2 h3</h3><span>My Form</span>
+//      <form id="myform" action="submit.html">
+//       <input type="text" name="name" value="John">
+//       <input type="text" name="address">
+//       <input type="submit" value="Submit"><span><a href="#">Add field</a></span>
+//      </form>
+//     </section>
+//     <section>
+//      <h3>Section 3 h3</h3>
+//      <table id="mytable">
 //       <tbody>
-//        <tr> 
-//         <td>3</td> 
-//         <td>15</td> 
-//         <td>15</td> 
-//         <td>1</td> 
-//        </tr> 
+//        <tr>
+//         <td>3</td>
+//         <td>15</td>
+//         <td>15</td>
+//         <td>1</td>
+//        </tr>
 //       </tbody>
-//      </table> 
-//     </section> 
+//      </table>
+//     </section>
+//    </div>
+//    <div id="footer"><span>No copyright 2014</span>
 // ...
 
 // Check if there are at least 3 ".active" elements

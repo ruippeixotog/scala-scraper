@@ -19,7 +19,7 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
       </head>
       <body id="bid" data-a="a" data-b="b">
         <div id="a1">
-          <a></a>
+          <table></table>
           <div></div>
         </div>
         <span></span>
@@ -241,21 +241,9 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
           body.parent must beSome.which { p => p.tagName mustEqual "html" }
           body.children.map(_.tagName) mustEqual Iterable("div", "span", "span", "div")
 
-          val a = doc.root.select("a").head
-          a.parent must beSome.which { p => p.attr("id") mustEqual "a1" }
-          a.children must beEmpty
-        }
-
-        "with correct parent and children methods" in {
-          val doc = browser.parseString(html)
-
-          val body = doc.body
-          body.parent must beSome.which { p => p.tagName mustEqual "html" }
-          body.children.map(_.tagName) mustEqual Iterable("div", "span", "span", "div")
-
-          val a = doc.root.select("a").head
-          a.parent must beSome.which { p => p.attr("id") mustEqual "a1" }
-          a.children must beEmpty
+          val table = doc.root.select("table").head
+          table.parent must beSome.which { p => p.attr("id") mustEqual "a1" }
+          table.children must beEmpty
         }
 
         "with correct attr, hasAttr and attrs methods" in {
