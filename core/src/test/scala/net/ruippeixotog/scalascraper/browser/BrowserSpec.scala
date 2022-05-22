@@ -68,7 +68,7 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
       } ~
       path("cookies") {
         optionalHeaderValuePF({ case Cookie(cookies) => cookies }) { cookies =>
-          val str = cookies.toSeq.flatten.sortBy(_.name).map { c => s"${c.name}=${c.value}" }.mkString(";")
+          val str = cookies.getOrElse(Nil).sortBy(_.name).map { c => s"${c.name}=${c.value}" }.mkString(";")
           serveText(str)
         }
       }
@@ -238,11 +238,11 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
           val doc = browser.parseString(html)
 
           val body = doc.body
-          body.parent must beSome.which { p => p.tagName mustEqual "html" }
+          body.parent must beSome[Element].which { p => p.tagName mustEqual "html" }
           body.children.map(_.tagName) mustEqual Iterable("div", "span", "span", "div")
 
           val table = doc.root.select("table").head
-          table.parent must beSome.which { p => p.attr("id") mustEqual "a1" }
+          table.parent must beSome[Element].which { p => p.attr("id") mustEqual "a1" }
           table.children must beEmpty
         }
 

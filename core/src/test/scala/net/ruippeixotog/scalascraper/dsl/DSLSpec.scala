@@ -7,7 +7,6 @@ import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.model.{Document, Element}
 import net.ruippeixotog.scalascraper.scraper.ContentExtractors.{text => stext, _}
 import net.ruippeixotog.scalascraper.scraper.HtmlExtractor
-import net.ruippeixotog.scalascraper.util.EitherRightBias._
 
 class DSLSpec extends Specification {
 
