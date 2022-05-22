@@ -143,12 +143,12 @@ object HtmlUnitBrowser {
 
     def parent = Option(underlying.getParentNode).collect { case elem: DomElement => HtmlUnitElement(elem) }
 
-    def children = underlying.getChildElements.asScala.map(HtmlUnitElement)
+    def children = underlying.getChildElements.asScala.map(HtmlUnitElement.apply)
 
     def siblings = {
       val previousSiblings = Stream.iterate(underlying)(_.getPreviousElementSibling).tail.takeWhile(_ != null)
       val nextSiblings = Stream.iterate(underlying)(_.getNextElementSibling).tail.takeWhile(_ != null)
-      (previousSiblings.reverse ++ nextSiblings).map(HtmlUnitElement)
+      (previousSiblings.reverse ++ nextSiblings).map(HtmlUnitElement.apply)
     }
 
     def childNodes = underlying.getChildNodes.asScala.flatMap(HtmlUnitNode.apply)

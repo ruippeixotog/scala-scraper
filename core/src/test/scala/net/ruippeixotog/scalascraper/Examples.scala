@@ -11,7 +11,6 @@ import net.ruippeixotog.scalascraper.dsl.DSL.Extract._
 import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.model.Element
 import net.ruippeixotog.scalascraper.scraper.HtmlValidator
-import net.ruippeixotog.scalascraper.util.EitherRightBias._
 
 object ExampleMatchers {
   val succ = HtmlValidator(text("head > title"), 1)(_.matches(".*Observador.*"))

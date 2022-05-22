@@ -96,11 +96,11 @@ object JsoupBrowser {
 
     def tagName = underlying.tagName
 
-    def parent = Option(underlying.parent).map(JsoupElement)
+    def parent = Option(underlying.parent).map(JsoupElement.apply)
 
-    def children = underlying.children.asScala.map(JsoupElement)
+    def children = underlying.children.asScala.map(JsoupElement.apply)
 
-    def siblings = underlying.siblingElements.asScala.map(JsoupElement)
+    def siblings = underlying.siblingElements.asScala.map(JsoupElement.apply)
 
     def childNodes = underlying.childNodes.asScala.flatMap(JsoupNode.apply)
 
@@ -122,7 +122,7 @@ object JsoupBrowser {
     def outerHtml = underlying.outerHtml
 
     private[this] def selectUnderlying(cssQuery: String): Iterator[JsoupElement] =
-      underlying.select(cssQuery).iterator.asScala.map(JsoupElement)
+      underlying.select(cssQuery).iterator.asScala.map(JsoupElement.apply)
 
     def select(cssQuery: String) = ElementQuery(cssQuery, this, selectUnderlying)
   }

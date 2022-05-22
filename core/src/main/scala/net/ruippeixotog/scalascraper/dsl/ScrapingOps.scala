@@ -1,6 +1,6 @@
 package net.ruippeixotog.scalascraper.dsl
 
-import net.ruippeixotog.scalascraper.model.Element
+import net.ruippeixotog.scalascraper.model.{Element, ElementQuery}
 import net.ruippeixotog.scalascraper.scraper.{HtmlExtractor, HtmlValidator}
 import net.ruippeixotog.scalascraper.util._
 import scala.util.Try
@@ -15,7 +15,7 @@ trait ScrapingOps extends syntax.ToIdOps with std.AllInstances with IdInstances 
 
     override def F: Functor[F] = Functor[F]
 
-    @inline implicit private[this] def aToQuery(a: A) = toQuery(a)
+    @inline implicit private[this] def aToQuery(a: A): ElementQuery[E] = toQuery(a)
 
     def extract[B](extractor: HtmlExtractor[E, B]) = self.map(extractor.extract(_))
 

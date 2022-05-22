@@ -83,7 +83,7 @@ object HtmlExtractor extends HtmlExtractorInstances {
 
 trait HtmlExtractorInstances {
 
-  implicit def extractorMonad[E <: Element] =
+  implicit def extractorMonad[E <: Element]: Monad[({ type t[A] = HtmlExtractor[E, A] })#t] =
     new Monad[({ type t[A] = HtmlExtractor[E, A] })#t] {
       def point[A](a: => A) =
         new HtmlExtractor[E, A] {

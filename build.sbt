@@ -3,7 +3,7 @@ import ReleaseTransformations._
 ThisBuild / organization := "net.ruippeixotog"
 
 ThisBuild / scalaVersion := "2.12.15"
-ThisBuild / crossScalaVersions := Seq("2.12.15", "2.13.8")
+ThisBuild / crossScalaVersions := Seq("2.12.15", "2.13.8", "3.1.2")
 
 lazy val core = project
   .in(file("core"))
@@ -16,8 +16,8 @@ lazy val core = project
       "net.sourceforge.htmlunit" % "htmlunit" % "2.61.0",
       "org.jsoup" % "jsoup" % "1.15.1",
       "org.scalaz" %% "scalaz-core" % "7.3.6",
-      "com.typesafe.akka" %% "akka-http" % "10.2.9" % "test",
-      "com.typesafe.akka" %% "akka-stream" % "2.6.19" % "test",
+      "com.typesafe.akka" %% "akka-http" % "10.2.9" % "test" cross CrossVersion.for3Use2_13,
+      "com.typesafe.akka" %% "akka-stream" % "2.6.19" % "test" cross CrossVersion.for3Use2_13,
       "org.slf4j" % "slf4j-nop" % "1.7.36" % "test",
       "org.specs2" %% "specs2-core" % "4.15.0" % "test"
     ),

@@ -18,7 +18,7 @@ sealed trait DeepFunctor[FA] {
 }
 
 trait LowerPriorityDeepFunctor {
-  implicit def nil[A1] =
+  implicit def nil[A1]: DeepFunctor.AuxA[A1, A1] { type F[X] = X } =
     new DeepFunctor[A1] {
       type A = A1
       type F[X] = X
@@ -30,7 +30,10 @@ trait LowerPriorityDeepFunctor {
 object DeepFunctor extends LowerPriorityDeepFunctor {
   type AuxA[FA, A0] = DeepFunctor[FA] { type A = A0 }
 
-  implicit def cons[FRA, RA](implicit u: Unapply.AuxA[Functor, FRA, RA], rest: DeepFunctor[RA]) =
+  implicit def cons[FRA, RA](implicit
+      u: Unapply.AuxA[Functor, FRA, RA],
+      rest: DeepFunctor[RA]
+  ): DeepFunctor.AuxA[FRA, rest.A] { type F[X] = u.M[rest.F[X]] } =
     new DeepFunctor[FRA] {
       type A = rest.A
       type F[X] = u.M[rest.F[X]]
