@@ -22,9 +22,6 @@ object ContentParsers {
     */
   val asDouble: String => Double = _.toDouble
 
-  @deprecated("Use either asDateTime or asLocalDate", "2.0.0")
-  def asDate(formats: String*) = new AsDateTime(formats)
-
   /** Parses text content as a `DateTime` using one of a list of formats.
     *
     * @param formats
