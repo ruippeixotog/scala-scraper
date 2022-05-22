@@ -24,7 +24,7 @@ private[model] class RootElementQuery[E <: Element](private val target: E, exec:
   def iterator = Iterator(target)
 
   def select(query: String): ElementQuery[E] =
-    new LazyElementQuery(query.split(","), target, exec)
+    new LazyElementQuery(query.split(",").toSeq, target, exec)
 
   override def equals(obj: Any) =
     obj match {
