@@ -391,20 +391,13 @@ Using the typed element API provides much more flexibility when more than queryi
 
 ## Working Behind an HTTP/HTTPS Proxy
 
-_NOTE: this feature is in a beta stage. Please expect API changes in future releases._
-
-If you are behind an HTTP proxy, you can configure `Browser` implementations to make connections through it by setting the Java system properties `http.proxyHost`, `https.proxyHost`, `http.proxyPort` and `https.proxyPort`. Scala Scraper provides a `ProxyUtils` object that facilitates that configuration:
+If you are behind an HTTP or SOCKS proxy, you can configure `Browser` implementations to make connections through it by either using the browser's appropriate constructor (implementation-dependent) or by calling `withProxy` on any browser instance:
 
 ```scala mdoc:silent
-import net.ruippeixotog.scalascraper.util.ProxyUtils
+import net.ruippeixotog.scalascraper.browser.Proxy
 
-ProxyUtils.setProxy("localhost", 3128)
-val browser2 = JsoupBrowser()
-// HTTP requests and scraping operations...
-ProxyUtils.removeProxy()
+val browser2 = JsoupBrowser().withProxy(Proxy("example.com", 7000, Proxy.SOCKS))
 ```
-
-`JsoupBrowser` uses internally `java.net.HttpURLConnection`. Configuring those JVM-wide system properties will affect not only `Browser` instances, but _all_ requests done using `HttpURLConnection` directly or indirectly. `HtmlUnitBrowser` was implementated so that it reads the same system properties for configuration, but once the browser is created they will be used on every request done by the instance, regardless of the properties' values at the time of the request.
 
 ## Integration with Typesafe Config
 
@@ -416,4 +409,4 @@ The [CHANGELOG](CHANGELOG.md) is kept updated with the bug fixes and new feature
 
 ## Copyright
 
-Copyright (c) 2014-2020 Rui Gonçalves. See LICENSE for details.
+Copyright (c) 2014-2022 Rui Gonçalves. See LICENSE for details.
