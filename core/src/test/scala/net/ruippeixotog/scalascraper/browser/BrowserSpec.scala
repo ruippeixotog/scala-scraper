@@ -8,9 +8,10 @@ import akka.http.scaladsl.model.headers._
 import akka.http.scaladsl.server.Directives.{post => httpPost, _}
 import org.specs2.mutable.Specification
 
+import net.ruippeixotog.scalascraper.SocksTestHelper
 import net.ruippeixotog.scalascraper.model._
 
-class BrowserSpec extends Specification with BrowserHelper with TestServer {
+class BrowserSpec extends Specification with BrowserHelper with TestServer with SocksTestHelper {
 
   val html = """
     <html>
@@ -301,6 +302,15 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer {
             TextNode(" styles")
           )
         }
+      }
+
+      "make requests through a SOCKS server if configured" in skipIfProxyUnavailable {
+        val proxy = Proxy(socksProxyHost, socksProxyPort, Proxy.SOCKS)
+        val proxiedBrowser = browser.withProxy(proxy)
+
+        val proxyIP = proxiedBrowser.get("http://ipv4.icanhazip.com").body.text
+        val myIP = browser.get("http://ipv4.icanhazip.com").body.text
+        proxyIP !=== myIP
       }
     }
   }

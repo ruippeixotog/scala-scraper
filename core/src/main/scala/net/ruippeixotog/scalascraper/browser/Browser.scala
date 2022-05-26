@@ -131,4 +131,8 @@ trait Browser {
   /** Clears the cookie store of this browser.
     */
   def clearCookies(): Unit
+
+  /** Returns a new browser that uses the provided proxy for all connections.
+    */
+  def withProxy(proxy: Proxy): Browser
 }

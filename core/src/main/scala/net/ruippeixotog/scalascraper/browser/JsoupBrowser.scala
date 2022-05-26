@@ -1,6 +1,7 @@
 package net.ruippeixotog.scalascraper.browser
 
 import java.io.{File, InputStream}
+import java.net.{InetSocketAddress, Proxy => JavaProxy}
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
@@ -26,8 +27,10 @@ import net.ruippeixotog.scalascraper.util._
   *
   * @param userAgent
   *   the user agent with which requests should be made
+  * @param proxy
+  *   an optional proxy configuration to use
   */
-class JsoupBrowser(val userAgent: String = "jsoup/1.8", val proxy: java.net.Proxy = null) extends Browser {
+class JsoupBrowser(val userAgent: String = "jsoup/1.8", val proxy: JavaProxy = null) extends Browser {
   type DocumentType = JsoupDocument
 
   private[this] val cookieMap = mutable.Map.empty[String, String]
@@ -58,6 +61,14 @@ class JsoupBrowser(val userAgent: String = "jsoup/1.8", val proxy: java.net.Prox
   }
 
   def clearCookies() = cookieMap.clear()
+
+  def withProxy(proxy: Proxy): JsoupBrowser = {
+    val newJavaProxy = new JavaProxy(
+      if (proxy.proxyType == Proxy.SOCKS) JavaProxy.Type.SOCKS else JavaProxy.Type.HTTP,
+      new InetSocketAddress(proxy.host, proxy.port)
+    )
+    new JsoupBrowser(userAgent, newJavaProxy)
+  }
 
   def requestSettings(conn: Connection): Connection = conn
 
