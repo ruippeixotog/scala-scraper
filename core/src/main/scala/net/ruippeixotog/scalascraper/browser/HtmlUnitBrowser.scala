@@ -34,15 +34,15 @@ import net.ruippeixotog.scalascraper.util._
   *
   * @param browserType
   *   the browser type and version to simulate
+  * @param proxy
+  *   an optional proxy configuration to use
   */
-class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME, proxy: ProxyConfig = null) extends Browser {
+class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME, proxy: Option[ProxyConfig] = None)
+    extends Browser {
   type DocumentType = HtmlUnitDocument
 
   lazy val underlying: WebClient = {
-    val c = ProxyUtils.getProxy match {
-      case Some((proxyHost, proxyPort)) => new WebClient(browserType, proxyHost, proxyPort)
-      case None => new WebClient(browserType)
-    }
+    val c = new WebClient(browserType)
     defaultClientSettings(c)
     c
   }
@@ -99,12 +99,19 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME, proxy
     */
   def closeAll() = underlying.close()
 
+  def withProxy(proxy: Proxy): HtmlUnitBrowser = {
+    val (scheme, isSocks) = proxy.proxyType match {
+      case Proxy.HTTP => ("http", false)
+      case Proxy.SOCKS => (null, true)
+    }
+    val newProxyConf = new ProxyConfig(proxy.host, proxy.port, scheme, isSocks)
+    new HtmlUnitBrowser(browserType, Some(newProxyConf))
+  }
+
   protected[this] def defaultClientSettings(client: WebClient): Unit = {
     client.getOptions.setCssEnabled(false)
     client.getOptions.setThrowExceptionOnScriptError(false)
-    if (proxy != null) {
-      client.getOptions.setProxyConfig(proxy)
-    }
+    proxy.foreach { proxy => client.getOptions.setProxyConfig(proxy) }
   }
 
   protected[this] def defaultRequestSettings(req: WebRequest): Unit = {

@@ -8,7 +8,7 @@ import org.specs2.mutable.Specification
 
 import net.ruippeixotog.scalascraper.SocksTestHelper
 
-class HtmlUnitBrowserSpec extends Specification with TestServer with SocksTestHelper {
+class HtmlUnitBrowserSpec extends Specification with TestServer {
 
   // format: OFF
   lazy val testService = get {
@@ -91,17 +91,6 @@ class HtmlUnitBrowserSpec extends Specification with TestServer with SocksTestHe
       doc.root.select("#t").head.text mustEqual "Before"
       browser.closeAll()
       doc.root.select("#t").head.text must not(beEqualTo("After").eventually)
-    }
-
-    "make requests through a SOCKS server if configured" in skipIfProxyUnavailable {
-      val proxyConfig = new ProxyConfig(socksProxyHost, socksProxyPort, null, true)
-
-      val browser = new HtmlUnitBrowser()
-      val proxiedBrowser = new HtmlUnitBrowser(proxy = proxyConfig)
-
-      val proxyIP = proxiedBrowser.get("http://ipv4.icanhazip.com").body.text
-      val myIP = browser.get("http://ipv4.icanhazip.com").body.text
-      proxyIP !=== myIP
     }
   }
 }
