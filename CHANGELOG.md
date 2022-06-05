@@ -1,3 +1,13 @@
+### 3.0.0 (May 25, 2022)
+
+Support for Scala 3.1 was introduced.
+
+- New features
+  - Added a new `withProxy` method to `Browser`, allowing users to configure the proxy regardless of the browser
+    implementation being used.
+- Breaking changes
+  - Removed all previously deprecated code.
+
 ### 2.2.1 (May 9, 2021)
 
 Support for Scala 2.11 was dropped.
