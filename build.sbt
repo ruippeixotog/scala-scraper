@@ -19,7 +19,7 @@ lazy val core = project
       "com.typesafe.akka" %% "akka-http" % "10.2.9" % "test" cross CrossVersion.for3Use2_13,
       "com.typesafe.akka" %% "akka-stream" % "2.6.19" % "test" cross CrossVersion.for3Use2_13,
       "org.slf4j" % "slf4j-nop" % "1.7.36" % "test",
-      "org.specs2" %% "specs2-core" % "4.15.0" % "test"
+      "org.specs2" %% "specs2-core" % "4.16.1" % "test"
     ),
     mdocOut := file(".")
   )
@@ -41,7 +41,7 @@ lazy val config = project
     name := "scala-scraper-config",
     libraryDependencies ++= Seq(
       "com.typesafe" % "config" % "1.4.2",
-      "org.specs2" %% "specs2-core" % "4.15.0" % "test"
+      "org.specs2" %% "specs2-core" % "4.16.1" % "test"
     )
   )
 
