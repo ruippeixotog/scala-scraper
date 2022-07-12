@@ -2,8 +2,8 @@ import ReleaseTransformations._
 
 ThisBuild / organization := "net.ruippeixotog"
 
-ThisBuild / scalaVersion := "2.12.15"
-ThisBuild / crossScalaVersions := Seq("2.12.15", "2.13.8", "3.1.2")
+ThisBuild / scalaVersion := "2.12.16"
+ThisBuild / crossScalaVersions := Seq("2.12.16", "2.13.8", "3.1.2")
 
 lazy val core = project
   .in(file("core"))
