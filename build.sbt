@@ -3,7 +3,7 @@ import ReleaseTransformations._
 ThisBuild / organization := "net.ruippeixotog"
 
 ThisBuild / scalaVersion := "2.12.15"
-ThisBuild / crossScalaVersions := Seq("2.12.15", "2.13.8", "3.1.2")
+ThisBuild / crossScalaVersions := Seq("2.12.15", "2.13.8", "3.1.3")
 
 lazy val core = project
   .in(file("core"))
@@ -13,13 +13,13 @@ lazy val core = project
     name := "scala-scraper",
     libraryDependencies ++= Seq(
       "com.github.nscala-time" %% "nscala-time" % "2.30.0",
-      "net.sourceforge.htmlunit" % "htmlunit" % "2.61.0",
+      "net.sourceforge.htmlunit" % "htmlunit" % "2.63.0",
       "org.jsoup" % "jsoup" % "1.15.1",
       "org.scalaz" %% "scalaz-core" % "7.3.6",
       "com.typesafe.akka" %% "akka-http" % "10.2.9" % "test" cross CrossVersion.for3Use2_13,
       "com.typesafe.akka" %% "akka-stream" % "2.6.19" % "test" cross CrossVersion.for3Use2_13,
       "org.slf4j" % "slf4j-nop" % "1.7.36" % "test",
-      "org.specs2" %% "specs2-core" % "4.15.0" % "test"
+      "org.specs2" %% "specs2-core" % "4.16.1" % "test"
     ),
     mdocOut := file(".")
   )
@@ -41,7 +41,7 @@ lazy val config = project
     name := "scala-scraper-config",
     libraryDependencies ++= Seq(
       "com.typesafe" % "config" % "1.4.2",
-      "org.specs2" %% "specs2-core" % "4.15.0" % "test"
+      "org.specs2" %% "specs2-core" % "4.16.1" % "test"
     )
   )
 
