@@ -241,21 +241,18 @@ doc >/~ validator(text("title"))(_ == "Test page")
 //    <div id="header">
 //     <h1>Test page h1</h1>
 //    </div>
-//    <div id="menu"><span><a href="#home">Home</a></span><span><a href="#section1">Section 1</a></span><span class="active">Section 2</span><span><a href="#section3">Section 3</a></span>
+//    <div id="menu"><span><a href="#home">Home</a></span> <span><a href="#section1">Section 1</a></span> <span class="active">Section 2</span> <span><a href="#section3">Section 3</a></span>
 //    </div>
 //    <div id="content">
-//     <h2>Test page h2</h2><span id="date">2014-10-26</span><span id="datefull">2014-10-26T12:30:05Z</span><span id="rating">4.5</span><span id="pages">2</span>
+//     <h2>Test page h2</h2> <span id="date">2014-10-26</span> <span id="datefull">2014-10-26T12:30:05Z</span> <span id="rating">4.5</span> <span id="pages">2</span>
 //     <section>
 //      <h3>Section 1 h3</h3>
 //      <p>Some text for testing</p>
 //      <p>More text for testing</p>
 //     </section>
 //     <section>
-//      <h3>Section 2 h3</h3><span>My Form</span>
-//      <form id="myform" action="submit.html">
-//       <input type="text" name="name" value="John">
-//       <input type="text" name="address">
-//       <input type="submit" value="Submit"><span><a href="#">Add field</a></span>
+//      <h3>Section 2 h3</h3> <span>My Form</span>
+//      <form id="myform" action="submit.html"><input type="text" name="name" value="John"> <input type="text" name="address"> <input type="submit" value="Submit"> <span><a href="#">Add field</a></span>
 //      </form>
 //     </section>
 //     <section>
