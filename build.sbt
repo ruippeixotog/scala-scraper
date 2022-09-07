@@ -17,7 +17,7 @@ lazy val core = project
       "org.jsoup" % "jsoup" % "1.15.3",
       "org.scalaz" %% "scalaz-core" % "7.3.6",
       "com.typesafe.akka" %% "akka-http" % "10.2.10" % "test" cross CrossVersion.for3Use2_13,
-      "com.typesafe.akka" %% "akka-stream" % "2.6.19" % "test" cross CrossVersion.for3Use2_13,
+      "com.typesafe.akka" %% "akka-stream" % "2.6.20" % "test" cross CrossVersion.for3Use2_13,
       "org.slf4j" % "slf4j-nop" % "2.0.0" % "test",
       "org.specs2" %% "specs2-core" % "4.16.1" % "test"
     ),
