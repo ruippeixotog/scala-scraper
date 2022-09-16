@@ -5,6 +5,11 @@ ThisBuild / organization := "net.ruippeixotog"
 ThisBuild / scalaVersion := "2.12.16"
 ThisBuild / crossScalaVersions := Seq("2.12.16", "2.13.8", "3.2.0")
 
+// taken from https://github.com/scala/bug/issues/12632
+ThisBuild / libraryDependencySchemes ++= Seq(
+  "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always
+)
+
 lazy val core = project
   .in(file("core"))
   .enablePlugins(ModuleMdocPlugin)
