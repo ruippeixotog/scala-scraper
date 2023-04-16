@@ -14,6 +14,7 @@ import org.htmlunit.html._
 import org.htmlunit.html.parser.neko.HtmlUnitNekoHtmlParser
 import org.htmlunit.util.{NameValuePair, StringUtils}
 import org.htmlunit.util.UrlUtils
+import org.w3c.dom.Node._
 
 import net.ruippeixotog.scalascraper.browser.HtmlUnitBrowser._
 import net.ruippeixotog.scalascraper.model._
@@ -178,6 +179,9 @@ object HtmlUnitBrowser {
     }
 
     def text = underlying.getTextContent.trim
+
+    def ownText =
+      underlying.getChildren.asScala.collect { case node: DomText => node.getWholeText }.mkString
 
     def innerHtml =
       underlying.getChildNodes.iterator.asScala.map {

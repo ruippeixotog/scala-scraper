@@ -260,6 +260,14 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer with 
           body.attr("data-c") must throwA[NoSuchElementException]
         }
 
+        "with correct text and ownText methods" in {
+          val doc = browser.parseString(html)
+
+          val textNode = doc.root.select("#t").head
+          textNode.text mustEqual "this is some text with many styles"
+          textNode.ownText must beMatching("this is( )+text with( )+styles".r)
+        }
+
         "with correct innerHtml and outerHtml methods" in {
           val doc = browser.parseString(html)
 
