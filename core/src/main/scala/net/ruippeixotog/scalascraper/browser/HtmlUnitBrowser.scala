@@ -14,7 +14,6 @@ import org.htmlunit.html._
 import org.htmlunit.html.parser.neko.HtmlUnitNekoHtmlParser
 import org.htmlunit.util.{NameValuePair, StringUtils}
 import org.htmlunit.util.UrlUtils
-import org.w3c.dom.Node._
 
 import net.ruippeixotog.scalascraper.browser.HtmlUnitBrowser._
 import net.ruippeixotog.scalascraper.model._
