@@ -9,11 +9,11 @@ import scala.collection.JavaConverters._
 
 import org.apache.commons.io.IOUtils
 import org.apache.http.HttpStatus
-import com.gargoylesoftware.htmlunit._
-import com.gargoylesoftware.htmlunit.html._
-import com.gargoylesoftware.htmlunit.html.parser.neko.HtmlUnitNekoHtmlParser
-import com.gargoylesoftware.htmlunit.util.{NameValuePair, StringUtils}
-import com.gargoylesoftware.htmlunit.util.UrlUtils
+import org.htmlunit._
+import org.htmlunit.html._
+import org.htmlunit.html.parser.neko.HtmlUnitNekoHtmlParser
+import org.htmlunit.util.{NameValuePair, StringUtils}
+import org.htmlunit.util.UrlUtils
 
 import net.ruippeixotog.scalascraper.browser.HtmlUnitBrowser._
 import net.ruippeixotog.scalascraper.model._

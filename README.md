@@ -504,7 +504,7 @@ typedDoc.location.split("/").last
 
 def click(elem: HtmlUnitElement): Unit = {
   // the type param may be needed, as the original API uses Java wildcards
-  aElem.underlying.click[com.gargoylesoftware.htmlunit.Page]()
+  aElem.underlying.click[org.htmlunit.Page]()
 }
 
 // simulate a click on our recently modified element
