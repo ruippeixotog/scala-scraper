@@ -51,28 +51,23 @@ lazy val config = project
   )
 
 lazy val commonSettings = Seq(
-  resolvers ++= Seq(
-    Resolver.sonatypeRepo("snapshots"),
-    "Scalaz Bintray Repo" at "https://dl.bintray.com/scalaz/releases"
-  ),
-  scalacOptions ++= baseScalacOptions ++ (CrossVersion
-    .partialVersion(scalaVersion.value) match {
-    case Some((2, scalaMajor)) if scalaMajor <= 12 =>
-      Seq("-Ypartial-unification")
-    case _ => Seq.empty[String]
-  }),
+  // format: off
+  resolvers ++= Resolver.sonatypeOssRepos("snapshots"),
+  resolvers += "Scalaz Bintray Repo" at "https://dl.bintray.com/scalaz/releases",
+
+  scalacOptions ++= baseScalacOptions ++
+    (CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((2, scalaMajor)) if scalaMajor <= 12 =>
+        List("-Ypartial-unification")
+      case _ =>
+        Nil
+    }),
+
   scalafmtOnCompile := true,
   Test / fork := true,
-  publishTo := {
-    val nexus = "https://oss.sonatype.org/"
-    if (isSnapshot.value) Some("snapshots" at nexus + "content/repositories/snapshots")
-    else Some("releases" at nexus + "service/local/staging/deploy/maven2")
-  },
-  publishMavenStyle := true,
-  Test / publishArtifact := false,
-  pomIncludeRepository := { _ => false },
-  licenses := Seq("MIT License" -> url("http://www.opensource.org/licenses/mit-license.php")),
+
   homepage := Some(url("https://github.com/ruippeixotog/scala-scraper")),
+  licenses := Seq("MIT License" -> url("http://www.opensource.org/licenses/mit-license.php")),
   scmInfo := Some(
     ScmInfo(
       url("https://github.com/ruippeixotog/scala-scraper"),
@@ -82,7 +77,12 @@ lazy val commonSettings = Seq(
   ),
   developers := List(
     Developer("ruippeixotog", "Rui Gonçalves", "ruippeixotog@gmail.com", url("http://www.ruippeixotog.net"))
-  )
+  ),
+
+  publishMavenStyle := true,
+  Test / publishArtifact := false,
+  publishTo := sonatypePublishToBundle.value,
+  // format: on
 )
 
 // do not publish the root project
