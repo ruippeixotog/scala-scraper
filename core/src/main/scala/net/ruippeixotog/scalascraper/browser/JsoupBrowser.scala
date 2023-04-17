@@ -128,6 +128,8 @@ object JsoupBrowser {
 
     def text = underlying.text
 
+    def ownText = underlying.ownText
+
     def innerHtml = underlying.html
 
     def outerHtml = underlying.outerHtml

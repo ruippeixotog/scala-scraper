@@ -57,9 +57,13 @@ trait Element {
     */
   def attr(name: String): String
 
-  /** The text content inside this element.
+  /** The text content inside this element and any child nodes.
     */
   def text: String
+
+  /** The text content owned by this element only, i.e. without text inside children.
+    */
+  def ownText: String
 
   /** The HTML representation of the content inside this element as a string.
     */

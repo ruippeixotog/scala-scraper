@@ -179,6 +179,9 @@ object HtmlUnitBrowser {
 
     def text = underlying.getTextContent.trim
 
+    def ownText =
+      underlying.getChildren.asScala.collect { case node: DomText => node.getWholeText }.mkString
+
     def innerHtml =
       underlying.getChildNodes.iterator.asScala.map {
         case node: DomElement => HtmlUnitElement(node).outerHtml
