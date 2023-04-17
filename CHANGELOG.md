@@ -1,3 +1,10 @@
+### 3.1.0 (Apr 17, 2023)
+
+- New features
+  - Added a new `ownText` method to `Element`.
+- Breaking changes
+  - Upgraded htmlunit to 3.x.
+
 ### 3.0.0 (May 25, 2022)
 
 Support for Scala 3.1 was introduced.
