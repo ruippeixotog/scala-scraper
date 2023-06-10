@@ -3,7 +3,7 @@ import ReleaseTransformations._
 ThisBuild / organization := "net.ruippeixotog"
 
 ThisBuild / scalaVersion := "2.12.18"
-ThisBuild / crossScalaVersions := Seq("2.12.18", "2.13.10", "3.3.0")
+ThisBuild / crossScalaVersions := Seq("2.12.18", "2.13.11", "3.3.0")
 
 // taken from https://github.com/scala/bug/issues/12632
 ThisBuild / libraryDependencySchemes ++= Seq(
