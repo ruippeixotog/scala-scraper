@@ -18,7 +18,7 @@ lazy val core = project
     name := "scala-scraper",
     libraryDependencies ++= Seq(
       "com.github.nscala-time" %% "nscala-time" % "2.32.0",
-      "org.htmlunit" % "htmlunit" % "3.4.0",
+      "org.htmlunit" % "htmlunit" % "3.5.0",
       "org.jsoup" % "jsoup" % "1.16.1",
       "org.scalaz" %% "scalaz-core" % "7.3.7",
       "com.typesafe.akka" %% "akka-http" % "10.2.10" % "test" cross CrossVersion.for3Use2_13,
