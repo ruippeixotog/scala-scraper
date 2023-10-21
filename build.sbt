@@ -19,7 +19,7 @@ lazy val core = project
     libraryDependencies ++= Seq(
       "com.github.nscala-time" %% "nscala-time" % "2.32.0",
       "org.htmlunit" % "htmlunit" % "3.6.0",
-      "org.jsoup" % "jsoup" % "1.16.1",
+      "org.jsoup" % "jsoup" % "1.16.2",
       "org.scalaz" %% "scalaz-core" % "7.3.7",
       "com.typesafe.akka" %% "akka-http" % "10.2.10" % "test" cross CrossVersion.for3Use2_13,
       "com.typesafe.akka" %% "akka-stream" % "2.6.20" % "test" cross CrossVersion.for3Use2_13,
