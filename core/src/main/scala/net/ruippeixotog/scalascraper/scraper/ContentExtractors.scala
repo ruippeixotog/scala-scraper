@@ -110,16 +110,22 @@ object ContentExtractors {
 
         case (cs, oc :: ocTail) if cs.isEmpty || idx >= oc.idx =>
           val (tailCells, tailNewOc) = buildRow(idx + oc.colspan, cs, ocTail)
-          val newOc = if (oc.remRowspan <= 1) Nil else List(oc.copy(remRowspan = oc.remRowspan))
-          (List.fill(oc.colspan)(oc.cell) ::: tailCells, newOc ::: tailNewOc)
+          val newOc =
+            if (oc.remRowspan <= 1) Nil
+            else
+              List(oc.copy(remRowspan = oc.remRowspan))(
+                List.fill(oc.colspan)(oc.cell) ::: tailCells,
+                newOc ::: tailNewOc
+              )
 
         case (c :: cTail, ocs) =>
           val colspan = Try(c.attr("colspan").toInt).getOrElse(1)
           val rowspan = Try(c.attr("rowspan").toInt).getOrElse(1)
 
           val (tailCells, tailNewOc) = buildRow(idx + colspan, cTail, ocs)
-          val newOc = if (rowspan <= 1) Nil else List(OpenCell(idx, colspan, rowspan - 1, c))
-          (List.fill(colspan)(c) ::: tailCells, newOc ::: tailNewOc)
+          val newOc =
+            if (rowspan <= 1) Nil
+            else List(OpenCell(idx, colspan, rowspan - 1, c))(List.fill(colspan)(c) ::: tailCells, newOc ::: tailNewOc)
       }
     }
 
