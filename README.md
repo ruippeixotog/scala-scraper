@@ -23,7 +23,7 @@ This README contains the following sections:
 To use Scala Scraper in an existing SBT project with Scala 2.11 or newer, add the following dependency to your `build.sbt`:
 
 ```scala
-libraryDependencies += "net.ruippeixotog" %% "scala-scraper" % "3.1.1"
+libraryDependencies += "net.ruippeixotog" %% "scala-scraper" % "3.1.2"
 ```
 
 If you are using an older version of this library, see this document for the version you're using: [1.x](https://github.com/ruippeixotog/scala-scraper/blob/v1.2.1/README.md), [0.1.2](https://github.com/ruippeixotog/scala-scraper/blob/v0.1.2/README.md), [0.1.1](https://github.com/ruippeixotog/scala-scraper/blob/v0.1.1/README.md), [0.1](https://github.com/ruippeixotog/scala-scraper/blob/v0.1/README.md).
@@ -426,8 +426,6 @@ Just remember that you can only apply extraction operators `>>` and `>?>` to doc
 // applied to strings
 doc >> texts("#menu > span") >> "a"
 // error: value >> is not a member of Iterable[String]
-// doc >> texts("#menu > span") >> "a"
-// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ```
 
 Finally, if you prefer not using operators for the sake of code legibility, you can use alternative methods:

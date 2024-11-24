@@ -1,3 +1,7 @@
+### 3.1.2 (Nov 24, 2024)
+
+Maintenance update to update dependency versions.
+
 ### 3.1.1 (Dec 16, 2023)
 
 Maintenance update to update dependency versions.
