@@ -16,7 +16,7 @@ jobs:
           - scala: '2.13'
             scala-version: 2.13.16
           - scala: '3'
-            scala-version: 3.4.3
+            scala-version: 3.6.4
 
     steps:
       - name: Checkout repository
