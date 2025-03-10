@@ -1,4 +1,4 @@
-# Scala Scraper [![Build Status](https://github.com/ruippeixotog/scala-scraper/workflows/CI/badge.svg?branch=master)](https://github.com/ruippeixotog/scala-scraper/actions?query=workflow%3ACI+branch%3Amaster) [![Coverage Status](https://coveralls.io/repos/github/ruippeixotog/scala-scraper/badge.svg?branch=master)](https://coveralls.io/github/ruippeixotog/scala-scraper?branch=master) [![Maven Central](https://img.shields.io/maven-central/v/net.ruippeixotog/scala-scraper_2.12.svg)](https://maven-badges.herokuapp.com/maven-central/net.ruippeixotog/scala-scraper_2.12) [![Join the chat at https://gitter.im/ruippeixotog/scala-scraper](https://badges.gitter.im/ruippeixotog/scala-scraper.svg)](https://gitter.im/ruippeixotog/scala-scraper)
+# Scala Scraper [![Build Status](https://github.com/ruippeixotog/scala-scraper/workflows/CI/badge.svg?branch=master)](https://github.com/ruippeixotog/scala-scraper/actions?query=workflow%3ACI+branch%3Amaster) [![Coverage Status](https://coveralls.io/repos/github/ruippeixotog/scala-scraper/badge.svg?branch=master)](https://coveralls.io/github/ruippeixotog/scala-scraper?branch=master) [![Maven Central](https://img.shields.io/maven-central/v/net.ruippeixotog/scala-scraper_2.13.svg)](https://maven-badges.herokuapp.com/maven-central/net.ruippeixotog/scala-scraper_2.13) [![Join the chat at https://gitter.im/ruippeixotog/scala-scraper](https://badges.gitter.im/ruippeixotog/scala-scraper.svg)](https://gitter.im/ruippeixotog/scala-scraper)
 
 A library providing a DSL for loading and extracting content from HTML pages.
 
@@ -20,7 +20,7 @@ This README contains the following sections:
 
 ## Quick Start
 
-To use Scala Scraper in an existing SBT project with Scala 2.11 or newer, add the following dependency to your `build.sbt`:
+To use Scala Scraper in an existing SBT project with Scala 2.13 or newer, add the following dependency to your `build.sbt`:
 
 ```scala
 libraryDependencies += "net.ruippeixotog" %% "scala-scraper" % "@VERSION@"

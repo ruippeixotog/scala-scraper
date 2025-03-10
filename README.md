@@ -1,4 +1,4 @@
-# Scala Scraper [![Build Status](https://github.com/ruippeixotog/scala-scraper/workflows/CI/badge.svg?branch=master)](https://github.com/ruippeixotog/scala-scraper/actions?query=workflow%3ACI+branch%3Amaster) [![Coverage Status](https://coveralls.io/repos/github/ruippeixotog/scala-scraper/badge.svg?branch=master)](https://coveralls.io/github/ruippeixotog/scala-scraper?branch=master) [![Maven Central](https://img.shields.io/maven-central/v/net.ruippeixotog/scala-scraper_2.12.svg)](https://maven-badges.herokuapp.com/maven-central/net.ruippeixotog/scala-scraper_2.12) [![Join the chat at https://gitter.im/ruippeixotog/scala-scraper](https://badges.gitter.im/ruippeixotog/scala-scraper.svg)](https://gitter.im/ruippeixotog/scala-scraper)
+# Scala Scraper [![Build Status](https://github.com/ruippeixotog/scala-scraper/workflows/CI/badge.svg?branch=master)](https://github.com/ruippeixotog/scala-scraper/actions?query=workflow%3ACI+branch%3Amaster) [![Coverage Status](https://coveralls.io/repos/github/ruippeixotog/scala-scraper/badge.svg?branch=master)](https://coveralls.io/github/ruippeixotog/scala-scraper?branch=master) [![Maven Central](https://img.shields.io/maven-central/v/net.ruippeixotog/scala-scraper_2.13.svg)](https://maven-badges.herokuapp.com/maven-central/net.ruippeixotog/scala-scraper_2.13) [![Join the chat at https://gitter.im/ruippeixotog/scala-scraper](https://badges.gitter.im/ruippeixotog/scala-scraper.svg)](https://gitter.im/ruippeixotog/scala-scraper)
 
 A library providing a DSL for loading and extracting content from HTML pages.
 
@@ -20,7 +20,7 @@ This README contains the following sections:
 
 ## Quick Start
 
-To use Scala Scraper in an existing SBT project with Scala 2.11 or newer, add the following dependency to your `build.sbt`:
+To use Scala Scraper in an existing SBT project with Scala 2.13 or newer, add the following dependency to your `build.sbt`:
 
 ```scala
 libraryDependencies += "net.ruippeixotog" %% "scala-scraper" % "3.1.3"
@@ -62,10 +62,10 @@ doc >> text("#header")
 // Extract the <span> elements inside #menu
 val items = doc >> elementList("#menu span")
 // items: List[Element] = List(
-//   JsoupElement(<span><a href="#home">Home</a></span>),
-//   JsoupElement(<span><a href="#section1">Section 1</a></span>),
-//   JsoupElement(<span class="active">Section 2</span>),
-//   JsoupElement(<span><a href="#section3">Section 3</a></span>)
+//   JsoupElement(underlying = <span><a href="#home">Home</a></span>),
+//   JsoupElement(underlying = <span><a href="#section1">Section 1</a></span>),
+//   JsoupElement(underlying = <span class="active">Section 2</span>),
+//   JsoupElement(underlying = <span><a href="#section3">Section 3</a></span>)
 // )
 
 // From each item, extract all the text inside their <a> elements
@@ -85,8 +85,8 @@ If the element may or may not be in the page, the `>?>` tries to extract the con
 // doesn't:
 doc >?> element("#footer")
 // res3: Option[Element] = Some(
-//   JsoupElement(
-//     <div id="footer">
+//   value = JsoupElement(
+//     underlying = <div id="footer">
 //  <span>No copyright 2014</span>
 // </div>
 //   )
@@ -155,11 +155,11 @@ doc >> extractor("#date", text, asLocalDate("yyyy-MM-dd"))
 
 // Extract the text of all "#mytable td" elements and parse each of them as a number
 doc >> extractor("#mytable td", texts, seq(asDouble))
-// res6: TraversableOnce[Double] = non-empty iterator
+// res6: TraversableOnce[Double] = List(3.0, 15.0, 15.0, 1.0)
 
 // Extract an element "h1" and do no parsing (the default parsing behavior)
 doc >> extractor("h1", element, asIs[Element])
-// res7: Element = JsoupElement(<h1>Test page h1</h1>)
+// res7: Element = JsoupElement(underlying = <h1>Test page h1</h1>)
 ```
 
 With the help of the implicit conversions provided by the DSL, we can write more succinctly the most common extraction cases:
@@ -173,10 +173,10 @@ Because of that, one can write the expressions in the Quick Start section, as we
 ```scala
 // Extract all the "h3" elements (as a lazy iterable)
 doc >> "h3"
-// res8: ElementQuery[Element] = LazyElementQuery(
-//   JsoupElement(<h3>Section 1 h3</h3>),
-//   JsoupElement(<h3>Section 2 h3</h3>),
-//   JsoupElement(<h3>Section 3 h3</h3>)
+// res8: ElementQuery[Element] = Iterable(
+//   JsoupElement(underlying = <h3>Section 1 h3</h3>),
+//   JsoupElement(underlying = <h3>Section 2 h3</h3>),
+//   JsoupElement(underlying = <h3>Section 3 h3</h3>)
 // )
 
 // Extract all text inside this document
@@ -186,7 +186,7 @@ doc >> allText
 // Extract the elements with class ".active"
 doc >> elementList(".active")
 // res10: List[Element] = List(
-//   JsoupElement(<span class="active">Section 2</span>)
+//   JsoupElement(underlying = <span class="active">Section 2</span>)
 // )
 
 // Extract the text inside each "p" element
@@ -229,8 +229,8 @@ Some validation examples:
 // Check if the title of the page is "Test page"
 doc >/~ validator(text("title"))(_ == "Test page")
 // res12: Either[Unit, browser.DocumentType] = Right(
-//   JsoupDocument(
-//     <!doctype html>
+//   value = JsoupDocument(
+//     underlying = <!doctype html>
 // <html lang="en">
 //  <head>
 //   <meta charset="utf-8">
@@ -275,11 +275,11 @@ doc >/~ validator(text("title"))(_ == "Test page")
 
 // Check if there are at least 3 ".active" elements
 doc >/~ validator(".active")(_.size >= 3)
-// res13: Either[Unit, browser.DocumentType] = Left(())
+// res13: Either[Unit, browser.DocumentType] = Left(value = ())
 
 // Check if the text in ".desc" contains the word "blue"
 doc >/~ validator(allText("#mytable"))(_.contains("blue"))
-// res14: Either[Unit, browser.DocumentType] = Left(())
+// res14: Either[Unit, browser.DocumentType] = Left(value = ())
 ```
 
 When a document fails a validation, it may be useful to identify the problem by pattern-matching it against common scraping pitfalls, such as a login page that appears unexpectedly because of an expired cookie, dynamic content that disappeared or server-side errors. If we define validators for both the success case and error cases:
@@ -297,7 +297,7 @@ They can be used in combination to create more informative validations:
 
 ```scala
 doc >/~ (succ, errors)
-// res15: Either[String, browser.DocumentType] = Left("Too few items")
+// res15: Either[String, browser.DocumentType] = Left(value = "Too few items")
 ```
 
 Validators matching errors were constructed above using an additional `result` parameter after the extractor. That value is returned wrapped in a `Left` if that particular error occurs during a validation.
@@ -322,9 +322,9 @@ doc >> (text("title"), elementList("#myform input"))
 // res17: (String, List[Element]) = (
 //   "Test page",
 //   List(
-//     JsoupElement(<input type="text" name="name" value="John">),
-//     JsoupElement(<input type="text" name="address">),
-//     JsoupElement(<input type="submit" value="Submit">)
+//     JsoupElement(underlying = <input type="text" name="name" value="John">),
+//     JsoupElement(underlying = <input type="text" name="address">),
+//     JsoupElement(underlying = <input type="submit" value="Submit">)
 //   )
 // )
 ```
@@ -338,7 +338,7 @@ List(doc, doc) >> text("title")
 
 // Extract the title if the document is a `Some`
 Option(doc) >> text("title")
-// res19: Option[String] = Some("Test page")
+// res19: Option[String] = Some(value = "Test page")
 ```
 
 You can apply other extractors and validators to the result of an extraction, which is particularly powerful combined with the feature shown above:
@@ -350,20 +350,22 @@ doc >> element("#menu") >> text(".active")
 
 // Same as above, but in a scenario where "#menu" can be absent
 doc >?> element("#menu") >> text(".active")
-// res21: Option[String] = Some("Section 2")
+// res21: Option[String] = Some(value = "Section 2")
 
 // Same as above, but check if the "#menu" has any "span" element before
 // extracting the text
 doc >?> element("#menu") >/~ validator("span")(_.nonEmpty) >> text(".active")
-// res22: Option[Either[Unit, String]] = Some(Right("Section 2"))
+// res22: Option[Either[Unit, String]] = Some(
+//   value = Right(value = "Section 2")
+// )
 
 // Extract the links inside all the "#menu > span" elements
 doc >> elementList("#menu > span") >?> attr("href")("a")
 // res23: List[Option[String]] = List(
-//   Some("#home"),
-//   Some("#section1"),
+//   Some(value = "#home"),
+//   Some(value = "#section1"),
 //   None,
-//   Some("#section3")
+//   Some(value = "#section3")
 // )
 ```
 
@@ -394,16 +396,16 @@ And they can be used just as extractors created using other means provided by th
 ```scala
 doc >> spanLinks
 // res24: List[Option[String]] = List(
-//   Some("#home"),
-//   Some("#section1"),
+//   Some(value = "#home"),
+//   Some(value = "#section1"),
 //   None,
-//   Some("#section3"),
-//   None,
-//   None,
+//   Some(value = "#section3"),
 //   None,
 //   None,
 //   None,
-//   Some("#"),
+//   None,
+//   None,
+//   Some(value = "#"),
 //   None
 // )
 
@@ -412,10 +414,10 @@ doc >> spanLinksCount
 
 doc >> menuLinks
 // res26: List[Option[String]] = List(
-//   Some("#home"),
-//   Some("#section1"),
+//   Some(value = "#home"),
+//   Some(value = "#section1"),
 //   None,
-//   Some("#section3")
+//   Some(value = "#section3")
 // )
 ```
 
@@ -441,7 +443,7 @@ doc tryExtract element("#optional")
 
 // `validateWith` is the same as `>/~`
 doc validateWith (succ, errors)
-// res30: Either[String, browser.DocumentType] = Left("Too few items")
+// res30: Either[String, browser.DocumentType] = Left(value = "Too few items")
 ```
 
 ## Using Browser-Specific Features
@@ -470,7 +472,9 @@ The content extractors `pElement`, `pElements` and `pElementList` are special ty
 ```scala
 // extract the "a" inside the second child of "#menu"
 val aElem = typedDoc >> pElement("#menu span:nth-child(2) a")
-// aElem: HtmlUnitElement = HtmlUnitElement(HtmlAnchor[<a href="#section1_2">])
+// aElem: HtmlUnitElement = HtmlUnitElement(
+//   underlying = HtmlAnchor[<a href="#section1_2">]
+// )
 ```
 
 Note that extracting using CSS queries also keeps the concrete types of the elements:
@@ -479,7 +483,7 @@ Note that extracting using CSS queries also keeps the concrete types of the elem
 // same thing as above
 typedDoc >> "#menu" >> "span:nth-child(2)" >> "a" >> pElement
 // res31: pElement.Out[HtmlUnitElement] = HtmlUnitElement(
-//   HtmlAnchor[<a href="#section1_2">]
+//   underlying = HtmlAnchor[<a href="#section1_2">]
 // )
 ```
 

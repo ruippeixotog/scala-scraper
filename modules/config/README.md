@@ -6,7 +6,7 @@ _NOTE: this module is in a beta stage. Please expect API changes in future relea
 
 ## Quick Start
 
-To use this module in an existing SBT project with Scala 2.11 or newer and `scala-scraper`, add the following dependency to your `build.sbt`:
+To use this module in an existing SBT project with Scala 2.13 or newer and `scala-scraper`, add the following dependency to your `build.sbt`:
 
 ```scala
 libraryDependencies += "net.ruippeixotog" %% "scala-scraper-config" % "3.1.3"
