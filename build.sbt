@@ -2,8 +2,8 @@ import ReleaseTransformations._
 
 ThisBuild / organization := "net.ruippeixotog"
 
-ThisBuild / scalaVersion := "2.12.20"
-ThisBuild / crossScalaVersions := Seq("2.12.20", "2.13.15", "3.6.1")
+ThisBuild / scalaVersion := "2.13.16"
+ThisBuild / crossScalaVersions := Seq("2.13.16", "3.6.1")
 
 // taken from https://github.com/scala/bug/issues/12632
 ThisBuild / libraryDependencySchemes ++= Seq(
@@ -17,13 +17,13 @@ lazy val core = project
   .settings(
     name := "scala-scraper",
     libraryDependencies ++= Seq(
-      "com.github.nscala-time" %% "nscala-time" % "2.34.0",
-      "org.htmlunit" % "htmlunit" % "4.4.0",
-      "org.jsoup" % "jsoup" % "1.18.1",
+      "com.github.nscala-time" %% "nscala-time" % "3.0.0",
+      "org.htmlunit" % "htmlunit" % "4.10.0",
+      "org.jsoup" % "jsoup" % "1.19.1",
       "org.scalaz" %% "scalaz-core" % "7.3.8",
       "com.typesafe.akka" %% "akka-http" % "10.2.10" % "test" cross CrossVersion.for3Use2_13,
       "com.typesafe.akka" %% "akka-stream" % "2.6.20" % "test" cross CrossVersion.for3Use2_13,
-      "org.slf4j" % "slf4j-nop" % "2.0.16" % "test",
+      "org.slf4j" % "slf4j-nop" % "2.0.17" % "test",
       "org.specs2" %% "specs2-core" % "4.20.9" % "test"
     ),
     mdocOut := file(".")
