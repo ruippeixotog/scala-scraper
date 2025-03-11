@@ -83,7 +83,7 @@ object ContentParsers {
     * @return
     *   a content parser for parsing a sequence of elements by applying `parser` to each of them.
     */
-  def seq[C, A](parser: C => A): TraversableOnce[C] => TraversableOnce[A] = _.map(parser)
+  def seq[C, A](parser: C => A): IterableOnce[C] => IterableOnce[A] = _.iterator.map(parser)
 
   /** A content parser with extra options for parsing joda-time models.
     */

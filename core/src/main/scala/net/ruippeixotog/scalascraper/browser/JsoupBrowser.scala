@@ -1,18 +1,16 @@
 package net.ruippeixotog.scalascraper.browser
 
-import java.io.{File, InputStream}
-import java.net.{InetSocketAddress, Proxy => JavaProxy}
-
-import scala.collection.JavaConverters._
-import scala.collection.mutable
-
+import net.ruippeixotog.scalascraper.browser.JsoupBrowser._
+import net.ruippeixotog.scalascraper.model._
+import net.ruippeixotog.scalascraper.util._
 import org.jsoup.Connection.Method._
 import org.jsoup.Connection.Response
 import org.jsoup.{Connection, Jsoup}
 
-import net.ruippeixotog.scalascraper.browser.JsoupBrowser._
-import net.ruippeixotog.scalascraper.model._
-import net.ruippeixotog.scalascraper.util._
+import java.io.{File, InputStream}
+import java.net.{InetSocketAddress, Proxy => JavaProxy}
+import scala.collection.mutable
+import scala.jdk.CollectionConverters._
 
 /** A [[Browser]] implementation based on [[http://jsoup.org jsoup]], a Java HTML parser library. `JsoupBrowser`
   * provides powerful and efficient document querying, but it doesn't run JavaScript in the pages. As such, it is

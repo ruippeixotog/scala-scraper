@@ -1,23 +1,20 @@
 package net.ruippeixotog.scalascraper.browser
 
-import java.io.{File, InputStream}
-import java.net.URL
-import java.nio.charset.Charset
-import java.util.UUID
-
-import scala.collection.JavaConverters._
-
+import net.ruippeixotog.scalascraper.browser.HtmlUnitBrowser._
+import net.ruippeixotog.scalascraper.model._
+import net.ruippeixotog.scalascraper.util._
 import org.apache.commons.io.IOUtils
 import org.apache.http.HttpStatus
 import org.htmlunit._
 import org.htmlunit.html._
-import org.htmlunit.html.parser.neko.HtmlUnitNekoHtmlParser
-import org.htmlunit.util.{NameValuePair, StringUtils}
-import org.htmlunit.util.UrlUtils
+import org.htmlunit.util.{NameValuePair, StringUtils, UrlUtils}
 
-import net.ruippeixotog.scalascraper.browser.HtmlUnitBrowser._
-import net.ruippeixotog.scalascraper.model._
-import net.ruippeixotog.scalascraper.util._
+import java.io.{File, InputStream}
+import java.net.URL
+import java.net.URI
+import java.nio.charset.Charset
+import java.util.UUID
+import scala.jdk.CollectionConverters._
 
 /** A [[Browser]] implementation based on [[http://htmlunit.sourceforge.net HtmlUnit]], a GUI-less browser for Java
   * programs. `HtmlUnitBrowser` simulates thoroughly a web browser, executing JavaScript code in the pages besides
@@ -56,16 +53,16 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME, proxy
   }
 
   def get(url: String): HtmlUnitDocument =
-    exec(newRequest(new URL(url)))
+    exec(newRequest(new URI(url).toURL))
 
   def post(url: String, form: Map[String, String]): HtmlUnitDocument = {
-    val req = newRequest(new URL(url), HttpMethod.POST)
+    val req = newRequest(new URI(url).toURL, HttpMethod.POST)
     req.setRequestParameters(form.map { case (k, v) => new NameValuePair(k, v) }.toBuffer.asJava)
     exec(req)
   }
 
   def parseFile(file: File, charset: String): HtmlUnitDocument = {
-    val req = newRequest(new URL(s"file://${file.getAbsolutePath}"), HttpMethod.GET)
+    val req = newRequest(new URI(s"file://${file.getAbsolutePath}").toURL, HttpMethod.GET)
     req.setCharset(Charset.forName(charset))
     exec(req)
   }
@@ -91,7 +88,7 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME, proxy
   }
 
   def cookies(url: String) =
-    underlying.getCookies(new URL(url)).asScala.map { c => c.getName -> c.getValue }.toMap
+    underlying.getCookies(new URI(url).toURL).asScala.map { c => c.getName -> c.getValue }.toMap
 
   def clearCookies() = underlying.getCookieManager.clearCookies()
 
@@ -153,20 +150,20 @@ object HtmlUnitBrowser {
     def children = underlying.getChildElements.asScala.map(HtmlUnitElement.apply)
 
     def siblings = {
-      val previousSiblings = Stream.iterate(underlying)(_.getPreviousElementSibling).tail.takeWhile(_ != null)
-      val nextSiblings = Stream.iterate(underlying)(_.getNextElementSibling).tail.takeWhile(_ != null)
+      val previousSiblings = LazyList.iterate(underlying)(_.getPreviousElementSibling).tail.takeWhile(_ != null)
+      val nextSiblings = LazyList.iterate(underlying)(_.getNextElementSibling).tail.takeWhile(_ != null)
       (previousSiblings.reverse ++ nextSiblings).map(HtmlUnitElement.apply)
     }
 
     def childNodes = underlying.getChildNodes.asScala.flatMap(HtmlUnitNode.apply)
 
     def siblingNodes = {
-      val previousSiblings = Stream.iterate[DomNode](underlying)(_.getPreviousSibling).tail.takeWhile(_ != null)
-      val nextSiblings = Stream.iterate[DomNode](underlying)(_.getNextSibling).tail.takeWhile(_ != null)
+      val previousSiblings = LazyList.iterate[DomNode](underlying)(_.getPreviousSibling).tail.takeWhile(_ != null)
+      val nextSiblings = LazyList.iterate[DomNode](underlying)(_.getNextSibling).tail.takeWhile(_ != null)
       (previousSiblings.reverse ++ nextSiblings).flatMap(HtmlUnitNode.apply)
     }
 
-    def attrs = underlying.getAttributesMap.asScala.mapValues(_.getValue).toMap
+    def attrs = underlying.getAttributesMap.asScala.view.mapValues(_.getValue).toMap
 
     def hasAttr(name: String) =
       underlying.hasAttribute(name) &&
