@@ -99,7 +99,7 @@ class DSLExtractingSpec extends Specification with BrowserHelper {
 
       "support immediate parsing of numbers after extraction" in {
         doc >> extractor("#rating", stext, asDouble) mustEqual 4.5
-        doc >> extractor("#mytable td", texts, seq(asInt)).map(_.toSeq) mustEqual Seq(3, 15, 15, 1)
+        doc >> extractor("#mytable td", texts, seq(asInt)).map(_.iterator.toSeq) mustEqual Seq(3, 15, 15, 1)
       }
 
       "allow immediate parsing of dates after extraction" in {
