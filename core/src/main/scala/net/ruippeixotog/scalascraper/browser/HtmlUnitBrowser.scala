@@ -62,7 +62,8 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME, proxy
   }
 
   def parseFile(file: File, charset: String): HtmlUnitDocument = {
-    val req = newRequest(new URI(s"file://${file.getAbsolutePath}").toURL, HttpMethod.GET)
+    val uri = file.toURI().toURL
+    val req = newRequest(uri, HttpMethod.GET)
     req.setCharset(Charset.forName(charset))
     exec(req)
   }
