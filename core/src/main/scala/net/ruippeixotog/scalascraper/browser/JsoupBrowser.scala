@@ -5,6 +5,7 @@ import net.ruippeixotog.scalascraper.model._
 import net.ruippeixotog.scalascraper.util._
 import org.jsoup.Connection.Method._
 import org.jsoup.Connection.Response
+import org.jsoup.parser.Parser
 import org.jsoup.{Connection, Jsoup}
 
 import java.io.{File, InputStream}
@@ -28,7 +29,11 @@ import scala.jdk.CollectionConverters._
   * @param proxy
   *   an optional proxy configuration to use
   */
-class JsoupBrowser(val userAgent: String = "jsoup/1.8", val proxy: JavaProxy = null) extends Browser {
+class JsoupBrowser(
+    val userAgent: String = "jsoup/1.8",
+    val proxy: JavaProxy = null,
+    val parser: Parser = Parser.htmlParser()
+) extends Browser {
   type DocumentType = JsoupDocument
 
   private[this] val cookieMap = mutable.Map.empty[String, String]
@@ -40,13 +45,13 @@ class JsoupBrowser(val userAgent: String = "jsoup/1.8", val proxy: JavaProxy = n
     executePipeline(Jsoup.connect(url).method(POST).proxy(proxy).data(form.asJava))
 
   def parseFile(file: File, charset: String): JsoupDocument =
-    JsoupDocument(Jsoup.parse(file, charset))
+    JsoupDocument(Jsoup.parse(file, charset, baseUri, parser))
 
   def parseString(html: String): JsoupDocument =
-    JsoupDocument(Jsoup.parse(html))
+    JsoupDocument(Jsoup.parse(html, baseUri, parser))
 
   def parseInputStream(inputStream: InputStream, charset: String): JsoupDocument =
-    using(inputStream) { _ => JsoupDocument(Jsoup.parse(inputStream, charset, "")) }
+    using(inputStream) { _ => JsoupDocument(Jsoup.parse(inputStream, charset, baseUri, parser)) }
 
   def cookies(url: String) = cookieMap.toMap
 
@@ -163,4 +168,5 @@ object JsoupBrowser {
     def toHtml = underlying.outerHtml
   }
 
+  private val baseUri = ""
 }

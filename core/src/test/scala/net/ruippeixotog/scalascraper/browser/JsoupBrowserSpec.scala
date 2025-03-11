@@ -1,11 +1,9 @@
 package net.ruippeixotog.scalascraper.browser
 
-import java.net.{InetSocketAddress, Proxy}
-
 import akka.http.scaladsl.server.Directives._
+import net.ruippeixotog.scalascraper.util.LineCompare
+import org.jsoup.parser.{ParseSettings, Parser}
 import org.specs2.mutable.Specification
-
-import net.ruippeixotog.scalascraper.SocksTestHelper
 
 class JsoupBrowserSpec extends Specification with TestServer {
 
@@ -25,6 +23,29 @@ class JsoupBrowserSpec extends Specification with TestServer {
 
       val doc = browser.get(testServerUri("agent"))
       doc.body.text mustEqual "test-agent"
+    }
+
+    "pass custom html parser with parse settings" in {
+      val parser = Parser.htmlParser()
+      parser.settings(new ParseSettings(true, true))
+      val browser = new JsoupBrowser(parser = parser)
+
+      val html = """
+        |<html>
+        |  <head>
+        |    <title>Test</title>
+        |  </head>
+        |  <body>
+        |    <div id="content" customSnakeTag="testValue">
+        |      <p>Some text</p>
+        |    </div>
+        |  </body>
+        |</html>
+      """.stripMargin
+
+      val parseResult = browser.parseString(html).toHtml
+
+      LineCompare.compare(html, parseResult) mustEqual true
     }
   }
 }
