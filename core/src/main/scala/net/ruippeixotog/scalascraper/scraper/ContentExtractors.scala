@@ -10,7 +10,7 @@ import net.ruippeixotog.scalascraper.model.{Element, ElementQuery}
   * retrieved.
   */
 object ContentExtractors {
-  @inline private[this] implicit def funcToExtractor[E <: Element, A](f: ElementQuery[E] => A): HtmlExtractor[E, A] =
+  @inline private implicit def funcToExtractor[E <: Element, A](f: ElementQuery[E] => A): HtmlExtractor[E, A] =
     HtmlExtractor(f)
 
   /** An extractor for the first element matched.

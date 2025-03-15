@@ -12,7 +12,7 @@ object ContentParsers {
 
   /** Leaves the extracted content as is.
     */
-  def asIs[C] = identity[C] _
+  def asIs[C] = identity[C]
 
   /** Parses text content as an `Int` value.
     */
@@ -88,10 +88,10 @@ object ContentParsers {
   /** A content parser with extra options for parsing joda-time models.
     */
   class AsJodaTime[A](formats: Seq[String], parse: (DateTimeFormatter, String) => A) extends (String => A) {
-    protected[this] lazy val dateParsers = formats.map(DateTimeFormat.forPattern(_).getParser)
-    protected[this] lazy val formatter = new DateTimeFormatterBuilder().append(null, dateParsers.toArray).toFormatter
+    protected lazy val dateParsers = formats.map(DateTimeFormat.forPattern(_).getParser)
+    protected lazy val formatter = new DateTimeFormatterBuilder().append(null, dateParsers.toArray).toFormatter
 
-    def apply(content: String) = parse(formatter, content)
+    def apply(content: String): A = parse(formatter, content)
   }
 
   /** A content parser with extra options for parsing `LocalDate`s.
@@ -115,7 +115,7 @@ object ContentParsers {
   /** A content parser with extra options for the retrieval of the first match of a regex.
     */
   class RegexMatch private[ContentParsers] (regex: Regex) extends (String => String) {
-    def apply(content: String) = regex.findFirstIn(content).get
+    def apply(content: String): String = regex.findFirstIn(content).get
 
     /** Matches text content against a regex and returns the first captured group of the first match.
       */
@@ -129,7 +129,7 @@ object ContentParsers {
   /** A content parser with extra options for the retrieval of all the matches of a regex.
     */
   class RegexMatches private[ContentParsers] (regex: Regex) extends (String => Iterator[String]) {
-    def apply(content: String) = regex.findAllIn(content)
+    def apply(content: String): Iterator[String] = regex.findAllIn(content)
 
     /** Matches text content against a regex and returns the first captured group of all the matches.
       */

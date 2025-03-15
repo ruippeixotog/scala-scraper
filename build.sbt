@@ -64,10 +64,8 @@ lazy val commonSettings = Seq(
 
   scalacOptions ++= baseScalacOptions ++
     (CrossVersion.partialVersion(scalaVersion.value) match {
-      case Some((2, scalaMajor)) if scalaMajor <= 12 =>
-        List("-Ypartial-unification")
-      case _ =>
-        Nil
+      case Some((2, _)) => List("-Xsource:3")
+      case _ => List("-rewrite", "-source", "3.4-migration")
     }),
 
   scalafmtOnCompile := true,
