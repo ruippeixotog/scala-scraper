@@ -107,31 +107,31 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME, proxy
     new HtmlUnitBrowser(browserType, Some(newProxyConf))
   }
 
-  protected[this] def defaultClientSettings(client: WebClient): Unit = {
+  protected def defaultClientSettings(client: WebClient): Unit = {
     client.getOptions.setCssEnabled(false)
     client.getOptions.setThrowExceptionOnScriptError(false)
     proxy.foreach { proxy => client.getOptions.setProxyConfig(proxy) }
   }
 
-  protected[this] def defaultRequestSettings(req: WebRequest): Unit = {
+  protected def defaultRequestSettings(req: WebRequest): Unit = {
     req.setAdditionalHeader("Accept", "text/html,application/xhtml+xml,application/xml")
     req.setAdditionalHeader("Accept-Charset", "utf-8")
   }
 
-  private[this] def newWebResponseData(inputStream: InputStream, charset: String): WebResponseData = {
+  private def newWebResponseData(inputStream: InputStream, charset: String): WebResponseData = {
     val bytes = IOUtils.toByteArray(inputStream)
     val compiledHeaders = List(new NameValuePair("Content-Type", "text/html; charset=" + charset))
     new WebResponseData(bytes, HttpStatus.SC_OK, "OK", compiledHeaders.asJava)
   }
 
-  private[this] def newRequest(url: URL, method: HttpMethod = HttpMethod.GET, charset: Option[String] = None) = {
+  private def newRequest(url: URL, method: HttpMethod = HttpMethod.GET, charset: Option[String] = None) = {
     val req = new WebRequest(url, method)
     charset.map(Charset.forName).foreach(req.setCharset)
     defaultRequestSettings(req)
     req
   }
 
-  private[this] def newWindow(): WebWindow =
+  private def newWindow(): WebWindow =
     underlying.synchronized {
       underlying.openTargetWindow(underlying.getCurrentWindow, null, UUID.randomUUID().toString)
     }
@@ -199,7 +199,7 @@ object HtmlUnitBrowser {
       s"<$tagName$attrsStr>$innerHtml</$tagName>"
     }
 
-    private[this] def selectUnderlying(cssQuery: String): Iterator[HtmlUnitElement] =
+    private def selectUnderlying(cssQuery: String): Iterator[HtmlUnitElement] =
       underlying.querySelectorAll(cssQuery).iterator.asScala.collect { case elem: DomElement => HtmlUnitElement(elem) }
 
     def select(cssQuery: String): ElementQuery[HtmlUnitElement] =
@@ -218,19 +218,20 @@ object HtmlUnitBrowser {
   case class HtmlUnitDocument(window: WebWindow) extends Document {
     type ElementType = HtmlUnitElement
 
-    private[this] var _underlying: SgmlPage = _
+    private var _underlying: Option[SgmlPage] = None
 
-    def underlying: SgmlPage = {
-      if (_underlying == null || window.getEnclosedPage.getUrl != _underlying.getUrl) {
-        _underlying = window.getEnclosedPage match {
+    def underlying: SgmlPage = _underlying
+      .filter(_.getUrl == window.getEnclosedPage.getUrl)
+      .getOrElse {
+        val newPage = window.getEnclosedPage match {
           case page: SgmlPage => page
           case page: TextPage =>
             val response = new StringWebResponse(page.getContent, page.getUrl)
             new DefaultPageCreator().createPage(response, window).asInstanceOf[SgmlPage]
         }
+        _underlying = Some(newPage)
+        newPage
       }
-      _underlying
-    }
 
     def location = underlying.getUrl.toString
 

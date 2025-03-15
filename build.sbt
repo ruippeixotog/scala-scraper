@@ -65,7 +65,7 @@ lazy val commonSettings = Seq(
   scalacOptions ++= baseScalacOptions ++
     (CrossVersion.partialVersion(scalaVersion.value) match {
       case Some((2, _)) => List("-Xsource:3")
-      case _ => Nil
+      case _ => List("-rewrite", "-source", "3.4-migration")
     }),
 
   scalafmtOnCompile := true,

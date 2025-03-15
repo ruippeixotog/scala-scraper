@@ -70,8 +70,8 @@ object HeadlineVerboseApp extends App {
   val browser = JsoupBrowser()
 
   for {
-    headline <- browser.get("http://observador.pt") validateWith (succ, errs) extract element("h1 a")
-    headlineDesc = browser.get(headline.attr("href")) extract text(".lead")
+    headline <- browser.get("http://observador.pt") `validateWith` (succ, errs) `extract` element("h1 a")
+    headlineDesc = browser.get(headline.attr("href")) `extract` text(".lead")
   } println("== " + headline.text + " ==\n" + headlineDesc)
 }
 
@@ -82,7 +82,7 @@ object MusicGenreTreeApp extends App {
     def leaves = root >> elementList("> a.genre") map { e => e.text -> e }
     def nodes = root >> elementList("> div:has(b:has(a.genre))") >> (text(".genre"), element("blockquote"))
 
-    def children: Map[String, GenreNode] = SortedMap(leaves ++ nodes: _*).mapValues(GenreNode.apply).toMap
+    def children: Map[String, GenreNode] = SortedMap((leaves ++ nodes)*).mapValues(GenreNode.apply).toMap
 
     def renderYaml(d: Int = 0): String =
       children.map {

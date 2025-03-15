@@ -35,20 +35,20 @@ class ConfigLoadingHelpersSpec extends Specification {
       docEmpty >/~ validatorAt(conf, "attr") must beLeft(())
 
       doc >/~ validatorAt(conf, "with-result") must beRight(doc)
-      doc errorIf validatorAt[Int](conf, "with-result") must beLeft(5)
-      doc errorIf validatorAt[String](conf, "with-result") must beLeft("5")
-      doc errorIf validatorAt[Boolean](conf, "with-result") must throwAn[Exception]
+      doc `errorIf` validatorAt[Int](conf, "with-result") must beLeft(5)
+      doc `errorIf` validatorAt[String](conf, "with-result") must beLeft("5")
+      doc `errorIf` validatorAt[Boolean](conf, "with-result") must throwAn[Exception]
 
       doc >/~ validatorAt(conf, "exists") must beRight(doc)
       docEmpty >/~ validatorAt(conf, "exists") must beRight(docEmpty)
-      doc errorIf validatorAt[Double](conf, "exists") must beLeft(0.25)
+      doc `errorIf` validatorAt[Double](conf, "exists") must beLeft(0.25)
 
       doc >/~ validatorAt(conf, "exists2") must beLeft(())
       docEmpty >/~ validatorAt(conf, "exists2") must beRight(docEmpty)
-      doc errorIf validatorAt[Double](conf, "exists2") must beRight(doc)
+      doc `errorIf` validatorAt[Double](conf, "exists2") must beRight(doc)
 
       doc >/~ validatorAt(conf, "inverted") must beRight(doc)
-      doc errorIf validatorAt[LocalDate](conf, "inverted") must beLeft("2013-03-03".toLocalDate)
+      doc `errorIf` validatorAt[LocalDate](conf, "inverted") must beLeft("2013-03-03".toLocalDate)
     }
   }
 }

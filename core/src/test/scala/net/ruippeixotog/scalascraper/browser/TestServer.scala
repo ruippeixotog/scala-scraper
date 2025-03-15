@@ -18,13 +18,13 @@ import org.specs2.specification.BeforeAfterAll
 
 trait TestServer extends BeforeAfterAll { this: Specification =>
 
-  implicit private[this] val system: ActorSystem = ActorSystem("my-system")
-  implicit private[this] val ec: ExecutionContext = system.dispatcher
+  implicit private val system: ActorSystem = ActorSystem("my-system")
+  implicit private val ec: ExecutionContext = system.dispatcher
 
   def testService: Route
   lazy val testServerPort: Int = TestServer.nextPort.getAndIncrement()
 
-  private[this] var server = Option.empty[ServerBinding]
+  private var server = Option.empty[ServerBinding]
 
   def beforeAll(): Unit = {
     server = Some(Await.result(Http().newServerAt("localhost", testServerPort).bindFlow(testService), 5.seconds))

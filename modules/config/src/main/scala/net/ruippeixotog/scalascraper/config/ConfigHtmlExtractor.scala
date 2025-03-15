@@ -21,7 +21,7 @@ object ConfigHtmlExtractor {
       if (conf.hasPath("date-format"))
         asDateTime(conf.getString("date-format"))
       else if (conf.hasPath("date-formats"))
-        asDateTime(conf.getStringList("date-formats").asScala.toSeq: _*)
+        asDateTime(conf.getStringList("date-formats").asScala.toSeq*)
       else if (conf.hasPath("regex-format"))
         regexMatch(conf.getString("regex-format"))
       else

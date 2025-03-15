@@ -42,7 +42,7 @@ class DSLValidatingSpec extends Specification with BrowserHelper {
         doc >/~ (succ, errors, "Unknown") must beLeft("Shouldn't be in Section 2")
         doc >/~ (succ, errors.dropRight(1), "Unknown") must beLeft("Unknown")
 
-        doc errorIf errors must beLeft("Shouldn't be in Section 2")
+        doc `errorIf` errors must beLeft("Shouldn't be in Section 2")
       }
 
       "allow extracting content before and after validating it" in {
@@ -59,17 +59,17 @@ class DSLValidatingSpec extends Specification with BrowserHelper {
         doc.root.select("head") >/~ matchAll must beRight(doc.root.select("head"))
         doc.root.select("legs") >/~ matchAll must beRight(doc.root.select("legs"))
 
-        doc errorIf matchAll(42) must beLeft(42)
-        doc.root.select("head") errorIf matchAll("42") must beLeft("42")
-        doc.root.select("legs") errorIf matchAll(42.0) must beLeft(42.0)
+        doc `errorIf` matchAll(42) must beLeft(42)
+        doc.root.select("head") `errorIf` matchAll("42") must beLeft("42")
+        doc.root.select("legs") `errorIf` matchAll(42.0) must beLeft(42.0)
 
         doc >/~ matchNothing(42) must beLeft(())
         doc.root.select("head") >/~ matchNothing("42") must beLeft(())
         doc.root.select("legs") >/~ matchNothing(42.0) must beLeft(())
 
-        doc errorIf matchNothing must beRight(doc)
-        doc.root.select("head") errorIf matchNothing must beRight(doc.root.select("head"))
-        doc.root.select("legs") errorIf matchNothing must beRight(doc.root.select("legs"))
+        doc `errorIf` matchNothing must beRight(doc)
+        doc.root.select("head") `errorIf` matchNothing must beRight(doc.root.select("head"))
+        doc.root.select("legs") `errorIf` matchNothing must beRight(doc.root.select("legs"))
       }
     }
   }

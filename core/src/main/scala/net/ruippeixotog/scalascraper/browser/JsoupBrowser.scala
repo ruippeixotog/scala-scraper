@@ -33,7 +33,7 @@ import net.ruippeixotog.scalascraper.util._
 class JsoupBrowser(val userAgent: String = "jsoup/1.8", val proxy: JavaProxy = null) extends Browser {
   type DocumentType = JsoupDocument
 
-  private[this] val cookieMap = mutable.Map.empty[String, String]
+  private val cookieMap = mutable.Map.empty[String, String]
 
   def get(url: String): JsoupDocument =
     executePipeline(Jsoup.connect(url).method(GET).proxy(proxy))
@@ -72,7 +72,7 @@ class JsoupBrowser(val userAgent: String = "jsoup/1.8", val proxy: JavaProxy = n
 
   def requestSettings(conn: Connection): Connection = conn
 
-  protected[this] def defaultRequestSettings(conn: Connection): Connection =
+  protected def defaultRequestSettings(conn: Connection): Connection =
     conn
       .cookies(cookieMap.asJava)
       .userAgent(userAgent)
@@ -81,17 +81,17 @@ class JsoupBrowser(val userAgent: String = "jsoup/1.8", val proxy: JavaProxy = n
       .timeout(15000)
       .maxBodySize(0)
 
-  protected[this] def executeRequest(conn: Connection): Response =
+  protected def executeRequest(conn: Connection): Response =
     conn.execute()
 
-  protected[this] def processResponse(res: Connection.Response): JsoupDocument = {
+  protected def processResponse(res: Connection.Response): JsoupDocument = {
     lazy val doc = res.parse
     cookieMap ++= res.cookies.asScala
     if (res.hasHeader("Location")) get(res.header("Location")) else JsoupDocument(doc)
   }
 
-  private[this] val executePipeline: Connection => JsoupDocument =
-    (defaultRequestSettings _)
+  private val executePipeline: Connection => JsoupDocument =
+    (defaultRequestSettings)
       .andThen(requestSettings)
       .andThen(executeRequest)
       .andThen(processResponse)
@@ -140,7 +140,7 @@ object JsoupBrowser {
 
     def outerHtml: String = underlying.outerHtml
 
-    private[this] def selectUnderlying(cssQuery: String): Iterator[JsoupElement] =
+    private def selectUnderlying(cssQuery: String): Iterator[JsoupElement] =
       underlying.select(cssQuery).iterator.asScala.map(JsoupElement.apply)
 
     def select(cssQuery: String) = ElementQuery(cssQuery, this, selectUnderlying)

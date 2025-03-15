@@ -55,7 +55,7 @@ object HtmlValidator {
       def result: Option[R] = Some(res)
     }
 
-  private[this] class HtmlValidatorImpl[-E <: Element, A, +R](
+  private class HtmlValidatorImpl[-E <: Element, A, +R](
       htmlExtractor: HtmlExtractor[E, A],
       matcher: A => Boolean,
       val result: Option[R] = None

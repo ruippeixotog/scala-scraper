@@ -12,7 +12,7 @@ object ContentParsers {
 
   /** Leaves the extracted content as is.
     */
-  def asIs[C] = identity[C] _
+  def asIs[C] = identity[C]
 
   /** Parses text content as an `Int` value.
     */
@@ -88,8 +88,8 @@ object ContentParsers {
   /** A content parser with extra options for parsing joda-time models.
     */
   class AsJodaTime[A](formats: Seq[String], parse: (DateTimeFormatter, String) => A) extends (String => A) {
-    protected[this] lazy val dateParsers = formats.map(DateTimeFormat.forPattern(_).getParser)
-    protected[this] lazy val formatter = new DateTimeFormatterBuilder().append(null, dateParsers.toArray).toFormatter
+    protected lazy val dateParsers = formats.map(DateTimeFormat.forPattern(_).getParser)
+    protected lazy val formatter = new DateTimeFormatterBuilder().append(null, dateParsers.toArray).toFormatter
 
     def apply(content: String): A = parse(formatter, content)
   }
