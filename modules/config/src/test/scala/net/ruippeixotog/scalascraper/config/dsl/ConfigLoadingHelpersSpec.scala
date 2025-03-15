@@ -5,8 +5,8 @@ import com.typesafe.config.ConfigFactory
 import org.specs2.mutable.Specification
 
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
-import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.config.dsl.DSL._
+import net.ruippeixotog.scalascraper.dsl.DSL._
 
 class ConfigLoadingHelpersSpec extends Specification {
 
