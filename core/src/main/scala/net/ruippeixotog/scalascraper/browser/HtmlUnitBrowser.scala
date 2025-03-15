@@ -145,50 +145,54 @@ object HtmlUnitBrowser {
   case class HtmlUnitElement(underlying: DomElement) extends Element {
     type ThisType = HtmlUnitElement
 
-    def tagName = underlying.getTagName
+    def tagName: String = underlying.getTagName
 
-    def parent = Option(underlying.getParentNode).collect { case elem: DomElement => HtmlUnitElement(elem) }
+    def parent: Option[HtmlUnitElement] =
+      Option(underlying.getParentNode).collect { case elem: DomElement => HtmlUnitElement(elem) }
 
-    def children = underlying.getChildElements.asScala.map(HtmlUnitElement.apply)
+    def children: Iterable[HtmlUnitElement] =
+      underlying.getChildElements.asScala.map(HtmlUnitElement.apply)
 
-    def siblings = {
+    def siblings: Iterable[HtmlUnitElement] = {
       val previousSiblings = Stream.iterate(underlying)(_.getPreviousElementSibling).tail.takeWhile(_ != null)
       val nextSiblings = Stream.iterate(underlying)(_.getNextElementSibling).tail.takeWhile(_ != null)
       (previousSiblings.reverse ++ nextSiblings).map(HtmlUnitElement.apply)
     }
 
-    def childNodes = underlying.getChildNodes.asScala.flatMap(HtmlUnitNode.apply)
+    def childNodes: Iterable[Node] =
+      underlying.getChildNodes.asScala.flatMap(HtmlUnitNode.apply)
 
-    def siblingNodes = {
+    def siblingNodes: Iterable[Node] = {
       val previousSiblings = Stream.iterate[DomNode](underlying)(_.getPreviousSibling).tail.takeWhile(_ != null)
       val nextSiblings = Stream.iterate[DomNode](underlying)(_.getNextSibling).tail.takeWhile(_ != null)
       (previousSiblings.reverse ++ nextSiblings).flatMap(HtmlUnitNode.apply)
     }
 
-    def attrs = underlying.getAttributesMap.asScala.mapValues(_.getValue).toMap
+    def attrs: Map[String, String] =
+      underlying.getAttributesMap.asScala.mapValues(_.getValue).toMap
 
-    def hasAttr(name: String) =
+    def hasAttr(name: String): Boolean =
       underlying.hasAttribute(name) &&
         (underlying.getAttribute(name) ne DomElement.ATTRIBUTE_NOT_DEFINED)
 
-    def attr(name: String) = {
+    def attr(name: String): String = {
       val v = underlying.getAttribute(name)
       if (v ne DomElement.ATTRIBUTE_NOT_DEFINED) v else throw new NoSuchElementException
     }
 
-    def text = underlying.getTextContent.trim
+    def text: String = underlying.getTextContent.trim
 
-    def ownText =
+    def ownText: String =
       underlying.getChildren.asScala.collect { case node: DomText => node.getWholeText }.mkString
 
-    def innerHtml =
+    def innerHtml: String =
       underlying.getChildNodes.iterator.asScala.map {
         case node: DomElement => HtmlUnitElement(node).outerHtml
         case node: DomText => node.getWholeText
         case node => node.asXml.trim
       }.mkString
 
-    def outerHtml = {
+    def outerHtml: String = {
       val a = attrs.map { case (k, v) => s"""$k="${StringUtils.escapeXmlAttributeValue(v)}"""" }
       val attrsStr = if (a.isEmpty) "" else a.mkString(" ", " ", "")
 
@@ -198,7 +202,8 @@ object HtmlUnitBrowser {
     private[this] def selectUnderlying(cssQuery: String): Iterator[HtmlUnitElement] =
       underlying.querySelectorAll(cssQuery).iterator.asScala.collect { case elem: DomElement => HtmlUnitElement(elem) }
 
-    def select(cssQuery: String) = ElementQuery(cssQuery, this, selectUnderlying)
+    def select(cssQuery: String): ElementQuery[HtmlUnitElement] =
+      ElementQuery(cssQuery, this, selectUnderlying)
   }
 
   object HtmlUnitNode {

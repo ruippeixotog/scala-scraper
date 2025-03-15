@@ -35,24 +35,24 @@ object HtmlValidator {
 
   val matchAll = new HtmlValidator[Element, Nothing] {
     def matches(doc: ElementQuery[Element]) = true
-    def result = None
+    def result: Option[Nothing] = None
   }
 
   val matchNothing = new HtmlValidator[Element, Nothing] {
     def matches(doc: ElementQuery[Element]) = false
-    def result = None
+    def result: Option[Nothing] = None
   }
 
   def matchAll[R](res: R) =
     new HtmlValidator[Element, R] {
       def matches(doc: ElementQuery[Element]) = true
-      def result = Some(res)
+      def result: Option[R] = Some(res)
     }
 
   def matchNothing[R](res: R) =
     new HtmlValidator[Element, R] {
       def matches(doc: ElementQuery[Element]) = false
-      def result = Some(res)
+      def result: Option[R] = Some(res)
     }
 
   private[this] class HtmlValidatorImpl[-E <: Element, A, +R](

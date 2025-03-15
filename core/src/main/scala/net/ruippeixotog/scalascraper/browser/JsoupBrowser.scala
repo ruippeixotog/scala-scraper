@@ -105,34 +105,40 @@ object JsoupBrowser {
   case class JsoupElement(underlying: org.jsoup.nodes.Element) extends Element {
     type ThisType = JsoupElement
 
-    def tagName = underlying.tagName
+    def tagName: String = underlying.tagName
 
-    def parent = Option(underlying.parent).map(JsoupElement.apply)
+    def parent: Option[JsoupElement] =
+      Option(underlying.parent).map(JsoupElement.apply)
 
-    def children = underlying.children.asScala.map(JsoupElement.apply)
+    def children: Iterable[JsoupElement] =
+      underlying.children.asScala.map(JsoupElement.apply)
 
-    def siblings = underlying.siblingElements.asScala.map(JsoupElement.apply)
+    def siblings: Iterable[JsoupElement] =
+      underlying.siblingElements.asScala.map(JsoupElement.apply)
 
-    def childNodes = underlying.childNodes.asScala.flatMap(JsoupNode.apply)
+    def childNodes: Iterable[Node] =
+      underlying.childNodes.asScala.flatMap(JsoupNode.apply)
 
-    def siblingNodes = underlying.siblingNodes.asScala.flatMap(JsoupNode.apply)
+    def siblingNodes: Iterable[Node] =
+      underlying.siblingNodes.asScala.flatMap(JsoupNode.apply)
 
-    def attrs = underlying.attributes.asScala.map { attr => attr.getKey -> attr.getValue }.toMap
+    def attrs: Map[String, String] =
+      underlying.attributes.asScala.map { attr => attr.getKey -> attr.getValue }.toMap
 
-    def hasAttr(name: String) = underlying.hasAttr(name)
+    def hasAttr(name: String): Boolean = underlying.hasAttr(name)
 
-    def attr(name: String) = {
+    def attr(name: String): String = {
       if (underlying.hasAttr(name)) underlying.attr(name)
       else throw new NoSuchElementException
     }
 
-    def text = underlying.text
+    def text: String = underlying.text
 
-    def ownText = underlying.ownText
+    def ownText: String = underlying.ownText
 
-    def innerHtml = underlying.html
+    def innerHtml: String = underlying.html
 
-    def outerHtml = underlying.outerHtml
+    def outerHtml: String = underlying.outerHtml
 
     private[this] def selectUnderlying(cssQuery: String): Iterator[JsoupElement] =
       underlying.select(cssQuery).iterator.asScala.map(JsoupElement.apply)
