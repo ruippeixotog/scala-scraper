@@ -1,10 +1,11 @@
 package net.ruippeixotog.scalascraper.dsl
 
+import org.specs2.mutable.Specification
+
 import net.ruippeixotog.scalascraper.browser._
 import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.scraper.ContentExtractors.{text => stext, _}
 import net.ruippeixotog.scalascraper.scraper.HtmlValidator._
-import org.specs2.mutable.Specification
 
 class DSLValidatingSpec extends Specification with BrowserHelper {
 

@@ -1,8 +1,8 @@
 package net.ruippeixotog.scalascraper.scraper
 
-import net.ruippeixotog.scalascraper.model.{ElementQuery, Element}
-
 import scala.util.Try
+
+import net.ruippeixotog.scalascraper.model.{Element, ElementQuery}
 
 trait HtmlValidator[-E <: Element, +R] { outer =>
   def matches(doc: ElementQuery[E]): Boolean

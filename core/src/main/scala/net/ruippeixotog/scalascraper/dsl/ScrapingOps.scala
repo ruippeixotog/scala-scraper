@@ -1,12 +1,13 @@
 package net.ruippeixotog.scalascraper.dsl
 
-import net.ruippeixotog.scalascraper.model.{Element, ElementQuery}
-import net.ruippeixotog.scalascraper.scraper.{HtmlExtractor, HtmlValidator}
-import net.ruippeixotog.scalascraper.util._
 import scala.util.Try
 
 import scalaz._
 import scalaz.syntax.FunctorSyntax
+
+import net.ruippeixotog.scalascraper.model.{Element, ElementQuery}
+import net.ruippeixotog.scalascraper.scraper.{HtmlExtractor, HtmlValidator}
+import net.ruippeixotog.scalascraper.util._
 
 trait ScrapingOps extends syntax.ToIdOps with std.AllInstances with IdInstances {
 

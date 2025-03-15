@@ -1,6 +1,7 @@
 package net.ruippeixotog.scalascraper.util
 
 import scalaz._
+
 import Scalaz._
 
 /** Type class that identifies a type `FA` as a nested sequence of type constructors applied to a type `A`, where each

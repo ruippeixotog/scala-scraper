@@ -31,6 +31,9 @@ jobs:
       - name: Check formatting
         run: sbt "++${{ matrix.scala-version }} scalafmtCheckAll" scalafmtSbtCheck
 
+      - name: Run linter
+        run: sbt "++${{ matrix.scala-version }} scalafixCheckAll"
+
       - name: Compile
         run: sbt "++${{ matrix.scala-version }} compile"
 

@@ -1,6 +1,7 @@
 package net.ruippeixotog.scalascraper.dsl
 
 import com.github.nscala_time.time.Imports._
+import org.specs2.mutable.Specification
 
 import net.ruippeixotog.scalascraper.browser._
 import net.ruippeixotog.scalascraper.dsl.DSL._
@@ -8,7 +9,6 @@ import net.ruippeixotog.scalascraper.model.{Element, ElementQuery}
 import net.ruippeixotog.scalascraper.scraper.ContentExtractors.{text => stext, _}
 import net.ruippeixotog.scalascraper.scraper.ContentParsers._
 import net.ruippeixotog.scalascraper.scraper.HtmlExtractor
-import org.specs2.mutable.Specification
 
 class DSLExtractingSpec extends Specification with BrowserHelper {
 
