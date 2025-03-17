@@ -2,13 +2,20 @@ import ReleaseTransformations._
 
 ThisBuild / organization := "net.ruippeixotog"
 
+// Enable the OrganizeImports Scalafix rule and semanticdb for scalafix.
+ThisBuild / semanticdbEnabled := true
+ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
+
 ThisBuild / scalaVersion := "2.13.16"
-ThisBuild / crossScalaVersions := Seq("2.13.16", "3.4.3")
+ThisBuild / crossScalaVersions := Seq("2.13.16", "3.6.4")
 
 // taken from https://github.com/scala/bug/issues/12632
 ThisBuild / libraryDependencySchemes ++= Seq(
   "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always
 )
+
+// Workaround for https://github.com/scalacenter/scalafix/issues/1488
+val scalafixCheckAll = taskKey[Unit]("No-arg alias for 'scalafixAll --check'")
 
 lazy val core = project
   .in(file("core"))
@@ -57,13 +64,13 @@ lazy val commonSettings = Seq(
 
   scalacOptions ++= baseScalacOptions ++
     (CrossVersion.partialVersion(scalaVersion.value) match {
-      case Some((2, scalaMajor)) if scalaMajor <= 12 =>
-        List("-Ypartial-unification")
-      case _ =>
-        Nil
+      case Some((2, _)) => List("-Xsource:3")
+      case _ => List("-rewrite", "-source", "3.4-migration")
     }),
 
   scalafmtOnCompile := true,
+  scalafixOnCompile := true,
+  scalafixCheckAll := scalafixAll.toTask(" --check").value,
   Test / fork := true,
 
   homepage := Some(url("https://github.com/ruippeixotog/scala-scraper")),

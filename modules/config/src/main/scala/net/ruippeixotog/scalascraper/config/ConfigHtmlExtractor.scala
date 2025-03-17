@@ -1,12 +1,13 @@
 package net.ruippeixotog.scalascraper.config
 
+import scala.jdk.CollectionConverters._
+
 import com.typesafe.config.Config
+
 import net.ruippeixotog.scalascraper.model.Element
 import net.ruippeixotog.scalascraper.scraper.ContentExtractors.{allText, attr}
 import net.ruippeixotog.scalascraper.scraper.ContentParsers.{asDateTime, asIs, regexMatch}
 import net.ruippeixotog.scalascraper.scraper.HtmlExtractor
-
-import scala.jdk.CollectionConverters._
 
 object ConfigHtmlExtractor {
 
@@ -20,7 +21,7 @@ object ConfigHtmlExtractor {
       if (conf.hasPath("date-format"))
         asDateTime(conf.getString("date-format"))
       else if (conf.hasPath("date-formats"))
-        asDateTime(conf.getStringList("date-formats").asScala.toSeq: _*)
+        asDateTime(conf.getStringList("date-formats").asScala.toSeq*)
       else if (conf.hasPath("regex-format"))
         regexMatch(conf.getString("regex-format"))
       else

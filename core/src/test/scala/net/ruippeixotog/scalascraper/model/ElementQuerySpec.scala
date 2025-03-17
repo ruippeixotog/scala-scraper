@@ -1,7 +1,8 @@
 package net.ruippeixotog.scalascraper.model
 
-import net.ruippeixotog.scalascraper.browser._
 import org.specs2.mutable.Specification
+
+import net.ruippeixotog.scalascraper.browser._
 
 class ElementQuerySpec extends Specification with BrowserHelper {
 

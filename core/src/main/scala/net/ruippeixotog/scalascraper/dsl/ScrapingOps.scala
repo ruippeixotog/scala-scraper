@@ -1,12 +1,13 @@
 package net.ruippeixotog.scalascraper.dsl
 
-import net.ruippeixotog.scalascraper.model.{Element, ElementQuery}
-import net.ruippeixotog.scalascraper.scraper.{HtmlExtractor, HtmlValidator}
-import net.ruippeixotog.scalascraper.util._
 import scala.util.Try
 
 import scalaz._
 import scalaz.syntax.FunctorSyntax
+
+import net.ruippeixotog.scalascraper.model.{Element, ElementQuery}
+import net.ruippeixotog.scalascraper.scraper.{HtmlExtractor, HtmlValidator}
+import net.ruippeixotog.scalascraper.util._
 
 trait ScrapingOps extends syntax.ToIdOps with std.AllInstances with IdInstances {
 
@@ -15,7 +16,7 @@ trait ScrapingOps extends syntax.ToIdOps with std.AllInstances with IdInstances 
 
     override def F: Functor[F] = Functor[F]
 
-    @inline implicit private[this] def aToQuery(a: A): ElementQuery[E] = toQuery(a)
+    @inline implicit private def aToQuery(a: A): ElementQuery[E] = toQuery(a)
 
     def extract[B](extractor: HtmlExtractor[E, B]) = self.map(extractor.extract(_))
 
@@ -51,7 +52,7 @@ trait ScrapingOps extends syntax.ToIdOps with std.AllInstances with IdInstances 
         (e1, e2, e3)
       }
 
-    def successIf[R](success: HtmlValidator[E, _]): F[Either[Unit, A]] =
+    def successIf[R](success: HtmlValidator[E, ?]): F[Either[Unit, A]] =
       self.map { doc => if (success.matches(doc)) Right(doc) else Left(()) }
 
     def errorIf[R](error: HtmlValidator[E, R]): F[Either[R, A]] =
@@ -66,7 +67,7 @@ trait ScrapingOps extends syntax.ToIdOps with std.AllInstances with IdInstances 
     }
 
     def validateWith[R](
-        success: HtmlValidator[E, _],
+        success: HtmlValidator[E, ?],
         errors: Seq[HtmlValidator[E, R]],
         default: => R = throw new ValidationException
     ): F[Either[R, A]] = {
@@ -82,25 +83,25 @@ trait ScrapingOps extends syntax.ToIdOps with std.AllInstances with IdInstances 
       }
     }
 
-    @inline final def >/~[R](success: HtmlValidator[E, _]) = successIf(success)
+    @inline final def >/~[R](success: HtmlValidator[E, ?]) = successIf(success)
 
-    @inline final def >/~[R](success: HtmlValidator[E, _], error: HtmlValidator[E, R]) =
+    @inline final def >/~[R](success: HtmlValidator[E, ?], error: HtmlValidator[E, R]) =
       validateWith(success, error :: Nil)
 
-    @inline final def >/~[R](success: HtmlValidator[E, _], errors: Seq[HtmlValidator[E, R]]) =
+    @inline final def >/~[R](success: HtmlValidator[E, ?], errors: Seq[HtmlValidator[E, R]]) =
       validateWith(success, errors)
 
-    @inline final def >/~[R](success: HtmlValidator[E, _], error: HtmlValidator[E, R], default: R) =
+    @inline final def >/~[R](success: HtmlValidator[E, ?], error: HtmlValidator[E, R], default: R) =
       validateWith(success, error :: Nil, default)
 
-    @inline final def >/~[R](success: HtmlValidator[E, _], errors: Seq[HtmlValidator[E, R]], default: R) =
+    @inline final def >/~[R](success: HtmlValidator[E, ?], errors: Seq[HtmlValidator[E, R]], default: R) =
       validateWith(success, errors, default)
   }
 
   implicit def deepFunctorOps[FA, A, E <: Element](
       self: FA
   )(implicit df: DeepFunctor.AuxA[FA, A], conv: ToQuery.Aux[A, E]): ElementsScrapingOps[df.F, A, E] =
-    new ElementsScrapingOps[df.F, A, E](df.asF(self))(df.f, conv)
+    new ElementsScrapingOps[df.F, A, E](df.asF(self))(using df.f, conv)
 }
 
 object ScrapingOps extends ScrapingOps

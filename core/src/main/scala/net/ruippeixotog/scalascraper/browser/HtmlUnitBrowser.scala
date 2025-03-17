@@ -1,20 +1,21 @@
 package net.ruippeixotog.scalascraper.browser
 
-import net.ruippeixotog.scalascraper.browser.HtmlUnitBrowser._
-import net.ruippeixotog.scalascraper.model._
-import net.ruippeixotog.scalascraper.util._
+import java.io.{File, InputStream}
+import java.net.{URI, URL}
+import java.nio.charset.Charset
+import java.util.UUID
+
+import scala.jdk.CollectionConverters._
+
 import org.apache.commons.io.IOUtils
 import org.apache.http.HttpStatus
 import org.htmlunit._
 import org.htmlunit.html._
 import org.htmlunit.util.{NameValuePair, StringUtils, UrlUtils}
 
-import java.io.{File, InputStream}
-import java.net.URL
-import java.net.URI
-import java.nio.charset.Charset
-import java.util.UUID
-import scala.jdk.CollectionConverters._
+import net.ruippeixotog.scalascraper.browser.HtmlUnitBrowser._
+import net.ruippeixotog.scalascraper.model._
+import net.ruippeixotog.scalascraper.util._
 
 /** A [[Browser]] implementation based on [[http://htmlunit.sourceforge.net HtmlUnit]], a GUI-less browser for Java
   * programs. `HtmlUnitBrowser` simulates thoroughly a web browser, executing JavaScript code in the pages besides
@@ -106,31 +107,31 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME, proxy
     new HtmlUnitBrowser(browserType, Some(newProxyConf))
   }
 
-  protected[this] def defaultClientSettings(client: WebClient): Unit = {
+  protected def defaultClientSettings(client: WebClient): Unit = {
     client.getOptions.setCssEnabled(false)
     client.getOptions.setThrowExceptionOnScriptError(false)
     proxy.foreach { proxy => client.getOptions.setProxyConfig(proxy) }
   }
 
-  protected[this] def defaultRequestSettings(req: WebRequest): Unit = {
+  protected def defaultRequestSettings(req: WebRequest): Unit = {
     req.setAdditionalHeader("Accept", "text/html,application/xhtml+xml,application/xml")
     req.setAdditionalHeader("Accept-Charset", "utf-8")
   }
 
-  private[this] def newWebResponseData(inputStream: InputStream, charset: String): WebResponseData = {
+  private def newWebResponseData(inputStream: InputStream, charset: String): WebResponseData = {
     val bytes = IOUtils.toByteArray(inputStream)
     val compiledHeaders = List(new NameValuePair("Content-Type", "text/html; charset=" + charset))
     new WebResponseData(bytes, HttpStatus.SC_OK, "OK", compiledHeaders.asJava)
   }
 
-  private[this] def newRequest(url: URL, method: HttpMethod = HttpMethod.GET, charset: Option[String] = None) = {
+  private def newRequest(url: URL, method: HttpMethod = HttpMethod.GET, charset: Option[String] = None) = {
     val req = new WebRequest(url, method)
     charset.map(Charset.forName).foreach(req.setCharset)
     defaultRequestSettings(req)
     req
   }
 
-  private[this] def newWindow(): WebWindow =
+  private def newWindow(): WebWindow =
     underlying.synchronized {
       underlying.openTargetWindow(underlying.getCurrentWindow, null, UUID.randomUUID().toString)
     }
@@ -144,21 +145,24 @@ object HtmlUnitBrowser {
   case class HtmlUnitElement(underlying: DomElement) extends Element {
     type ThisType = HtmlUnitElement
 
-    def tagName = underlying.getTagName
+    def tagName: String = underlying.getTagName
 
-    def parent = Option(underlying.getParentNode).collect { case elem: DomElement => HtmlUnitElement(elem) }
+    def parent: Option[HtmlUnitElement] =
+      Option(underlying.getParentNode).collect { case elem: DomElement => HtmlUnitElement(elem) }
 
-    def children = underlying.getChildElements.asScala.map(HtmlUnitElement.apply)
+    def children: Iterable[HtmlUnitElement] =
+      underlying.getChildElements.asScala.map(HtmlUnitElement.apply)
 
-    def siblings = {
+    def siblings: Iterable[HtmlUnitElement] = {
       val previousSiblings = LazyList.iterate(underlying)(_.getPreviousElementSibling).tail.takeWhile(_ != null)
       val nextSiblings = LazyList.iterate(underlying)(_.getNextElementSibling).tail.takeWhile(_ != null)
       (previousSiblings.reverse ++ nextSiblings).map(HtmlUnitElement.apply)
     }
 
-    def childNodes = underlying.getChildNodes.asScala.flatMap(HtmlUnitNode.apply)
+    def childNodes: Iterable[Node] =
+      underlying.getChildNodes.asScala.flatMap(HtmlUnitNode.apply)
 
-    def siblingNodes = {
+    def siblingNodes: Iterable[Node] = {
       val previousSiblings = LazyList.iterate[DomNode](underlying)(_.getPreviousSibling).tail.takeWhile(_ != null)
       val nextSiblings = LazyList.iterate[DomNode](underlying)(_.getNextSibling).tail.takeWhile(_ != null)
       (previousSiblings.reverse ++ nextSiblings).flatMap(HtmlUnitNode.apply)
@@ -166,38 +170,39 @@ object HtmlUnitBrowser {
 
     def attrs = underlying.getAttributesMap.asScala.view.mapValues(_.getValue).toMap
 
-    def hasAttr(name: String) =
+    def hasAttr(name: String): Boolean =
       underlying.hasAttribute(name) &&
         (underlying.getAttribute(name) ne DomElement.ATTRIBUTE_NOT_DEFINED)
 
-    def attr(name: String) = {
+    def attr(name: String): String = {
       val v = underlying.getAttribute(name)
       if (v ne DomElement.ATTRIBUTE_NOT_DEFINED) v else throw new NoSuchElementException
     }
 
-    def text = underlying.getTextContent.trim
+    def text: String = underlying.getTextContent.trim
 
-    def ownText =
+    def ownText: String =
       underlying.getChildren.asScala.collect { case node: DomText => node.getWholeText }.mkString
 
-    def innerHtml =
+    def innerHtml: String =
       underlying.getChildNodes.iterator.asScala.map {
         case node: DomElement => HtmlUnitElement(node).outerHtml
         case node: DomText => node.getWholeText
         case node => node.asXml.trim
       }.mkString
 
-    def outerHtml = {
+    def outerHtml: String = {
       val a = attrs.map { case (k, v) => s"""$k="${StringUtils.escapeXmlAttributeValue(v)}"""" }
       val attrsStr = if (a.isEmpty) "" else a.mkString(" ", " ", "")
 
       s"<$tagName$attrsStr>$innerHtml</$tagName>"
     }
 
-    private[this] def selectUnderlying(cssQuery: String): Iterator[HtmlUnitElement] =
+    private def selectUnderlying(cssQuery: String): Iterator[HtmlUnitElement] =
       underlying.querySelectorAll(cssQuery).iterator.asScala.collect { case elem: DomElement => HtmlUnitElement(elem) }
 
-    def select(cssQuery: String) = ElementQuery(cssQuery, this, selectUnderlying)
+    def select(cssQuery: String): ElementQuery[HtmlUnitElement] =
+      ElementQuery(cssQuery, this, selectUnderlying)
   }
 
   object HtmlUnitNode {
@@ -212,19 +217,20 @@ object HtmlUnitBrowser {
   case class HtmlUnitDocument(window: WebWindow) extends Document {
     type ElementType = HtmlUnitElement
 
-    private[this] var _underlying: SgmlPage = _
+    private var _underlying: Option[SgmlPage] = None
 
-    def underlying: SgmlPage = {
-      if (_underlying == null || window.getEnclosedPage.getUrl != _underlying.getUrl) {
-        _underlying = window.getEnclosedPage match {
+    def underlying: SgmlPage = _underlying
+      .filter(_.getUrl == window.getEnclosedPage.getUrl)
+      .getOrElse {
+        val newPage = window.getEnclosedPage match {
           case page: SgmlPage => page
           case page: TextPage =>
             val response = new StringWebResponse(page.getContent, page.getUrl)
             new DefaultPageCreator().createPage(response, window).asInstanceOf[SgmlPage]
         }
+        _underlying = Some(newPage)
+        newPage
       }
-      _underlying
-    }
 
     def location = underlying.getUrl.toString
 

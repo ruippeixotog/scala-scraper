@@ -1,12 +1,13 @@
 package net.ruippeixotog.scalascraper.config.dsl
 
+import scala.jdk.CollectionConverters._
+
 import com.typesafe.config.{Config, ConfigFactory}
+
 import net.ruippeixotog.scalascraper.config.util.ConfigReader
 import net.ruippeixotog.scalascraper.config.{ConfigHtmlExtractor, ConfigHtmlValidator}
 import net.ruippeixotog.scalascraper.model.Element
 import net.ruippeixotog.scalascraper.scraper._
-
-import scala.jdk.CollectionConverters._
 
 trait ConfigLoaders {
 
