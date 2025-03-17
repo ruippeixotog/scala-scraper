@@ -1,9 +1,10 @@
 package net.ruippeixotog.scalascraper.browser
 
 import akka.http.scaladsl.server.Directives._
-import net.ruippeixotog.scalascraper.util.LineCompare
 import org.jsoup.parser.{ParseSettings, Parser}
 import org.specs2.mutable.Specification
+
+import net.ruippeixotog.scalascraper.util.LineCompare
 
 class JsoupBrowserSpec extends Specification with TestServer {
 

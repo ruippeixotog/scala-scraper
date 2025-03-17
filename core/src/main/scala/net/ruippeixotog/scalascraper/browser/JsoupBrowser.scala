@@ -55,17 +55,17 @@ class JsoupBrowser(
   def parseInputStream(inputStream: InputStream, charset: String): JsoupDocument =
     using(inputStream) { _ => JsoupDocument(Jsoup.parse(inputStream, charset, baseUri, parser)) }
 
-  def cookies(url: String) = cookieMap.toMap
+  def cookies(url: String): Map[String, String] = cookieMap.toMap
 
-  def setCookie(url: String, key: String, value: String) = {
+  def setCookie(url: String, key: String, value: String): mutable.Map[String, String] = {
     cookieMap += key -> value
   }
 
-  def setCookies(url: String, m: Map[String, String]) = {
+  def setCookies(url: String, m: Map[String, String]): mutable.Map[String, String] = {
     cookieMap ++= m
   }
 
-  def clearCookies() = cookieMap.clear()
+  def clearCookies(): Unit = cookieMap.clear()
 
   def withProxy(proxy: Proxy): JsoupBrowser = {
     val newJavaProxy = new JavaProxy(
@@ -75,7 +75,7 @@ class JsoupBrowser(
     new JsoupBrowser(userAgent, newJavaProxy)
   }
 
-  def requestSettings(conn: Connection): Connection = conn
+  private def requestSettings(conn: Connection): Connection = conn
 
   protected def defaultRequestSettings(conn: Connection): Connection =
     conn
@@ -96,13 +96,15 @@ class JsoupBrowser(
   }
 
   private val executePipeline: Connection => JsoupDocument =
-    (defaultRequestSettings)
+    defaultRequestSettings
       .andThen(requestSettings)
       .andThen(executeRequest)
       .andThen(processResponse)
 }
 
 object JsoupBrowser {
+  private val baseUri = ""
+
   def apply(): Browser = new JsoupBrowser()
 
   def typed(): JsoupBrowser = new JsoupBrowser()
@@ -148,7 +150,7 @@ object JsoupBrowser {
     private def selectUnderlying(cssQuery: String): Iterator[JsoupElement] =
       underlying.select(cssQuery).iterator.asScala.map(JsoupElement.apply)
 
-    def select(cssQuery: String) = ElementQuery(cssQuery, this, selectUnderlying)
+    def select(cssQuery: String): ElementQuery[JsoupElement] = ElementQuery(cssQuery, this, selectUnderlying)
   }
 
   object JsoupNode {
@@ -163,18 +165,16 @@ object JsoupBrowser {
   case class JsoupDocument(underlying: org.jsoup.nodes.Document) extends Document {
     type ElementType = JsoupElement
 
-    def location = underlying.location()
+    def location: String = underlying.location()
 
-    def root = JsoupElement(underlying.getElementsByTag("html").first)
+    def root: JsoupElement = JsoupElement(underlying.getElementsByTag("html").first)
 
-    override def title = underlying.title
+    override def title: String = underlying.title
 
-    override def head = JsoupElement(underlying.head)
+    override def head: JsoupElement = JsoupElement(underlying.head)
 
-    override def body = JsoupElement(underlying.body)
+    override def body: JsoupElement = JsoupElement(underlying.body)
 
-    def toHtml = underlying.outerHtml
+    def toHtml: String = underlying.outerHtml
   }
-
-  private val baseUri = ""
 }
