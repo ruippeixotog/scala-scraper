@@ -47,7 +47,7 @@ class JsoupBrowser(
     executePipeline(Jsoup.connect(url).method(POST).proxy(proxy).data(form.asJava))
 
   def parseFile(file: File, charset: String): JsoupDocument =
-    JsoupDocument(Jsoup.parse(file, charset, baseUri, parser))
+    JsoupDocument(Jsoup.parse(file, charset, file.getAbsolutePath, parser))
 
   def parseString(html: String): JsoupDocument =
     JsoupDocument(Jsoup.parse(html, baseUri, parser))
