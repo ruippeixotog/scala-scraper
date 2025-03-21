@@ -34,7 +34,7 @@ import net.ruippeixotog.scalascraper.util._
 class JsoupBrowser(
     val userAgent: String = "jsoup/1.8",
     val proxy: JavaProxy = null,
-    val parser: Parser = Parser.htmlParser()
+    val parserBuilder: () => Parser = () => Parser.htmlParser()
 ) extends Browser {
   type DocumentType = JsoupDocument
 
