@@ -4,29 +4,42 @@ on: [push, pull_request]
 jobs:
   test:
     name: Test
-    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        jdk: [adopt@1.8]
-        scala: ['2.13', '3']
+        jdk:
+          - temurin@8
+          - temurin@21
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-14
+        scala:
+          - 2.13
+          - 3
         include:
           - scala: '2.13'
             scala-version: 2.13.16
           - scala: '3'
             scala-version: 3.6.4
-
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - name: Ignore line ending differences in git
+        if: contains(runner.os, 'windows')
+        shell: bash
+        run: git config --global core.autocrlf false
 
-      - name: Set up Scala
-        uses: olafurpg/setup-scala@v13
+      - name: Checkout current branch (full)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+
+      - name: Setup sbt
+        uses: sbt/setup-sbt@v1
         with:
           java-version: ${{ matrix.jdk }}
-
-      - name: Setup Tor
-        uses: tor-actions/setup-tor@v1.0.0
 
       - name: Check formatting
         run: sbt "++${{ matrix.scala-version }} scalafmtCheckAll" scalafmtSbtCheck
@@ -38,6 +51,7 @@ jobs:
         run: sbt "++${{ matrix.scala-version }} compile"
 
       - name: Run tests
+        shell: bash
         run: >
           if [[ "${{ matrix.scala }}" =~ ^2\..* ]]; then
             sbt coverage "++${{ matrix.scala-version }} test";
