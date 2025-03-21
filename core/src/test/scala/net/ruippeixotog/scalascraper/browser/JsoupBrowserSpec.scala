@@ -27,9 +27,14 @@ class JsoupBrowserSpec extends Specification with TestServer {
     }
 
     "pass custom html parser with parse settings" in {
-      val parser = Parser.htmlParser()
-      parser.settings(new ParseSettings(true, true))
-      val browser = new JsoupBrowser(parser = parser)
+
+      def parserBuilder(): Parser = {
+        val parser = Parser.htmlParser()
+        parser.settings(new ParseSettings(true, true))
+        parser
+      }
+
+      val browser = new JsoupBrowser(parserBuilder = parserBuilder)
 
       val html = """
         |<html>

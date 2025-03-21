@@ -30,6 +30,8 @@ import net.ruippeixotog.scalascraper.util._
   *   the user agent with which requests should be made
   * @param proxy
   *   an optional proxy configuration to use
+  * @param parserBuilder
+  *   a function that builds the parser to use when parsing documents
   */
 class JsoupBrowser(
     val userAgent: String = "jsoup/1.8",
@@ -47,21 +49,21 @@ class JsoupBrowser(
     executePipeline(Jsoup.connect(url).method(POST).proxy(proxy).data(form.asJava))
 
   def parseFile(file: File, charset: String): JsoupDocument =
-    JsoupDocument(Jsoup.parse(file, charset, file.getAbsolutePath, parser))
+    JsoupDocument(Jsoup.parse(file, charset, file.getAbsolutePath, parserBuilder()))
 
   def parseString(html: String): JsoupDocument =
-    JsoupDocument(Jsoup.parse(html, baseUri, parser))
+    JsoupDocument(Jsoup.parse(html, "", parserBuilder()))
 
   def parseInputStream(inputStream: InputStream, charset: String): JsoupDocument =
-    using(inputStream) { _ => JsoupDocument(Jsoup.parse(inputStream, charset, baseUri, parser)) }
+    using(inputStream) { _ => JsoupDocument(Jsoup.parse(inputStream, charset, "", parserBuilder())) }
 
   def cookies(url: String): Map[String, String] = cookieMap.toMap
 
-  def setCookie(url: String, key: String, value: String): mutable.Map[String, String] = {
+  def setCookie(url: String, key: String, value: String): Unit = {
     cookieMap += key -> value
   }
 
-  def setCookies(url: String, m: Map[String, String]): mutable.Map[String, String] = {
+  def setCookies(url: String, m: Map[String, String]): Unit = {
     cookieMap ++= m
   }
 
@@ -75,7 +77,7 @@ class JsoupBrowser(
     new JsoupBrowser(userAgent, newJavaProxy)
   }
 
-  private def requestSettings(conn: Connection): Connection = conn
+  def requestSettings(conn: Connection): Connection = conn
 
   protected def defaultRequestSettings(conn: Connection): Connection =
     conn
@@ -103,7 +105,6 @@ class JsoupBrowser(
 }
 
 object JsoupBrowser {
-  private val baseUri = ""
 
   def apply(): Browser = new JsoupBrowser()
 
