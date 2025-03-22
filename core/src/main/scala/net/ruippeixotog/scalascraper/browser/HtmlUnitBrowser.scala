@@ -168,7 +168,8 @@ object HtmlUnitBrowser {
       (previousSiblings.reverse ++ nextSiblings).flatMap(HtmlUnitNode.apply)
     }
 
-    def attrs = underlying.getAttributesMap.asScala.view.mapValues(_.getValue).toMap
+    def attrs: Map[String, String] =
+      underlying.getAttributesMap.asScala.mapValues(_.getValue).toMap
 
     def hasAttr(name: String): Boolean =
       underlying.hasAttribute(name) &&
