@@ -1,17 +1,16 @@
 package net.ruippeixotog.scalascraper.browser
 
 import java.io.{File, InputStream}
-import java.net.URL
+import java.net.{URI, URL}
 import java.nio.charset.Charset
 import java.util.UUID
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 import org.apache.commons.io.IOUtils
 import org.apache.http.HttpStatus
 import org.htmlunit._
 import org.htmlunit.html._
-import org.htmlunit.html.parser.neko.HtmlUnitNekoHtmlParser
 import org.htmlunit.util.{NameValuePair, StringUtils, UrlUtils}
 
 import net.ruippeixotog.scalascraper.browser.HtmlUnitBrowser._
@@ -55,16 +54,17 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME, proxy
   }
 
   def get(url: String): HtmlUnitDocument =
-    exec(newRequest(new URL(url)))
+    exec(newRequest(new URI(url).toURL))
 
   def post(url: String, form: Map[String, String]): HtmlUnitDocument = {
-    val req = newRequest(new URL(url), HttpMethod.POST)
+    val req = newRequest(new URI(url).toURL, HttpMethod.POST)
     req.setRequestParameters(form.map { case (k, v) => new NameValuePair(k, v) }.toBuffer.asJava)
     exec(req)
   }
 
   def parseFile(file: File, charset: String): HtmlUnitDocument = {
-    val req = newRequest(new URL(s"file://${file.getAbsolutePath}"), HttpMethod.GET)
+    val uri = file.toURI().toURL
+    val req = newRequest(uri, HttpMethod.GET)
     req.setCharset(Charset.forName(charset))
     exec(req)
   }
@@ -90,7 +90,7 @@ class HtmlUnitBrowser(browserType: BrowserVersion = BrowserVersion.CHROME, proxy
   }
 
   def cookies(url: String) =
-    underlying.getCookies(new URL(url)).asScala.map { c => c.getName -> c.getValue }.toMap
+    underlying.getCookies(new URI(url).toURL).asScala.map { c => c.getName -> c.getValue }.toMap
 
   def clearCookies() = underlying.getCookieManager.clearCookies()
 
@@ -154,8 +154,8 @@ object HtmlUnitBrowser {
       underlying.getChildElements.asScala.map(HtmlUnitElement.apply)
 
     def siblings: Iterable[HtmlUnitElement] = {
-      val previousSiblings = Stream.iterate(underlying)(_.getPreviousElementSibling).tail.takeWhile(_ != null)
-      val nextSiblings = Stream.iterate(underlying)(_.getNextElementSibling).tail.takeWhile(_ != null)
+      val previousSiblings = LazyList.iterate(underlying)(_.getPreviousElementSibling).tail.takeWhile(_ != null)
+      val nextSiblings = LazyList.iterate(underlying)(_.getNextElementSibling).tail.takeWhile(_ != null)
       (previousSiblings.reverse ++ nextSiblings).map(HtmlUnitElement.apply)
     }
 
@@ -163,8 +163,8 @@ object HtmlUnitBrowser {
       underlying.getChildNodes.asScala.flatMap(HtmlUnitNode.apply)
 
     def siblingNodes: Iterable[Node] = {
-      val previousSiblings = Stream.iterate[DomNode](underlying)(_.getPreviousSibling).tail.takeWhile(_ != null)
-      val nextSiblings = Stream.iterate[DomNode](underlying)(_.getNextSibling).tail.takeWhile(_ != null)
+      val previousSiblings = LazyList.iterate[DomNode](underlying)(_.getPreviousSibling).tail.takeWhile(_ != null)
+      val nextSiblings = LazyList.iterate[DomNode](underlying)(_.getNextSibling).tail.takeWhile(_ != null)
       (previousSiblings.reverse ++ nextSiblings).flatMap(HtmlUnitNode.apply)
     }
 

@@ -50,7 +50,7 @@ class BrowserSpec extends Specification with BrowserHelper with TestServer with 
     get {
       path("hello") { serveHtml(html) } ~
       path("encoding" / Segment) { charset =>
-        respondWithHeader(`Content-Encoding`.parseFromValueString(charset).right.get) {
+        respondWithHeader(`Content-Encoding`.parseFromValueString(charset).toOption.get) {
           serveResource(s"encoding-${charset.toLowerCase}.html", charset)
         }
       } ~

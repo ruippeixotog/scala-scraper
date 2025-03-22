@@ -105,7 +105,9 @@ object ContentExtractors {
     case class OpenCell(idx: Int, colspan: Int, remRowspan: Int, cell: Element)
 
     def buildRow(idx: Int, cellElems: List[Element], openCells: List[OpenCell]): (List[Element], List[OpenCell]) = {
-      (cellElems, openCells) match {
+      // This will suppress "match may not be exhaustive warning" for case input: (Nil, List(_)),
+      // since it contains in case (cs, oc :: ocTail) if cs.isEmpty || idx >= oc.idx
+      ((cellElems, openCells): (List[Element], List[OpenCell]) @unchecked) match {
         case (Nil, Nil) => (Nil, Nil)
 
         case (cs, oc :: ocTail) if cs.isEmpty || idx >= oc.idx =>
