@@ -7,7 +7,7 @@ ThisBuild / semanticdbEnabled := true
 ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
 
 ThisBuild / scalaVersion := "2.13.16"
-ThisBuild / crossScalaVersions := Seq("2.13.16", "3.6.4")
+ThisBuild / crossScalaVersions := Seq("2.13.16", "3.3.5")
 
 // taken from https://github.com/scala/bug/issues/12632
 ThisBuild / libraryDependencySchemes ++= Seq(
@@ -65,7 +65,7 @@ lazy val commonSettings = Seq(
   scalacOptions ++= baseScalacOptions ++
     (CrossVersion.partialVersion(scalaVersion.value) match {
       case Some((2, _)) => List("-Xsource:3")
-      case _ => List("-rewrite", "-source", "3.4-migration")
+      case _ => Nil
     }),
 
   scalafmtOnCompile := true,
