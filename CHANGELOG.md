@@ -1,3 +1,12 @@
+### 3.2.0 (May 5, 2025)
+
+- New features
+  - Added support for configuring the jsoup parser to use.
+- Breaking changes
+  - Drops support for Scala 2.12.
+- Bug fixes
+  - Reverted Scala 3 version back to 3.3 (LTS) to fix binary compatibility issues introduced in the last version.
+
 ### 3.1.3 (Mar 10, 2025)
 
 Maintenance update to update dependency versions.

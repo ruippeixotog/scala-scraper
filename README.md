@@ -23,7 +23,7 @@ This README contains the following sections:
 To use Scala Scraper in an existing SBT project with Scala 2.13 or newer, add the following dependency to your `build.sbt`:
 
 ```scala
-libraryDependencies += "net.ruippeixotog" %% "scala-scraper" % "3.1.3"
+libraryDependencies += "net.ruippeixotog" %% "scala-scraper" % "3.2.0"
 ```
 
 If you are using an older version of this library, see this document for the version you're using: [1.x](https://github.com/ruippeixotog/scala-scraper/blob/v1.2.1/README.md), [0.1.2](https://github.com/ruippeixotog/scala-scraper/blob/v0.1.2/README.md), [0.1.1](https://github.com/ruippeixotog/scala-scraper/blob/v0.1.1/README.md), [0.1](https://github.com/ruippeixotog/scala-scraper/blob/v0.1/README.md).
@@ -155,7 +155,7 @@ doc >> extractor("#date", text, asLocalDate("yyyy-MM-dd"))
 
 // Extract the text of all "#mytable td" elements and parse each of them as a number
 doc >> extractor("#mytable td", texts, seq(asDouble))
-// res6: TraversableOnce[Double] = List(3.0, 15.0, 15.0, 1.0)
+// res6: IterableOnce[Double] = non-empty iterator
 
 // Extract an element "h1" and do no parsing (the default parsing behavior)
 doc >> extractor("h1", element, asIs[Element])
@@ -243,19 +243,21 @@ doc >/~ validator(text("title"))(_ == "Test page")
 //     <h1>Test page h1</h1>
 //    </div>
 //    <div id="menu">
-//     <span><a href="#home">Home</a></span> <span><a href="#section1">Section 1</a></span> <span class="active">Section 2</span> <span><a href="#section3">Section 3</a></span>
+//     <span><a href="#home">Home</a></span><span><a href="#section1">Section 1</a></span> <span class="active">Section 2</span> <span><a href="#section3">Section 3</a></span>
 //    </div>
 //    <div id="content">
-//     <h2>Test page h2</h2><span id="date">2014-10-26</span> <span id="datefull">2014-10-26T12:30:05Z</span> <span id="rating">4.5</span> <span id="pages">2</span>
+//     <h2>Test page h2</h2>
+//     <span id="date">2014-10-26</span><span id="datefull">2014-10-26T12:30:05Z</span> <span id="rating">4.5</span> <span id="pages">2</span>
 //     <section>
 //      <h3>Section 1 h3</h3>
 //      <p>Some text for testing</p>
 //      <p>More text for testing</p>
 //     </section>
 //     <section>
-//      <h3>Section 2 h3</h3><span>My Form</span>
+//      <h3>Section 2 h3</h3>
+//      <span>My Form</span>
 //      <form id="myform" action="submit.html">
-//       <input type="text" name="name" value="John"> <input type="text" name="address"> <input type="submit" value="Submit"> <span><a href="#">Add field</a></span>
+//       <input type="text" name="name" value="John"><input type="text" name="address"> <input type="submit" value="Submit"> <span><a href="#">Add field</a></span>
 //      </form>
 //     </section>
 //     <section>
