@@ -59,7 +59,7 @@ lazy val config = project
 
 lazy val commonSettings = Seq(
   // format: off
-  resolvers ++= Resolver.sonatypeOssRepos("snapshots"),
+  resolvers += Resolver.sonatypeCentralSnapshots,
   resolvers += "Scalaz Bintray Repo" at "https://dl.bintray.com/scalaz/releases",
 
   scalacOptions ++= baseScalacOptions ++
@@ -88,7 +88,11 @@ lazy val commonSettings = Seq(
 
   publishMavenStyle := true,
   Test / publishArtifact := false,
-  publishTo := sonatypePublishToBundle.value,
+  publishTo := {
+    val centralSnapshots = "https://central.sonatype.com/repository/maven-snapshots/"
+    if (isSnapshot.value) Some("central-snapshots" at centralSnapshots)
+    else localStaging.value
+  }
   // format: on
 )
 
@@ -109,7 +113,7 @@ releaseProcess := Seq[ReleaseStep](
   commitReleaseVersion,
   tagRelease,
   releaseStepCommandAndRemaining("+publishSigned"),
-  releaseStepCommand("sonatypeBundleRelease"),
+  releaseStepCommand("sonaRelease"),
   setNextVersion,
   commitNextVersion,
   pushChanges
