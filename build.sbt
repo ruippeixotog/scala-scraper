@@ -7,7 +7,7 @@ ThisBuild / semanticdbEnabled := true
 ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
 
 ThisBuild / scalaVersion := "2.13.16"
-ThisBuild / crossScalaVersions := Seq("2.13.16", "3.3.6")
+ThisBuild / crossScalaVersions := Seq("2.13.16", "3.3.7")
 
 // taken from https://github.com/scala/bug/issues/12632
 ThisBuild / libraryDependencySchemes ++= Seq(
