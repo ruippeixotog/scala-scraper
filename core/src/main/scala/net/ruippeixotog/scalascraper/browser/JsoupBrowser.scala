@@ -98,10 +98,10 @@ class JsoupBrowser(
   }
 
   private val executePipeline: Connection => JsoupDocument =
-    defaultRequestSettings
-      .andThen(requestSettings)
-      .andThen(executeRequest)
-      .andThen(processResponse)
+    (defaultRequestSettings(_))
+      .andThen(requestSettings(_))
+      .andThen(executeRequest(_))
+      .andThen(processResponse(_))
 }
 
 object JsoupBrowser {
