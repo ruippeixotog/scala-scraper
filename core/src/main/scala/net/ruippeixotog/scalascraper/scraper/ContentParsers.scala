@@ -12,7 +12,7 @@ object ContentParsers {
 
   /** Leaves the extracted content as is.
     */
-  def asIs[C] = identity[C]
+  def asIs[C] = identity[C](_)
 
   /** Parses text content as an `Int` value.
     */
