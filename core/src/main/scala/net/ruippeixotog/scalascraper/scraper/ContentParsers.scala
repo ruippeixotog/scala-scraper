@@ -110,6 +110,15 @@ object ContentParsers {
       *   a content parser for parsing text content as a `DateTime` using `tz` as default time zone.
       */
     def withZone(tz: DateTimeZone): String => DateTime = formatter.withZone(tz).parseDateTime(_).withZone(tz)
+
+    /** Parses text content as a `DateTime` using a provided locale.
+      *
+      * @param locale
+      *   the locale to be used by the parser
+      * @return
+      *   a content parser for parsing text content as a `DateTime` using `locale` as the locale.
+      */
+    def withLocale(locale: java.util.Locale): String => DateTime = formatter.withLocale(locale).parseDateTime(_)
   }
 
   /** A content parser with extra options for the retrieval of the first match of a regex.
