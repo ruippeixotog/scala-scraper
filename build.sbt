@@ -24,7 +24,7 @@ lazy val core = project
   .settings(
     name := "scala-scraper",
     libraryDependencies ++= Seq(
-      "com.github.nscala-time" %% "nscala-time" % "3.0.0",
+      "com.github.nscala-time" %% "nscala-time" % "3.2.0",
       "org.htmlunit" % "htmlunit" % "5.5.0",
       "org.jsoup" % "jsoup" % "1.23.2",
       "org.scalaz" %% "scalaz-core" % "7.3.9",
