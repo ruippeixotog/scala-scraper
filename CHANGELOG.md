@@ -1,3 +1,8 @@
+### 3.3.0 (Oct 9, 2026)
+
+- Breaking changes
+  - Upgraded htmlunit to 5.x.
+
 ### 3.2.0 (May 5, 2025)
 
 - New features
