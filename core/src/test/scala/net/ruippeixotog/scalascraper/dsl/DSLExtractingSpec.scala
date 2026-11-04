@@ -129,6 +129,15 @@ class DSLExtractingSpec extends Specification with BrowserHelper {
         // when there is time zone in the string to be parsed, the datetime is just changed to the provided time zone
         doc >> extractor("#datefull", stext, asDateTime("yyyy-MM-dd'T'HH:mm:ssZ").withZone(customTz)) mustEqual
           "2014-10-26T12:30:05Z".toDateTime.withZone(customTz)
+
+        // when there is locale provided, it is used
+        val dutch = java.util.Locale.forLanguageTag("nl")
+        (doc >> extractor(
+          "#dutchdate",
+          stext,
+          asDateTime("MMM dd, yyyy HH:mm:ss zzz").withLocale(dutch)
+        )).toString mustEqual
+          "2022-10-01T15:22:10.000-07:00"
       }
 
       "allow immediate parsing with a regex after extraction" in {
